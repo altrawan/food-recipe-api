@@ -57,7 +57,6 @@ module.exports = {
       const { id } = req.params;
       const result = await recipeModel.getRecipeById(id);
 
-      // CHANGE result.rows.length
       if (result.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
@@ -72,12 +71,36 @@ module.exports = {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
   },
+  getRecipeByName: async (req, res) => {
+    try {
+      const { key } = req.query;
+      const result = await recipeModel.getRecipeByName(key);
+
+      if (result.rows.length < 1) {
+        return wrapper.response(
+          res,
+          404,
+          `Data by name ${key} not found !`,
+          null
+        );
+      }
+
+      return wrapper.response(
+        res,
+        200,
+        `Success get recipe by name ${key}`,
+        result.rows
+      );
+    } catch (error) {
+      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
+    }
+  },
   getLatestRecipe: async (req, res) => {
     try {
       let { limit } = req.query;
       limit = Number(limit) || 5;
       const result = await recipeModel.getLatestRecipe(limit);
-      
+
       return wrapper.response(
         res,
         200,
@@ -114,6 +137,13 @@ module.exports = {
   },
   createRecipe: async (req, res) => {
     try {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        res.status(422).json({ errors: errors.array() });
+        return;
+      }
+
       let isNull;
       const { title, image, ingredients, video, user_id } = req.body;
 
@@ -147,6 +177,13 @@ module.exports = {
   },
   updateRecipe: async (req, res) => {
     try {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        res.status(422).json({ errors: errors.array() });
+        return;
+      }
+
       const { id } = req.params;
       let isNull;
       const checkId = await recipeModel.getRecipeById(id);

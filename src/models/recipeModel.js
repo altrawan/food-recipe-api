@@ -32,6 +32,19 @@ module.exports = {
         resolve(res);
       });
     }),
+  getRecipeByName: (key) =>
+    new Promise((resolve, reject) => {
+      db.query(
+        `SELECT * FROM recipes WHERE title ILIKE '%' || $1 || '%'`,
+        [key],
+        (err, res) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          resolve(res);
+        }
+      );
+    }),
   getLatestRecipe: (limit) =>
     new Promise((resolve, reject) => {
       db.query(
