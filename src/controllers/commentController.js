@@ -1,5 +1,4 @@
 const { v4: uuidv4 } = require('uuid');
-const bcrypt = require('bcrypt');
 const commentModel = require('../models/commentModel');
 const wrapper = require('../helpers/wrapper/wrapper');
 
@@ -9,7 +8,7 @@ module.exports = {
       let { key, search, sort, sortType, page, limit } = req.query;
       key = key || 'recipe_id';
       search = !search ? '%' : `%${search}%`;
-      sort = sort || 'created_at';
+      sort = sort || 'recipes.created_at';
       sortType = sortType || 'DESC';
       page = Number(page) || 1;
       limit = Number(limit) || 3;
@@ -34,7 +33,7 @@ module.exports = {
         offset
       );
 
-      if (result.length < 1) {
+      if (result.rows.length < 1) {
         return wrapper.response(res, 404, 'Data not found', null);
       }
 
@@ -57,7 +56,7 @@ module.exports = {
     try {
       const { id } = req.params;
       const result = await commentModel.getCommentById(id);
-      if (result.length < 1) {
+      if (result.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
       return wrapper.response(
@@ -73,8 +72,8 @@ module.exports = {
   getCommentByRecipe: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await commentModel.getCommentByResep(id);
-      if (result.length < 1) {
+      const result = await commentModel.getCommentByRecipe(id);
+      if (result.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
       return wrapper.response(
@@ -124,7 +123,7 @@ module.exports = {
       let isNull;
       const checkId = await commentModel.getCommentById(id);
 
-      if (checkId.length < 1) {
+      if (checkId.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
 
@@ -160,7 +159,7 @@ module.exports = {
       const { id } = req.params;
       const checkId = await commentModel.getCommentById(id);
 
-      if (checkId.length < 1) {
+      if (checkId.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
 

@@ -33,7 +33,7 @@ module.exports = {
         offset
       );
 
-      if (result.length < 1) {
+      if (result.rows.length < 1) {
         return wrapper.response(res, 404, 'Data not found', null);
       }
 
@@ -57,7 +57,8 @@ module.exports = {
       const { id } = req.params;
       const result = await recipeModel.getRecipeById(id);
 
-      if (result.length < 1) {
+      // CHANGE result.rows.length
+      if (result.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
 
@@ -74,10 +75,9 @@ module.exports = {
   getLatestRecipe: async (req, res) => {
     try {
       let { limit } = req.query;
-      console.log(limit);
       limit = Number(limit) || 5;
       const result = await recipeModel.getLatestRecipe(limit);
-      console.log(result);
+      
       return wrapper.response(
         res,
         200,
@@ -93,7 +93,7 @@ module.exports = {
       let { id } = req.params;
       const result = await recipeModel.getRecipeByUser(id);
 
-      if (result.length < 1) {
+      if (result.rows.length < 1) {
         return wrapper.response(
           res,
           404,
@@ -151,7 +151,7 @@ module.exports = {
       let isNull;
       const checkId = await recipeModel.getRecipeById(id);
 
-      if (checkId.length < 1) {
+      if (checkId.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
 
@@ -189,7 +189,7 @@ module.exports = {
       const { id } = req.params;
       const checkId = await recipeModel.getRecipeById(id);
 
-      if (checkId.length < 1) {
+      if (checkId.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
 

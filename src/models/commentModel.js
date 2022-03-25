@@ -4,7 +4,10 @@ module.exports = {
   getAllComments: (key, search, sort, sortType, limit, offset) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT * FROM comments WHERE ${key} ILIKE $1 ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
+        `SELECT comments.id, users.id AS user_id, users.name, recipes.id AS recipe_id, recipes.title, comments.comment_text 
+        FROM comments INNER JOIN users ON comments.user_id = users.id
+        INNER JOIN recipes ON comments.recipe_id = recipes.id 
+        WHERE ${key} ILIKE $1 ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
         [search, limit, offset],
         (err, res) => {
           if (err) {
@@ -32,7 +35,7 @@ module.exports = {
         resolve(res);
       });
     }),
-  getCommentByResep: (id) =>
+  getCommentByRecipe: (id) =>
     new Promise((resolve, reject) => {
       db.query(
         `SELECT recipes.id, recipes.title, recipes.image, recipes.ingredients, recipes.video, comments.comment_text FROM comments 

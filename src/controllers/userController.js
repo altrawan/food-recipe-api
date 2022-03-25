@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const { validationResult } = require('express-validator/check');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
 const wrapper = require('../helpers/wrapper/wrapper');
@@ -34,7 +35,7 @@ module.exports = {
         offset
       );
 
-      if (result.length < 1) {
+      if (result.rows.length < 1) {
         return wrapper.response(res, 404, 'Data not found', null);
       }
 
@@ -57,7 +58,7 @@ module.exports = {
     try {
       const { id } = req.params;
       const result = await userModel.getUserById(id);
-      if (result.length < 1) {
+      if (result.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
       return wrapper.response(
@@ -72,6 +73,13 @@ module.exports = {
   },
   createUser: async (req, res) => {
     try {
+      const errors = validationResult(req);
+
+      if (!errors.isEmpty()) {
+        res.status(422).json({ errors: errors.array() });
+        return;
+      }
+
       let isNull;
       const { name, email, password, phone, photo } = req.body;
 
@@ -93,7 +101,12 @@ module.exports = {
       }
 
       const result = await userModel.createUser(data);
-      return wrapper.response(res, 200, `Success create user id ${data.id}`, result);
+      return wrapper.response(
+        res,
+        200,
+        `Success create user id ${data.id}`,
+        result
+      );
     } catch (error) {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
@@ -104,7 +117,7 @@ module.exports = {
       let isNull;
       const checkId = await userModel.getUserById(id);
 
-      if (checkId.length < 1) {
+      if (checkId.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
 
@@ -137,7 +150,7 @@ module.exports = {
       const { id } = req.params;
       const checkId = await userModel.getUserById(id);
 
-      if (checkId.length < 1) {
+      if (checkId.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
 
