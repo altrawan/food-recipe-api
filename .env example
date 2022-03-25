@@ -1,3 +1,5 @@
+# remove example to use into .env filename
+
 # url
 APP_PORT='YOUR PORT'
 
