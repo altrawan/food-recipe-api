@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid');
+const { validationResult } = require('express-validator/check');
 const recipeModel = require('../models/recipeModel');
 const wrapper = require('../helpers/wrapper/wrapper');
 
@@ -193,6 +194,19 @@ module.exports = {
       }
 
       const { title, image, ingredients, video, user_id } = req.body;
+
+      // validate if data same
+      const row = checkId.rows[0];
+      if (
+        title === row.title &&
+        image === row.image &&
+        ingredients === row.ingredients &&
+        video === row.video &&
+        user_id === row.user_id
+      ) {
+        return wrapper.response(res, 400, `Data cannot be same`, null);
+      }
+
       const data = {
         title,
         image: image ? image : '-',

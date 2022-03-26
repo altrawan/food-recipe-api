@@ -54,7 +54,6 @@ module.exports = {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
           }
-          console.log(res);
           resolve(res);
         }
       );

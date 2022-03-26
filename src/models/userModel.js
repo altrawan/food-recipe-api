@@ -23,6 +23,15 @@ module.exports = {
         resolve(res.rows[0].total);
       });
     }),
+  getEmailAllUsers: (email) =>
+    new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM users WHERE email = $1`, [email], (err, res) => {
+        if (err) {
+          reject(new Error(`SQL : ${err.message}`));
+        }
+        resolve(res);
+      });
+    }),
   getUserById: (id) =>
     new Promise((resolve, reject) => {
       db.query(`SELECT * FROM users WHERE id = $1`, [id], (err, res) => {

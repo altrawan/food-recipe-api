@@ -128,6 +128,17 @@ module.exports = {
       }
 
       const { user_id, recipe_id, comment_text } = req.body;
+
+      // validate if data same
+      const row = checkId.rows[0];
+      if (
+        user_id === row.user_id &&
+        recipe_id === row.recipe_id &&
+        comment_text === row.comment_text
+      ) {
+        return wrapper.response(res, 400, `Data cannot be same`, null);
+      }
+
       const data = {
         user_id,
         recipe_id,

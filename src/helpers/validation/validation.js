@@ -7,7 +7,7 @@ exports.validate = (method) => {
         body('name')
           .isLength({ min: 3, max: 50 })
           .withMessage('Name minimum 3 chars and maximum 50 chars')
-          .isAlpha()
+          .matches(/^[A-Za-z ]+$/)
           .withMessage('Only letters allowed'),
         body('email', 'Email is not valid').isEmail(),
         body('password')
@@ -24,10 +24,10 @@ exports.validate = (method) => {
     }
     case 'recipe': {
       return [
-        body('name')
+        body('title')
           .isLength({ min: 3 })
           .withMessage('must be at least 3 chars long')
-          .isAlpha()
+          .matches(/^[A-Za-z ]+$/)
           .withMessage('Only letters allowed'),
         body('video', 'Only URL allowed').isURL(),
       ];

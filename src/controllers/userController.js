@@ -80,11 +80,15 @@ module.exports = {
         return;
       }
 
-      // CHECK EMAIL ALREADY EXIST
-      // const checkId = await userModel.getUserById(id);
-
       let isNull;
       const { name, email, password, phone, photo } = req.body;
+
+      // CHECK EMAIL ALREADY EXIST
+      const checkEmail = await userModel.getEmailAllUsers(email);
+
+      if (checkEmail.rows.length > 0) {
+        return wrapper.response(res, 400, `Email ${email} already exists !`, null);
+      }
 
       const data = {
         id: uuidv4(),
@@ -132,6 +136,26 @@ module.exports = {
       }
 
       const { name, email, password, phone, photo } = req.body;
+
+      // validate if data same
+      const row = checkId.rows[0];
+      if (
+        name === row.name &&
+        email === row.email &&
+        password === row.password &&
+        phone === row.phone &&
+        photo === row.photo
+      ) {
+        return wrapper.response(res, 400, `Data cannot be same`, null);
+      }
+
+      // CHECK EMAIL ALREADY EXIST
+      const checkEmail = await userModel.getEmailAllUsers(email);
+
+      if (checkEmail.rows.length > 0) {
+        return wrapper.response(res, 400, `Email ${email} already exists !`, null);
+      }
+
       const data = {
         name,
         email,
