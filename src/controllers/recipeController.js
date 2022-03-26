@@ -204,7 +204,7 @@ module.exports = {
         video === row.video &&
         user_id === row.user_id
       ) {
-        return wrapper.response(res, 400, `Data cannot be same`, null);
+        return wrapper.response(res, 409, `Data cannot be same`, null);
       }
 
       const data = {

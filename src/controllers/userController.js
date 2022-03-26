@@ -87,7 +87,7 @@ module.exports = {
       const checkEmail = await userModel.getEmailAllUsers(email);
 
       if (checkEmail.rows.length > 0) {
-        return wrapper.response(res, 400, `Email ${email} already exists !`, null);
+        return wrapper.response(res, 409, `Email ${email} already exists !`, null);
       }
 
       const data = {
@@ -146,14 +146,14 @@ module.exports = {
         phone === row.phone &&
         photo === row.photo
       ) {
-        return wrapper.response(res, 400, `Data cannot be same`, null);
+        return wrapper.response(res, 409, `Data cannot be same`, null);
       }
 
       // CHECK EMAIL ALREADY EXIST
       const checkEmail = await userModel.getEmailAllUsers(email);
 
       if (checkEmail.rows.length > 0) {
-        return wrapper.response(res, 400, `Email ${email} already exists !`, null);
+        return wrapper.response(res, 409, `Email ${email} already exists !`, null);
       }
 
       const data = {

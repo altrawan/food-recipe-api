@@ -136,7 +136,7 @@ module.exports = {
         recipe_id === row.recipe_id &&
         comment_text === row.comment_text
       ) {
-        return wrapper.response(res, 400, `Data cannot be same`, null);
+        return wrapper.response(res, 409, `Data cannot be same`, null);
       }
 
       const data = {
