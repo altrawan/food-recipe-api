@@ -16,7 +16,7 @@
     - ```APP_PORT``` : fill for set the API running port
     - ```PGHOST``` : fill with HOSTNAME in your postgreSQL configuration
     - ```PGUSER``` : fill with USERNAME in your postgreSQL configuration
-    - ```PGDATABASE``` : fill with the DATABASE NAME (Or leave it filled with ```pijarfood``` if you isn't rename the database)
+    - ```PGDATABASE``` : fill with the DATABASE NAME or leave it filled with ```pijarfood``` if you isn't rename the database
     - ```PGPASSWORD``` : fill with PASSWORD in your postgreSQL configuration
     - ```PGPORT``` : fill with PORT in your postgreSQL configuration
 4. Run with :
@@ -30,7 +30,7 @@
 
 - Flowchart
 - Database
-- Postman
+- Postman : [https://www.postman.com/collections/1e44db0bfaa83e49d791](https://www.postman.com/collections/1e44db0bfaa83e49d791)
 - Microsoft Power Point Slide Persentation
 
 ## Support Developer
