@@ -4,7 +4,7 @@ module.exports = {
   getAllComments: (key, search, sort, sortType, limit, offset) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT comments.id, users.id AS user_id, users.name, recipes.id AS recipe_id, recipes.title, comments.comment_text 
+        `SELECT comments.id, comments.user_id, users.name, comments.recipe_id, recipes.title, comments.comment_text 
         FROM comments INNER JOIN users ON comments.user_id = users.id
         INNER JOIN recipes ON comments.recipe_id = recipes.id 
         WHERE ${key} ILIKE $1 ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
@@ -21,7 +21,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       db.query(`SELECT COUNT(*) AS total FROM comments`, (err, res) => {
         if (err) {
-          reject(new Error(`SQL : ${err.sqlMessage}`));
+          reject(new Error(`SQL : ${err.message}`));
         }
         resolve(res.rows[0].total);
       });

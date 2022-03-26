@@ -6,15 +6,45 @@ module.exports = {
   getSavedRecipeByUser: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await savedRecipeModel.getSavedRecipeByUser(id);
-      if (result.length < 1) {
+      let { sort, sortType, page, limit } = req.query;
+      sort = sort || 'saved_recipes.created_at';
+      sortType = sortType || 'DESC';
+      page = Number(page) || 1;
+      limit = Number(limit) || 3;
+
+      const offset = page * limit - limit;
+      const totalData = await savedRecipeModel.getCountSavedRecipe(id);
+      const totalPage = Math.ceil(totalData / limit);
+
+      const pageInfo = {
+        page,
+        totalPage,
+        limit,
+        totalData,
+      };
+
+      const result = await savedRecipeModel.getSavedRecipeByUser(
+        id,
+        sort,
+        sortType,
+        limit,
+        offset
+      );
+
+      if (result.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
+
+      if (page > totalPage) {
+        return wrapper.response(res, 400, `Data only up to page ${totalPage}`);
+      }
+
       return wrapper.response(
         res,
         200,
         `Success get saved recipe by id user ${id}`,
-        result.rows
+        result.rows,
+        pageInfo
       );
     } catch (error) {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
@@ -24,7 +54,7 @@ module.exports = {
     try {
       const { id } = req.params;
       const result = await savedRecipeModel.getSavedRecipeById(id);
-      if (result.length < 1) {
+      if (result.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
       return wrapper.response(
@@ -57,7 +87,12 @@ module.exports = {
       }
 
       const result = await savedRecipeModel.createSavedRecipe(data);
-      return wrapper.response(res, 200, `Sucess create saved recipe`, result);
+      return wrapper.response(
+        res,
+        200,
+        `Success create saved recipe id ${data.id}`,
+        result
+      );
     } catch (error) {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
@@ -67,12 +102,12 @@ module.exports = {
       const { id } = req.params;
       const checkId = await savedRecipeModel.getSavedRecipeById(id);
 
-      if (checkId.length < 1) {
+      if (checkId.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
 
       const result = await savedRecipeModel.deleteSavedRecipe(id);
-      return wrapper.response(res, 200, `Success delete saved recipe id ${id}`);
+      return wrapper.response(res, 200, `Success delete like recipe id ${id}`);
     } catch (error) {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }

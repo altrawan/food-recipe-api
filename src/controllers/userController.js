@@ -81,7 +81,7 @@ module.exports = {
       }
 
       // CHECK EMAIL ALREADY EXIST
-      const checkId = await userModel.getUserById(id);
+      // const checkId = await userModel.getUserById(id);
 
       let isNull;
       const { name, email, password, phone, photo } = req.body;
@@ -104,12 +104,12 @@ module.exports = {
       }
 
       const result = await userModel.createUser(data);
-      // return wrapper.response(
-      //   res,
-      //   200,
-      //   `Success create user id ${data.id}`,
-      //   result
-      // );
+      return wrapper.response(
+        res,
+        200,
+        `Success create user id ${data.id}`,
+        result
+      );
     } catch (error) {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
