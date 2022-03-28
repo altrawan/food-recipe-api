@@ -14,7 +14,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{dev}}/user?page=1&limit=3",
+							"raw": "{{dev}}/user?page=1&limit=3&key=name&search=john",
 							"host": [
 								"{{dev}}"
 							],
@@ -32,13 +32,11 @@
 								},
 								{
 									"key": "key",
-									"value": "name",
-									"disabled": true
+									"value": "name"
 								},
 								{
 									"key": "search",
-									"value": "kurtis",
-									"disabled": true
+									"value": "john"
 								},
 								{
 									"key": "sort",
@@ -61,13 +59,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{dev}}/user/ab15e14c-1d52-4594-ba90-88ccaf900a29",
+							"raw": "{{dev}}/user/0d1d2bd9-1cca-4dbe-84af-f95bea39f318",
 							"host": [
 								"{{dev}}"
 							],
 							"path": [
 								"user",
-								"ab15e14c-1d52-4594-ba90-88ccaf900a29"
+								"0d1d2bd9-1cca-4dbe-84af-f95bea39f318"
 							]
 						}
 					},
@@ -80,7 +78,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Kurtis Weissna\",\r\n    \"email\": \"telly.h@billy.biz\",\r\n    \"password\": \"pijarcamp12\",\r\n    \"phone\": \"2100676132\",\r\n    \"photo\": \"https://www.w3schools.com/howto/img_avatar.png\"\r\n}",
+							"raw": "{\r\n    \"name\": \"John Walker\",\r\n    \"email\": \"john.wolker@billy.biz\",\r\n    \"password\": \"pijarcamp123\",\r\n    \"phone\": \"1247346357\",\r\n    \"photo\": \"https://www.w3schools.com/howto/img_avatar.png\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -106,7 +104,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Kurtis Weissna\",\r\n    \"email\": \"telly.ha@billy.biz\",\r\n    \"password\": \"pijarcamp12\",\r\n    \"phone\": \"2100676132\",\r\n    \"photo\": \"https://www.w3schools.com/howto/img_avatar.png\"\r\n}",
+							"raw": "{\r\n    \"name\": \"John Walker\",\r\n    \"email\": \"john.w@billy.biz\",\r\n    \"password\": \"pijarcamp123\",\r\n    \"phone\": \"1247346357\",\r\n    \"photo\": \"https://www.w3schools.com/howto/img_avatar.png\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -114,13 +112,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{dev}}/user/b64984c7-afb1-47ae-b837-1b1cbb3f3025",
+							"raw": "{{dev}}/user/d8bf4262-5c0c-4ee5-a39d-e2e349aed959",
 							"host": [
 								"{{dev}}"
 							],
 							"path": [
 								"user",
-								"b64984c7-afb1-47ae-b837-1b1cbb3f3025"
+								"d8bf4262-5c0c-4ee5-a39d-e2e349aed959"
 							]
 						}
 					},
@@ -132,13 +130,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{dev}}/user/b64984c7-afb1-47ae-b837-1b1cbb3f3025",
+							"raw": "{{dev}}/user/d8bf4262-5c0c-4ee5-a39d-e2e349aed959",
 							"host": [
 								"{{dev}}"
 							],
 							"path": [
 								"user",
-								"b64984c7-afb1-47ae-b837-1b1cbb3f3025"
+								"d8bf4262-5c0c-4ee5-a39d-e2e349aed959"
 							]
 						}
 					},
@@ -155,7 +153,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{dev}}/recipe?page=1&limit=3",
+							"raw": "{{dev}}/recipe?page=1&limit=3&sort=created_at&sortType=DESC",
 							"host": [
 								"{{dev}}"
 							],
@@ -178,18 +176,16 @@
 								},
 								{
 									"key": "search",
-									"value": "nasi",
+									"value": "pudding",
 									"disabled": true
 								},
 								{
 									"key": "sort",
-									"value": "created_at",
-									"disabled": true
+									"value": "created_at"
 								},
 								{
 									"key": "sortType",
-									"value": "DESC",
-									"disabled": true
+									"value": "DESC"
 								}
 							]
 						}
@@ -209,30 +205,6 @@
 							"path": [
 								"recipe",
 								"0b9464b5-bb72-4185-9e20-ae4c852e82a7"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Recipe By Name",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{dev}}/recipe/search?key=pancakes",
-							"host": [
-								"{{dev}}"
-							],
-							"path": [
-								"recipe",
-								"search"
-							],
-							"query": [
-								{
-									"key": "key",
-									"value": "pancakes"
-								}
 							]
 						}
 					},
@@ -288,7 +260,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Bread Pudding\",\r\n    \"image\": \"https://www.simplyrecipes.com/thmb/KJq00c0FUq8y9Twu_5GT9sI-utA=/720x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Simply-Recipes-Bread-Pudding-Lead-3-2-f0f7ea30c35b47038d13d110c597f42f.jpg\",\r\n    \"ingredients\": \"-\",\r\n    \"video\": \"https://cdn.jwplayer.com/videos/2Kbyo2Sf-tXzwfO7V.mp4\",\r\n    \"user_id\": \"0d7f82c0-d88c-427d-bda7-3acd36316337\"\r\n}",
+							"raw": "{\r\n    \"title\": \"Nasi Goreng\",\r\n    \"image\": \"https://www.simplyrecipes.com/thmb/KJq00c0FUq8y9Twu_5GT9sI-utA=/720x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Simply-Recipes-Bread-Pudding-Lead-3-2-f0f7ea30c35b47038d13d110c597f42f.jpg\",\r\n    \"ingredients\": \"Nasi, Kecap, Minyak\",\r\n    \"video\": \"https://cdn.jwplayer.com/videos/2Kbyo2Sf-tXzwfO7V.mp4\",\r\n    \"user_id\": \"0d7f82c0-d88c-427d-bda7-3acd36316337\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -314,7 +286,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"title\": \"Bread Pudding\",\r\n    \"image\": \"https://www.simplyrecipes.com/thmb/KJq00c0FUq8y9Twu_5GT9sI-utA=/720x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Simply-Recipes-Bread-Pudding-Lead-3-2-f0f7ea30c35b47038d13d110c597f42f.jpg\",\r\n    \"ingredients\": \"beras\",\r\n    \"video\": \"https://cdn.jwplayer.com/videos/2Kbyo2Sf-tXzwfO7V.mp4\",\r\n    \"user_id\": \"0d7f82c0-d88c-427d-bda7-3acd36316337\"\r\n}",
+							"raw": "{\r\n    \"title\": \"Nasi Goreng\",\r\n    \"image\": \"https://www.simplyrecipes.com/thmb/KJq00c0FUq8y9Twu_5GT9sI-utA=/720x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/Simply-Recipes-Bread-Pudding-Lead-3-2-f0f7ea30c35b47038d13d110c597f42f.jpg\",\r\n    \"ingredients\": \"Nasi, Kecap, Minyak, Garam, Telur\",\r\n    \"video\": \"https://cdn.jwplayer.com/videos/2Kbyo2Sf-tXzwfO7V.mp4\",\r\n    \"user_id\": \"0d7f82c0-d88c-427d-bda7-3acd36316337\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -322,13 +294,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{dev}}/recipe/3ff05174-44e4-473d-8764-630810555695",
+							"raw": "{{dev}}/recipe/649ccd47-79a0-49b7-af83-1984208dcc99",
 							"host": [
 								"{{dev}}"
 							],
 							"path": [
 								"recipe",
-								"3ff05174-44e4-473d-8764-630810555695"
+								"649ccd47-79a0-49b7-af83-1984208dcc99"
 							]
 						}
 					},
@@ -340,13 +312,13 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{dev}}/recipe/3ff05174-44e4-473d-8764-630810555695",
+							"raw": "{{dev}}/recipe/649ccd47-79a0-49b7-af83-1984208dcc99",
 							"host": [
 								"{{dev}}"
 							],
 							"path": [
 								"recipe",
-								"3ff05174-44e4-473d-8764-630810555695"
+								"649ccd47-79a0-49b7-af83-1984208dcc99"
 							]
 						}
 					},
