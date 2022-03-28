@@ -16,7 +16,7 @@
     - ```APP_PORT``` : fill for set the API running port
     - ```PGHOST``` : fill with HOSTNAME in your postgreSQL configuration
     - ```PGUSER``` : fill with USERNAME in your postgreSQL configuration
-    - ```PGDATABASE``` : fill with the DATABASE NAME (Or leave it filled with ```pijarfood``` if you isn't rename the database)
+    - ```PGDATABASE``` : fill with the DATABASE NAME or leave it filled with ```pijarfood``` if you isn't rename the database
     - ```PGPASSWORD``` : fill with PASSWORD in your postgreSQL configuration
     - ```PGPORT``` : fill with PORT in your postgreSQL configuration
 4. Run with :
@@ -29,9 +29,17 @@
 ## Documentations
 
 - Flowchart
-- Database
-- Postman
-- Microsoft Power Point Slide Persentation
+    - Flowchart Route Structure\
+        [https://drive.google.com/file/d/1InpbdbTeJYn4aqAis7cTzXadjk-ecFEw/view?usp=sharing](https://drive.google.com/file/d/1InpbdbTeJYn4aqAis7cTzXadjk-ecFEw/view?usp=sharing)
+    - Flowchart Food Recipe Application\
+        [https://drive.google.com/file/d/1Xi513noYtrvLAQV1w4us84YeVlqIpJ8Y/view?usp=sharing](https://drive.google.com/file/d/1Xi513noYtrvLAQV1w4us84YeVlqIpJ8Y/view?usp=sharing
+)
+- Database<br>
+    [https://drive.google.com/file/d/1efaqywqW42Rlf4-2Wf-NJhFtFiWRBFqG/view?usp=sharing](https://drive.google.com/file/d/1efaqywqW42Rlf4-2Wf-NJhFtFiWRBFqG/view?usp=sharing)
+- Postman<br>
+    [https://www.postman.com/collections/1e44db0bfaa83e49d791](https://www.postman.com/collections/1e44db0bfaa83e49d791)
+- Microsoft Power Point Slide Persentation<br>
+    [https://docs.google.com/presentation/u/1/d/1j11u-vw_wxKtUcQOCnazDnpLSllTDg4L/edit?usp=drive_web&ouid=117824289596076313726&rtpof=true](https://docs.google.com/presentation/u/1/d/1j11u-vw_wxKtUcQOCnazDnpLSllTDg4L/edit?usp=drive_web&ouid=117824289596076313726&rtpof=true)
 
 ## Support Developer
 1. Follow my account Github
