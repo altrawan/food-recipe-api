@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const expressValidator = require('express-validator');
 
-const router = require('./src/helpers/router/router');
+const router = require('./src/routes');
 
 const app = express();
 const port = process.env.APP_PORT;

@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator/check');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/userModel');
-const wrapper = require('../helpers/wrapper/wrapper');
+const wrapper = require('../helpers/wrapper');
 
 module.exports = {
   getAllUsers: async (req, res) => {

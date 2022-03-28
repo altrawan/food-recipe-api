@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const savedRecipeModel = require('../models/savedRecipeModel');
-const wrapper = require('../helpers/wrapper/wrapper');
+const wrapper = require('../helpers/wrapper');
 
 module.exports = {
   getSavedRecipeByUser: async (req, res) => {

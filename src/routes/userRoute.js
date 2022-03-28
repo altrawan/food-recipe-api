@@ -3,7 +3,7 @@ const express = require('express');
 const Router = express.Router();
 
 const userController = require('../controllers/userController');
-const validation = require('../helpers/validation/validation');
+const validation = require('../validations');
 
 Router.get('/', userController.getAllUsers)
   .get('/:id', userController.getUserById)

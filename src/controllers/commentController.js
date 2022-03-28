@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const commentModel = require('../models/commentModel');
-const wrapper = require('../helpers/wrapper/wrapper');
+const wrapper = require('../helpers/wrapper');
 
 module.exports = {
   getAllComments: async (req, res) => {

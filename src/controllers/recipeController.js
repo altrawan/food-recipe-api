@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const { validationResult } = require('express-validator/check');
 const recipeModel = require('../models/recipeModel');
-const wrapper = require('../helpers/wrapper/wrapper');
+const wrapper = require('../helpers/wrapper');
 
 module.exports = {
   getAllRecipes: async (req, res) => {
@@ -67,30 +67,6 @@ module.exports = {
         200,
         `Success get recipe by id ${id}`,
         result.rows[0]
-      );
-    } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
-    }
-  },
-  getRecipeByName: async (req, res) => {
-    try {
-      const { key } = req.query;
-      const result = await recipeModel.getRecipeByName(key);
-
-      if (result.rows.length < 1) {
-        return wrapper.response(
-          res,
-          404,
-          `Data by name ${key} not found !`,
-          null
-        );
-      }
-
-      return wrapper.response(
-        res,
-        200,
-        `Success get recipe by name ${key}`,
-        result.rows
       );
     } catch (error) {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);

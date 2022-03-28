@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const likedRecipeModel = require('../models/likedRecipeModel');
-const wrapper = require('../helpers/wrapper/wrapper');
+const wrapper = require('../helpers/wrapper');
 
 module.exports = {
   getLikedRecipeByUser: async (req, res) => {
