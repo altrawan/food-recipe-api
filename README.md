@@ -1,6 +1,6 @@
 # Food Recipe API (Backend Development)
 
-> aaa
+> Pijarfood is here to help you cook delicious and simple meals. We offer recipes and cooking advice for home cooks, by home cooks.
 
 ## Tools and Technologies
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1)
