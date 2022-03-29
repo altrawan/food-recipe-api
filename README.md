@@ -61,6 +61,11 @@
 - Microsoft Power Point Slide Persentation<br>
     [https://docs.google.com/presentation/u/1/d/1j11u-vw_wxKtUcQOCnazDnpLSllTDg4L/edit?usp=drive_web&ouid=117824289596076313726&rtpof=true](https://docs.google.com/presentation/u/1/d/1j11u-vw_wxKtUcQOCnazDnpLSllTDg4L/edit?usp=drive_web&ouid=117824289596076313726&rtpof=true)
 
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
 ## Support Developer
 1. Follow my account Github
 2. Add a Star 🌟 to this 👆 Repository
