@@ -16,7 +16,7 @@
     ![](https://img.shields.io/badge/body--parser-v1.19.2-blue)
     ![](https://img.shields.io/badge/cors-v2.8.5-blue)
     ![](https://img.shields.io/badge/dotenv-v16.0.0-blue)
-    ![](https://img.shields.io/badge/express-v4.17.3-blue)
+    ![https://www.npmjs.com/package/express](https://img.shields.io/badge/express-v4.17.3-blue)
     ![](https://img.shields.io/badge/express--validator-v5.3.1-blue)
     ![](https://img.shields.io/badge/helmet-v5.0.2-blue)
     ![](https://img.shields.io/badge/pg-v8.7.3-blue)
