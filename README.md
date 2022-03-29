@@ -9,6 +9,26 @@
 ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
 
+## Packages Included
+- NPM dependencies
+
+    ![https://img.shields.io/badge/bcrypt-v5.0.1-blue](https://img.shields.io/badge/bcrypt-v5.0.1-blue)
+    ![https://img.shields.io/badge/body--parser-v1.19.2-blue](https://img.shields.io/badge/body--parser-v1.19.2-blue)
+    ![https://img.shields.io/badge/cors-v2.8.5-blue](https://img.shields.io/badge/cors-v2.8.5-blue)
+    ![https://img.shields.io/badge/dotenv-v16.0.0-blue](https://img.shields.io/badge/dotenv-v16.0.0-blue)
+    ![https://img.shields.io/badge/express-v4.17.3-blue](https://img.shields.io/badge/express-v4.17.3-blue)
+    ![https://img.shields.io/badge/express--validator-v5.3.1-blue](https://img.shields.io/badge/express--validator-v5.3.1-blue)
+    ![https://img.shields.io/badge/helmet-v5.0.2-blue](https://img.shields.io/badge/helmet-v5.0.2-blue)
+    ![https://img.shields.io/badge/pg-v8.7.3-blue](https://img.shields.io/badge/pg-v8.7.3-blue)
+    ![https://img.shields.io/badge/uuid-v8.3.2-blue](https://img.shields.io/badge/uuid-v8.3.2-blue)
+    ![https://img.shields.io/badge/xss--clean-v0.1.1-blue](https://img.shields.io/badge/xss--clean-v0.1.1-blue)
+- NPM devDependencies
+    
+    ![https://img.shields.io/badge/eslint-v8.11.0-brightgreen](https://img.shields.io/badge/eslint-v8.11.0-brightgreen)
+    ![https://img.shields.io/badge/eslint--config--airbnb--base-v15.0.0-brightgreen](https://img.shields.io/badge/eslint--config--airbnb--base-v15.0.0-brightgreen)
+    ![https://img.shields.io/badge/eslint--plugin--import-v2.25.4-brightgreen](https://img.shields.io/badge/eslint--plugin--import-v2.25.4-brightgreen)
+    ![https://img.shields.io/badge/nodemon-v2.0.15-brightgreen](https://img.shields.io/badge/nodemon-v2.0.15-brightgreen)
+
 ## Instructions to Use
 1. Run ```npm install``` to install library / packages required
 2. Import database ```pijarfood``` to your PostgreSQL ([Backup and Restore PostgreSQL](https://www.postgresql.org/docs/8.1/backup.html#BACKUP-DUMP-RESTORE))
