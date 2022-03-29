@@ -30,7 +30,7 @@
     ![](https://img.shields.io/badge/nodemon-v2.0.15-brightgreen)
 
 ## Instructions to Use
-1. Run ```npm install``` to install library / packages required
+1. Run ```npm install``` to install packages required
 2. Import database ```pijarfood``` to your PostgreSQL ([Backup and Restore PostgreSQL](https://www.postgresql.org/docs/8.1/backup.html#BACKUP-DUMP-RESTORE))
 3. Rename ".env example" file to ".env" and set ".env" file in root:
     - ```APP_PORT``` : fill for set the API running port
