@@ -1,5 +1,7 @@
 # Food Recipe API (Backend Development)
 
+> Pijarfood is here to help you cook delicious and simple meals. We offer recipes and cooking advice for home cooks, by home cooks.
+
 ## Tools and Technologies
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1)
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
@@ -9,8 +11,28 @@
 ![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
 
+## Packages Included
+- NPM dependencies
+
+    ![](https://img.shields.io/badge/bcrypt-v5.0.1-blue)
+    ![](https://img.shields.io/badge/body--parser-v1.19.2-blue)
+    ![](https://img.shields.io/badge/cors-v2.8.5-blue)
+    ![](https://img.shields.io/badge/dotenv-v16.0.0-blue)
+    ![](https://img.shields.io/badge/express-v4.17.3-blue)
+    ![](https://img.shields.io/badge/express--validator-v5.3.1-blue)
+    ![](https://img.shields.io/badge/helmet-v5.0.2-blue)
+    ![](https://img.shields.io/badge/pg-v8.7.3-blue)
+    ![](https://img.shields.io/badge/uuid-v8.3.2-blue)
+    ![](https://img.shields.io/badge/xss--clean-v0.1.1-blue)
+- NPM devDependencies
+    
+    ![](https://img.shields.io/badge/eslint-v8.11.0-brightgreen)
+    ![](https://img.shields.io/badge/eslint--config--airbnb--base-v15.0.0-brightgreen)
+    ![](https://img.shields.io/badge/eslint--plugin--import-v2.25.4-brightgreen)
+    ![](https://img.shields.io/badge/nodemon-v2.0.15-brightgreen)
+
 ## Instructions to Use
-1. Run ```npm install``` to install library / packages required
+1. Run ```npm install``` to install packages required
 2. Import database ```pijarfood``` to your PostgreSQL ([Backup and Restore PostgreSQL](https://www.postgresql.org/docs/8.1/backup.html#BACKUP-DUMP-RESTORE))
 3. Rename ".env example" file to ".env" and set ".env" file in root:
     - ```APP_PORT``` : fill for set the API running port
@@ -40,6 +62,11 @@
     [https://www.postman.com/collections/1e44db0bfaa83e49d791](https://www.postman.com/collections/1e44db0bfaa83e49d791)
 - Microsoft Power Point Slide Persentation<br>
     [https://docs.google.com/presentation/u/1/d/1j11u-vw_wxKtUcQOCnazDnpLSllTDg4L/edit?usp=drive_web&ouid=117824289596076313726&rtpof=true](https://docs.google.com/presentation/u/1/d/1j11u-vw_wxKtUcQOCnazDnpLSllTDg4L/edit?usp=drive_web&ouid=117824289596076313726&rtpof=true)
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
 
 ## Support Developer
 1. Follow my account Github
