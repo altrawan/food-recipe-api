@@ -51,8 +51,8 @@
 ## Documentations
 
 - Flowchart
-    - Flowchart Route Structure\
-        [https://drive.google.com/file/d/1InpbdbTeJYn4aqAis7cTzXadjk-ecFEw/view?usp=sharing](https://drive.google.com/file/d/1InpbdbTeJYn4aqAis7cTzXadjk-ecFEw/view?usp=sharing)
+    - Flowchart Flow Backend\
+        [https://drive.google.com/file/d/1Eqtv8oM9QdhSHDFXTcA9BJ7uzCZy5nLk/view?usp=sharing](https://drive.google.com/file/d/1Eqtv8oM9QdhSHDFXTcA9BJ7uzCZy5nLk/view?usp=sharing)
     - Flowchart Food Recipe Application\
         [https://drive.google.com/file/d/1Xi513noYtrvLAQV1w4us84YeVlqIpJ8Y/view?usp=sharing](https://drive.google.com/file/d/1Xi513noYtrvLAQV1w4us84YeVlqIpJ8Y/view?usp=sharing
 )
@@ -61,7 +61,7 @@
 - Postman<br>
     [https://www.postman.com/collections/1e44db0bfaa83e49d791](https://www.postman.com/collections/1e44db0bfaa83e49d791)
 - Microsoft Power Point Slide Persentation<br>
-    [https://docs.google.com/presentation/u/1/d/1j11u-vw_wxKtUcQOCnazDnpLSllTDg4L/edit?usp=drive_web&ouid=117824289596076313726&rtpof=true](https://docs.google.com/presentation/u/1/d/1j11u-vw_wxKtUcQOCnazDnpLSllTDg4L/edit?usp=drive_web&ouid=117824289596076313726&rtpof=true)
+    [https://docs.google.com/presentation/d/1KkLHU3mD1022GCdS39r_GaWXMMovH0nc](https://docs.google.com/presentation/d/1KkLHU3mD1022GCdS39r_GaWXMMovH0nc)
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
