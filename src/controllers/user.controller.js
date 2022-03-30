@@ -1,13 +1,13 @@
 const { v4: uuidv4 } = require('uuid');
-const { validationResult } = require('express-validator/check');
 const bcrypt = require('bcrypt');
-const userModel = require('../models/userModel');
+const userModel = require('../models/user.model');
 const wrapper = require('../helpers/wrapper');
 
 module.exports = {
+  // Retrieve all users from the database.
   getAllUsers: async (req, res) => {
     try {
-      let { key, search, sort, sortType, page, limit } = req.query;
+      let { key, search, sort, sortType, page, limit } = req.query; //
       key = key || 'name';
       search = !search ? '%' : `%${search}%`;
       sort = sort || 'created_at';
@@ -43,6 +43,13 @@ module.exports = {
         return wrapper.response(res, 400, `Data only up to page ${totalPage}`);
       }
 
+      // const pagination = {
+      //   currentPage: page,
+      //   dataPerPage: limit,
+      //   totalPage: Math.ceil(total / limit),
+      //   totalData
+      // }
+
       return wrapper.response(
         res,
         200,
@@ -54,6 +61,7 @@ module.exports = {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
   },
+  // Find a single user with an id
   getUserById: async (req, res) => {
     try {
       const { id } = req.params;
@@ -71,23 +79,22 @@ module.exports = {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
   },
+  // Create and save a new user
   createUser: async (req, res) => {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        res.status(422).json({ errors: errors.array() });
-        return;
-      }
-
       let isNull;
       const { name, email, password, phone, photo } = req.body;
 
       // CHECK EMAIL ALREADY EXIST
-      const checkEmail = await userModel.getEmailAllUsers(email);
+      const checkEmail = await userModel.getUserByEmail(email);
 
       if (checkEmail.rows.length > 0) {
-        return wrapper.response(res, 409, `Email ${email} already exists !`, null);
+        return wrapper.response(
+          res,
+          409,
+          `Email ${email} already exists !`,
+          null
+        );
       }
 
       const data = {
@@ -118,18 +125,12 @@ module.exports = {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
   },
+  // Update a user by the id in the request
   updateUser: async (req, res) => {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        res.status(422).json({ errors: errors.array() });
-        return;
-      }
-
       const { id } = req.params;
       let isNull;
-      const checkId = await userModel.getUserById(id);
+      const checkId = await userModel.getUserByEmail(id);
 
       if (checkId.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
@@ -150,10 +151,15 @@ module.exports = {
       }
 
       // CHECK EMAIL ALREADY EXIST
-      const checkEmail = await userModel.getEmailAllUsers(email);
+      const checkEmail = await userModel.getUserByEmail(email);
 
       if (checkEmail.rows.length > 0) {
-        return wrapper.response(res, 409, `Email ${email} already exists !`, null);
+        return wrapper.response(
+          res,
+          409,
+          `Email ${email} already exists !`,
+          null
+        );
       }
 
       const data = {
@@ -179,6 +185,7 @@ module.exports = {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
   },
+  // Delete a user with the specified id in the request
   deleteUser: async (req, res) => {
     try {
       const { id } = req.params;

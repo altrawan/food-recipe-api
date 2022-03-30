@@ -1,12 +1,20 @@
-require('dotenv').config();
 const { Pool } = require('pg');
+const {
+  PGHOST,
+  PGUSER,
+  PGPASSWORD,
+  PGDATABASE,
+  PGPORT,
+} = require('../helpers/env');
 
+// pools will use environment variables
+// for connection information
 const db = new Pool({
-  host: process.env.PGHOST,
-  user: process.env.PGUSER,
-  password: process.env.PGPASSWORD,
-  database: process.env.PGDATABASE,
-  port: process.env.PGPORT,
+  host: PGHOST,
+  user: PGUSER,
+  password: PGPASSWORD,
+  database: PGDATABASE,
+  port: PGPORT,
 });
 
 // check connection

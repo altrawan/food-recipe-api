@@ -1,21 +1,20 @@
 const { v4: uuidv4 } = require('uuid');
-const { validationResult } = require('express-validator/check');
-const recipeModel = require('../models/recipeModel');
+const commentModel = require('../models/comment.model');
 const wrapper = require('../helpers/wrapper');
 
 module.exports = {
-  getAllRecipes: async (req, res) => {
+  getAllComments: async (req, res) => {
     try {
       let { key, search, sort, sortType, page, limit } = req.query;
-      key = key || 'title';
+      key = key || 'recipe_id';
       search = !search ? '%' : `%${search}%`;
-      sort = sort || 'created_at';
+      sort = sort || 'recipes.created_at';
       sortType = sortType || 'DESC';
       page = Number(page) || 1;
       limit = Number(limit) || 3;
 
       const offset = page * limit - limit;
-      const totalData = await recipeModel.getCountRecipe();
+      const totalData = await commentModel.getCountComment();
       const totalPage = Math.ceil(totalData / limit);
 
       const pageInfo = {
@@ -25,7 +24,7 @@ module.exports = {
         totalData,
       };
 
-      const result = await recipeModel.getAllRecipes(
+      const result = await commentModel.getAllComments(
         key,
         search,
         sort,
@@ -45,7 +44,7 @@ module.exports = {
       return wrapper.response(
         res,
         200,
-        'success get all data recipes',
+        `Success get all data comments`,
         result.rows,
         pageInfo
       );
@@ -53,84 +52,50 @@ module.exports = {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
   },
-  getRecipeById: async (req, res) => {
+  getCommentById: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await recipeModel.getRecipeById(id);
-
+      const result = await commentModel.getCommentById(id);
       if (result.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
-
       return wrapper.response(
         res,
         200,
-        `Success get recipe by id ${id}`,
+        `Success get data by id ${id}`,
         result.rows[0]
       );
     } catch (error) {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
   },
-  getLatestRecipe: async (req, res) => {
+  getCommentByRecipe: async (req, res) => {
     try {
-      let { limit } = req.query;
-      limit = Number(limit) || 5;
-      const result = await recipeModel.getLatestRecipe(limit);
-
-      return wrapper.response(
-        res,
-        200,
-        `Success get latest recipe`,
-        result.rows
-      );
-    } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
-    }
-  },
-  getRecipeByUser: async (req, res) => {
-    try {
-      let { id } = req.params;
-      const result = await recipeModel.getRecipeByUser(id);
-
+      const { id } = req.params;
+      const result = await commentModel.getCommentByRecipe(id);
       if (result.rows.length < 1) {
-        return wrapper.response(
-          res,
-          404,
-          `Data by user id ${id} not found !`,
-          null
-        );
+        return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
-
       return wrapper.response(
         res,
         200,
-        `Success get recipe by user id ${id}`,
+        `Success get data by id ${id}`,
         result.rows
       );
     } catch (error) {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
   },
-  createRecipe: async (req, res) => {
+  createComment: async (req, res) => {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        res.status(422).json({ errors: errors.array() });
-        return;
-      }
-
       let isNull;
-      const { title, image, ingredients, video, user_id } = req.body;
+      const { user_id, recipe_id, comment_text } = req.body;
 
       const data = {
         id: uuidv4(),
-        title,
-        image: image ? image : '-',
-        ingredients,
-        video: video ? video : '-',
         user_id,
+        recipe_id,
+        comment_text,
       };
 
       Object.keys(data).forEach((e) => {
@@ -141,54 +106,43 @@ module.exports = {
         return wrapper.response(res, 400, `${isNull} cannot be empty`, null);
       }
 
-      const result = await recipeModel.createRecipe(data);
+      const result = await commentModel.createComment(data);
       return wrapper.response(
         res,
         200,
-        `Success create recipe id ${data.id}`,
+        `Success create comment id ${data.id}`,
         result
       );
     } catch (error) {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
   },
-  updateRecipe: async (req, res) => {
+  updateComment: async (req, res) => {
     try {
-      const errors = validationResult(req);
-
-      if (!errors.isEmpty()) {
-        res.status(422).json({ errors: errors.array() });
-        return;
-      }
-
       const { id } = req.params;
       let isNull;
-      const checkId = await recipeModel.getRecipeById(id);
+      const checkId = await commentModel.getCommentById(id);
 
       if (checkId.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
 
-      const { title, image, ingredients, video, user_id } = req.body;
+      const { user_id, recipe_id, comment_text } = req.body;
 
       // validate if data same
       const row = checkId.rows[0];
       if (
-        title === row.title &&
-        image === row.image &&
-        ingredients === row.ingredients &&
-        video === row.video &&
-        user_id === row.user_id
+        user_id === row.user_id &&
+        recipe_id === row.recipe_id &&
+        comment_text === row.comment_text
       ) {
         return wrapper.response(res, 409, `Data cannot be same`, null);
       }
 
       const data = {
-        title,
-        image: image ? image : '-',
-        ingredients,
-        video: video ? video : '-',
         user_id,
+        recipe_id,
+        comment_text,
         updated_at: new Date(Date.now()),
       };
 
@@ -200,28 +154,28 @@ module.exports = {
         return wrapper.response(res, 400, `${isNull} cannot be empty`, null);
       }
 
-      const result = await recipeModel.updateRecipe(data, id);
+      const result = await commentModel.updateComment(data, id);
       return wrapper.response(
         res,
         200,
-        `Success update recipe id ${id}`,
+        `Success update comment id ${id}`,
         result
       );
     } catch (error) {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }
   },
-  deleteRecipe: async (req, res) => {
+  deleteComment: async (req, res) => {
     try {
       const { id } = req.params;
-      const checkId = await recipeModel.getRecipeById(id);
+      const checkId = await commentModel.getCommentById(id);
 
       if (checkId.rows.length < 1) {
         return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
       }
 
-      const result = await recipeModel.deleteRecipe(id);
-      return wrapper.response(res, 200, `Success delete recipe id ${id}`);
+      const result = await commentModel.deleteComment(id);
+      return wrapper.response(res, 200, `Success delete user id ${id}`);
     } catch (error) {
       return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
     }

@@ -18,14 +18,23 @@ module.exports = {
     new Promise((resolve, reject) => {
       db.query(`SELECT COUNT(*) AS total FROM users`, (err, res) => {
         if (err) {
-          reject(new Error(`SQL : ${err.sqlMessage}`));
+          reject(new Error(`SQL : ${err.message}`));
         }
         resolve(res.rows[0].total);
       });
     }),
-  getEmailAllUsers: (email) =>
+  getUserByEmail: (email) =>
     new Promise((resolve, reject) => {
       db.query(`SELECT * FROM users WHERE email = $1`, [email], (err, res) => {
+        if (err) {
+          reject(new Error(`SQL : ${err.message}`));
+        }
+        resolve(res);
+      });
+    }),
+  getUserByPhone: (phone) =>
+    new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM users WHERE phone = $1`, [phone], (err, res) => {
         if (err) {
           reject(new Error(`SQL : ${err.message}`));
         }
