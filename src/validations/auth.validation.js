@@ -28,27 +28,10 @@ const registerValidationRules = () => {
       .not()
       .isEmpty()
       .withMessage('Password cannot be empty')
-      .matches(/^[A-Za-z0-9]+$/)
-      .withMessage('Only letter and number allowed')
-      .isLength({ min: 8 })
-      .withMessage('must be at least 8 chars long')
-      .matches(/\d/)
-      .withMessage('must contain a number')
-      .not()
-      .isUppercase()
-      .withMessage('must contain a lower case')
-      .not()
-      .isLowercase()
-      .withMessage('must contain a upper case'),
-    // .isStrongPassword({
-    //   minLength: 8,
-    //   minLowercase: 1,
-    //   minUppercase: 1,
-    //   minNumbers: 1,
-    // })
-    // .withMessage(
-    //   'Password must be greater than 8 and contain at least one uppercase letter, one lowercase letter, and one number'
-    // ),
+      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/, 'i')
+      .withMessage(
+        'Password must be greater than 8 and contain at least one uppercase letter, one lowercase letter, and one number'
+      ),
     body('phone')
       .not()
       .isEmpty()
@@ -72,7 +55,6 @@ const registerValidationRules = () => {
         if (value !== req.body.password) {
           throw new Error('Password confirmation does not match password');
         }
-
         // Indicates the success of this synchronous custom validator
         return true;
       }),
@@ -93,16 +75,10 @@ const loginValidationRules = () => {
       .withMessage('Password cannot be empty')
       .matches(/^[A-Za-z0-9]+$/)
       .withMessage('Only letter and number allowed')
-      .isLength({ min: 8 })
-      .withMessage('must be at least 8 chars long')
-      .matches(/\d/)
-      .withMessage('must contain a number')
-      .not()
-      .isUppercase()
-      .withMessage('must contain a lower case')
-      .not()
-      .isLowercase()
-      .withMessage('must contain a upper case'),
+      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/, 'i')
+      .withMessage(
+        'Password must be greater than 8 and contain at least one uppercase letter, one lowercase letter, and one number'
+      ),
   ];
 };
 
