@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+// export environment
 module.exports = {
   PORT: process.env.PORT,
   PGHOST: process.env.PGHOST,
