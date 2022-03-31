@@ -22,4 +22,6 @@ app.use(express.urlencoded({ extended: true }));
 // parse application/json
 app.use(bodyParser.json());
 
+app.use(express.static('public'));
+
 module.exports = app;
