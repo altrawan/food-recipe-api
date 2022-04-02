@@ -1,7 +1,7 @@
 module.exports = {
   success: (res, code, status, message, data, pagination) => {
     const result = {};
-    result.code = code || 200
+    result.code = code || 200;
     result.status = status || 'success';
     result.message = message;
     result.data = data;
@@ -16,7 +16,7 @@ module.exports = {
     result.error = error;
     return res.status(result.code).json(result);
   },
-  successWithToken: (res, status, message, token) => {
+  successWithToken: (res, code, status, message, token) => {
     const result = {};
     result.code = code || 200;
     result.status = status || 'success';
