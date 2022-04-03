@@ -1,14 +1,16 @@
 const { v4: uuidv4 } = require('uuid');
 const recipeModel = require('../models/recipe.model');
-const wrapper = require('../helpers/wrapper');
+const { success, failed } = require('../helpers/response');
+const deleteFile = require('../helpers/deleteFile');
+const redis = require('../config/redis');
 
 module.exports = {
   getAllRecipes: async (req, res) => {
     try {
       let { key, search, sort, sortType, page, limit } = req.query;
       key = key || 'title';
-      search = !search ? '%' : `%${search}%`;
-      sort = sort || 'created_at';
+      search = search ? `%${search}%` : '%';
+      sort = sort || 'recipes.created_at';
       sortType = sortType || 'DESC';
       page = Number(page) || 1;
       limit = Number(limit) || 3;
@@ -18,9 +20,9 @@ module.exports = {
       const totalPage = Math.ceil(totalData / limit);
 
       const pageInfo = {
-        page,
+        currentPage: page,
+        dataPerPage: limit,
         totalPage,
-        limit,
         totalData,
       };
 
@@ -34,22 +36,29 @@ module.exports = {
       );
 
       if (result.rows.length < 1) {
-        return wrapper.response(res, 404, 'Data not found', null);
+        return failed(res, 404, 'failed', 'Data not found');
       }
 
       if (page > totalPage) {
-        return wrapper.response(res, 400, `Data only up to page ${totalPage}`);
+        return failed(res, 400, 'failed', `Data only up to page ${totalPage}`);
       }
 
-      return wrapper.response(
+      redis.setEx(
+        `getRecipe:${JSON.stringify(req.query)}`,
+        3600,
+        JSON.stringify({ result, pageInfo })
+      );
+
+      return success(
         res,
         200,
+        'success',
         'success get all data recipes',
         result.rows,
         pageInfo
       );
     } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
   getRecipeById: async (req, res) => {
@@ -58,33 +67,20 @@ module.exports = {
       const result = await recipeModel.getRecipeById(id);
 
       if (result.rows.length < 1) {
-        return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      return wrapper.response(
+      redis.setEx(`getRecipe:${id}`, 3600, JSON.stringify(result));
+
+      return success(
         res,
         200,
+        'success',
         `Success get recipe by id ${id}`,
         result.rows[0]
       );
     } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
-    }
-  },
-  getLatestRecipe: async (req, res) => {
-    try {
-      let { limit } = req.query;
-      limit = Number(limit) || 5;
-      const result = await recipeModel.getLatestRecipe(limit);
-
-      return wrapper.response(
-        res,
-        200,
-        `Success get latest recipe`,
-        result.rows
-      );
-    } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
   getRecipeByUser: async (req, res) => {
@@ -93,122 +89,142 @@ module.exports = {
       const result = await recipeModel.getRecipeByUser(id);
 
       if (result.rows.length < 1) {
-        return wrapper.response(
-          res,
-          404,
-          `Data by user id ${id} not found !`,
-          null
-        );
+        return failed(res, 404, `Data by user id ${id} not found !`);
       }
 
-      return wrapper.response(
+      const checkId = await recipeModel.getDetailRecipeByUser(id);
+      
+      const row = checkId.rows[0];
+      if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
+        return failed(res, 403, 'failed', `You don't have access to this page`);
+      }
+
+      redis.setEx(`getRecipeByUser:${id}`, 3600, JSON.stringify(result));
+
+      return success(
         res,
         200,
+        'success',
         `Success get recipe by user id ${id}`,
         result.rows
       );
     } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
   createRecipe: async (req, res) => {
     try {
-      let isNull;
-      const { title, image, ingredients, video, user_id } = req.body;
+      // get data from req.body
+      const { title, ingredients, video } = req.body;
 
+      // create new object
       const data = {
         id: uuidv4(),
         title,
-        image: image ? image : '-',
+        image: req.file ? req.file.filename : null,
         ingredients,
-        video: video ? video : '-',
-        user_id,
+        video: video ? video : null,
+        status: 1,
+        user_id: req.APP_DATA.tokenDecoded.id,
       };
 
-      Object.keys(data).forEach((e) => {
-        if (!data[e]) isNull = e;
-      });
-
-      if (isNull) {
-        return wrapper.response(res, 400, `${isNull} cannot be empty`, null);
-      }
-
+      // send object to model
       const result = await recipeModel.createRecipe(data);
-      return wrapper.response(
+
+      // response REST API success
+      return success(
         res,
         200,
+        'success',
         `Success create recipe id ${data.id}`,
         result
       );
     } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
   updateRecipe: async (req, res) => {
     try {
       const { id } = req.params;
-      let isNull;
-      const checkId = await recipeModel.getRecipeById(id);
+      const { title, ingredients, video } = req.body;
 
+      // check recipe
+      const checkId = await recipeModel.getDetailRecipe(id);
       if (checkId.rows.length < 1) {
-        return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      const { title, image, ingredients, video, user_id } = req.body;
-
-      // validate if data same
       const row = checkId.rows[0];
-      if (
-        title === row.title &&
-        image === row.image &&
-        ingredients === row.ingredients &&
-        video === row.video &&
-        user_id === row.user_id
-      ) {
-        return wrapper.response(res, 409, `Data cannot be same`, null);
+      if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
+        return failed(res, 403, 'failed', `You don't have access to this page`);
       }
 
       const data = {
         title,
-        image: image ? image : '-',
+        image: req.file ? req.file.filename : null,
         ingredients,
-        video: video ? video : '-',
-        user_id,
+        video: video ? video : null,
         updated_at: new Date(Date.now()),
       };
 
-      Object.keys(data).forEach((e) => {
-        if (!data[e]) isNull = e;
-      });
-
-      if (isNull) {
-        return wrapper.response(res, 400, `${isNull} cannot be empty`, null);
+      const file = row.image;
+      if (file) {
+        deleteFile(`public/uploads/recipe/${file}`);
       }
 
       const result = await recipeModel.updateRecipe(data, id);
-      return wrapper.response(
+
+      return success(
         res,
         200,
+        'success',
         `Success update recipe id ${id}`,
         result
       );
     } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
   deleteRecipe: async (req, res) => {
     try {
       const { id } = req.params;
-      const checkId = await recipeModel.getRecipeById(id);
+      const checkId = await recipeModel.getDetailRecipe(id);
 
       if (checkId.rows.length < 1) {
-        return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      const result = await recipeModel.deleteRecipe(id);
-      return wrapper.response(res, 200, `Success delete recipe id ${id}`);
+      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
+        return failed(res, 403, 'failed', `You don't have access to this page`);
+      }
+
+      if (checkId.rows[0].status === 0) {
+        return failed(res, 409, 'failed', `Recipe already not active`);
+      }
+
+      const result = await recipeModel.deleteUser(id);
+      return success(res, 200, 'success', `Success delete recipe id ${id}`);
     } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+    }
+  },
+  deletePermanentRecipe: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const checkId = await recipeModel.getDetailRecipe(id);
+
+      if (checkId.rows.length < 1) {
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      }
+
+      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
+        return failed(res, 403, 'failed', `You don't have access to this page`);
+      }
+
+      const result = await recipeModel.deletePermanentRecipe(id);
+      return success(res, 200, 'success', `Success delete recipe id ${id}`);
+    } catch (error) {
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
 };
