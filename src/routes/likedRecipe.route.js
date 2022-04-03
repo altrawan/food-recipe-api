@@ -19,7 +19,6 @@ Router.get(
   .get(
     '/user/:id',
     middlewareAuth.authentication,
-    middlewareAuth.isUser,
     middlewareRedis.getLikedRecipeById,
     likedRecipeController.getLikedRecipeByUser
   )

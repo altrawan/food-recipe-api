@@ -4,7 +4,8 @@ module.exports = {
   getAllLikedRecipe: (key, search, sort, sortType, limit, offset) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT liked_recipes.id, recipes.title, recipes.image, users.name, liked_recipes.created_at 
+        `SELECT liked_recipes.id, recipes.title, recipes.image, users.name, 
+        to_char(liked_recipes.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
         FROM liked_recipes
         INNER JOIN recipes ON liked_recipes.recipe_id = recipes.id
         INNER JOIN users ON liked_recipes.user_id = users.id
@@ -30,7 +31,11 @@ module.exports = {
   getLikedRecipeById: (id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT * FROM liked_recipes WHERE id = $1`,
+        `SELECT recipes.title, recipes.image, users.name, 
+        to_char(liked_recipes.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
+        FROM liked_recipes
+        INNER JOIN recipes ON liked_recipes.recipe_id = recipes.id
+        INNER JOIN users ON liked_recipes.user_id = users.id WHERE liked_recipes.id = $1`,
         [id],
         (err, res) => {
           if (err) {
@@ -43,11 +48,38 @@ module.exports = {
   getLikedRecipeByUser: (id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT liked_recipes.id, recipes.title, recipes.image, users.name, liked_recipes.created_at 
+        `SELECT recipes.title, recipes.image, users.name, 
+        to_char(liked_recipes.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
         FROM liked_recipes
         INNER JOIN recipes ON liked_recipes.recipe_id = recipes.id
         INNER JOIN users ON liked_recipes.user_id = users.id 
-        WHERE liked_recipes.user_id = $1 ORDER BY created_at DESC`,
+        WHERE liked_recipes.user_id = $1 ORDER BY liked_recipes.created_at DESC`,
+        [id],
+        (err, res) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          resolve(res);
+        }
+      );
+    }),
+  getDetailLikedRecipe: (id) =>
+    new Promise((resolve, reject) => {
+      db.query(
+        `SELECT * FROM liked_recipes WHERE id = $1`,
+        [id],
+        (err, res) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          resolve(res);
+        }
+      );
+    }),
+  getDetailLikedRecipeByUser: (id) =>
+    new Promise((resolve, reject) => {
+      db.query(
+        `SELECT * FROM liked_recipes WHERE user_id = $1`,
         [id],
         (err, res) => {
           if (err) {
