@@ -2,6 +2,15 @@
 
 > Pijarfood is here to help you cook delicious and simple meals. We offer recipes and cooking advice for home cooks, by home cooks.
 
+## Quick Start
+
+## Installation
+
+## Table of contents
+    - [Features]()
+    
+## Features
+
 ## Tools and Technologies
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1)
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
