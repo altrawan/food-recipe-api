@@ -1,7 +1,9 @@
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/user.model');
-const wrapper = require('../helpers/wrapper');
+const { success, failed } = require('../helpers/response');
+const deleteFile = require('../helpers/deleteFile');
+const redis = require('../config/redis');
 
 module.exports = {
   // Retrieve all users from the database.
@@ -20,9 +22,9 @@ module.exports = {
       const totalPage = Math.ceil(totalData / limit);
 
       const pageInfo = {
-        page,
+        currentPage: page,
+        dataPerPage: limit,
         totalPage,
-        limit,
         totalData,
       };
 
@@ -36,29 +38,29 @@ module.exports = {
       );
 
       if (result.rows.length < 1) {
-        return wrapper.response(res, 404, 'Data not found', null);
+        return failed(res, 404, 'failed', 'Data not found');
       }
 
       if (page > totalPage) {
-        return wrapper.response(res, 400, `Data only up to page ${totalPage}`);
+        return failed(res, 400, 'failed', `Data only up to page ${totalPage}`);
       }
 
-      // const pagination = {
-      //   currentPage: page,
-      //   dataPerPage: limit,
-      //   totalPage: Math.ceil(total / limit),
-      //   totalData
-      // }
+      redis.setEx(
+        `getUser:${JSON.stringify(req.query)}`,
+        3600,
+        JSON.stringify({ result, pageInfo })
+      );
 
-      return wrapper.response(
+      return success(
         res,
         200,
+        'success',
         'Success get all data users',
         result.rows,
         pageInfo
       );
     } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
   // Find a single user with an id
@@ -66,139 +68,169 @@ module.exports = {
     try {
       const { id } = req.params;
       const result = await userModel.getUserById(id);
+
       if (result.rows.length < 1) {
-        return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
-      return wrapper.response(
+
+      redis.setEx(`getUser:${id}`, 3600, JSON.stringify(result));
+
+      return success(
         res,
         200,
+        'success',
         `Success get data by id ${id}`,
         result.rows[0]
       );
     } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
-    }
-  },
-  // Create and save a new user
-  createUser: async (req, res) => {
-    try {
-      let isNull;
-      const { name, email, password, phone, photo } = req.body;
-
-      // CHECK EMAIL ALREADY EXIST
-      const checkEmail = await userModel.getUserByEmail(email);
-
-      if (checkEmail.rows.length > 0) {
-        return wrapper.response(
-          res,
-          409,
-          `Email ${email} already exists !`,
-          null
-        );
-      }
-
-      const data = {
-        id: uuidv4(),
-        name,
-        email,
-        password: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),
-        phone,
-        photo: photo ? photo : '-',
-      };
-
-      Object.keys(data).forEach((e) => {
-        if (!data[e]) isNull = e;
-      });
-
-      if (isNull) {
-        return wrapper.response(res, 400, `${isNull} cannot be empty`, null);
-      }
-
-      const result = await userModel.createUser(data);
-      return wrapper.response(
-        res,
-        200,
-        `Success create user id ${data.id}`,
-        result
-      );
-    } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
   // Update a user by the id in the request
-  updateUser: async (req, res) => {
+  updateProfile: async (req, res) => {
     try {
-      const { id } = req.params;
-      let isNull;
-      const checkId = await userModel.getUserByEmail(id);
+      const { id } = req.APP_DATA.tokenDecoded;
+      const { name, email, phone } = req.body;
 
+      // check user
+      const checkId = await userModel.getDetailUser(id);
       if (checkId.rows.length < 1) {
-        return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      const { name, email, password, phone, photo } = req.body;
-
-      // validate if data same
       const row = checkId.rows[0];
-      if (
-        name === row.name &&
-        email === row.email &&
-        password === row.password &&
-        phone === row.phone &&
-        photo === row.photo
-      ) {
-        return wrapper.response(res, 409, `Data cannot be same`, null);
+      // Only admin or user login
+      if (req.APP_DATA.tokenDecoded.id !== row.id) {
+        return failed(res, 403, 'failed', `You don't have access to this page`);
       }
 
-      // CHECK EMAIL ALREADY EXIST
+      // validation email already exist
       const checkEmail = await userModel.getUserByEmail(email);
+      if (email !== row.email && checkEmail.rowCount > 0) {
+        return failed(res, 409, 'failed', `Email already exist`);
+      }
 
-      if (checkEmail.rows.length > 0) {
-        return wrapper.response(
-          res,
-          409,
-          `Email ${email} already exists !`,
-          null
-        );
+      // validation phone already in use
+      const checkPhone = await userModel.getUserByPhone(phone);
+      if (phone !== row.phone && checkPhone.rowCount > 0) {
+        return failed(res, 409, 'failed', `Phone number already in use`);
       }
 
       const data = {
         name,
         email,
-        password: bcrypt.hashSync(password, bcrypt.genSaltSync(10)),
         phone,
-        photo: photo ? photo : '-',
         updated_at: new Date(Date.now()),
       };
 
-      Object.keys(data).forEach((e) => {
-        if (!data[e]) isNull = e;
-      });
-
-      if (isNull) {
-        return wrapper.response(res, 400, `${isNull} cannot be empty`, null);
-      }
-
-      const result = await userModel.updateUser(data, id);
-      return wrapper.response(res, 200, `Success update user id ${id}`, result);
+      const result = await userModel.updateProfile(data, id);
+      return success(res, 200, 'success', `Success update profile`, result);
     } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
-  // Delete a user with the specified id in the request
+  updateImage: async (req, res) => {
+    try {
+      const { id } = req.APP_DATA.tokenDecoded;
+
+      // check user
+      const checkId = await userModel.getDetailUser(id);
+      if (checkId.rows.length < 1) {
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      }
+
+      // Only admin or user login
+      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].id) {
+        return failed(res, 403, 'failed', `You don't have access to this page`);
+      }
+
+      const data = {
+        photo: req.file ? req.file.filename : null,
+        updated_at: new Date(Date.now()),
+      };
+
+      const result = await userModel.updateImage(data, id);
+      return success(
+        res,
+        200,
+        'success',
+        `Success update photo profile`,
+        result
+      );
+    } catch (error) {
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+    }
+  },
+  updatePassword: async (req, res) => {
+    try {
+      const { id } = req.APP_DATA.tokenDecoded;
+      const { newPassword } = req.body;
+
+      // check user
+      const checkId = await userModel.getDetailUser(id);
+      if (checkId.rows.length < 1) {
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      }
+
+      // Only admin or user login
+      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].id) {
+        return failed(res, 403, 'failed', `You don't have access to this page`);
+      }
+
+      const data = {
+        password: bcrypt.hashSync(newPassword, 10),
+        updated_at: new Date(Date.now()),
+      };
+
+      const result = await userModel.updatePassword(data, id);
+      return success(res, 200, 'success', `Change password success`, result);
+    } catch (error) {
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+    }
+  },
   deleteUser: async (req, res) => {
     try {
       const { id } = req.params;
-      const checkId = await userModel.getUserById(id);
+      const checkId = await userModel.getDetailUser(id);
 
       if (checkId.rows.length < 1) {
-        return wrapper.response(res, 404, `Data by id ${id} not found !`, null);
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      }
+
+      if (checkId.rows[0].status === 0) {
+        return failed(res, 409, 'failed', `User already not active`);
       }
 
       const result = await userModel.deleteUser(id);
-      return wrapper.response(res, 200, `Success delete user id ${id}`);
+      return success(res, 200, 'success', `Success delete user id ${id}`);
     } catch (error) {
-      return wrapper.response(res, 400, `Bad Request : ${error.message}`, null);
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+    }
+  },
+  // Delete a user with the specified id in the request
+  deletePermanentUser: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const checkId = await userModel.getDetailUser(id);
+
+      if (checkId.rows.length < 1) {
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      }
+
+      // Only admin or user login
+      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].id) {
+        return failed(res, 403, 'failed', `You don't have access to this page`);
+      }
+
+      const photo = checkId.rows[0].photo;
+      if (photo) {
+        deleteFile(`public/uploads/user/1648736734977.png`);
+      }
+
+      const result = await userModel.deletePermanentUser(id);
+      return success(res, 200, 'success', `Success delete user id ${id}`);
+    } catch (error) {
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
 };

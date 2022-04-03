@@ -4,7 +4,10 @@ module.exports = {
   getAllUsers: (key, search, sort, sortType, limit, offset) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT * FROM users WHERE ${key} ILIKE $1 ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
+        `SELECT id, name, email, phone, CASE WHEN level = 0 THEN 'Admin' ELSE 'User' END AS level, 
+        CASE WHEN status = 0 THEN 'Not Active' ELSE 'Active' END AS status, photo,
+        to_char(created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date 
+        FROM users WHERE ${key} ILIKE $1 ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
         [search, limit, offset],
         (err, res) => {
           if (err) {
@@ -43,33 +46,69 @@ module.exports = {
     }),
   getUserById: (id) =>
     new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM users WHERE id = $1`, [id], (err, res) => {
+      db.query(
+        `SELECT name, email, phone, photo, to_char(created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date 
+        FROM users WHERE id = $1`,
+        [id],
+        (err, res) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          resolve(res);
+        }
+      );
+    }),
+  getDetailUser: (id) =>
+    new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM users WHERE id = $1`, [id], (er, res) => {
         if (err) {
           reject(new Error(`SQL : ${err.message}`));
         }
         resolve(res);
       });
     }),
-  createUser: (data) =>
+  updateProfile: (data, id) =>
     new Promise((resolve, reject) => {
-      const { id, name, email, password, phone, photo } = data;
+      const { name, email, phone, updated_at } = data;
       db.query(
-        `INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6)`,
-        [id, name, email, password, phone, photo],
+        `UPDATE users SET name = $1, email = $2, phone = $3, updated_at = $4 WHERE id = $5`,
+        [name, email, phone, updated_at, id],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
           }
-          resolve(data);
+          const newRes = {
+            id,
+            ...data,
+          };
+          resolve(newRes);
         }
       );
     }),
-  updateUser: (data, id) =>
+  updateImage: (data, id) =>
     new Promise((resolve, reject) => {
-      const { name, email, password, phone, photo, updated_at } = data;
+      const { photo, updated_at } = data;
       db.query(
-        `UPDATE users SET name = $1, email = $2, password = $3, phone = $4, photo = $5, updated_at = $6 WHERE id = $7`,
-        [name, email, password, phone, photo, updated_at, id],
+        `UPDATE users SET photo = $1, updated_at = $2 WHERE id = $3`,
+        [photo, updated_at, id],
+        (err) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          const newRes = {
+            id,
+            ...data,
+          };
+          resolve(newRes);
+        }
+      );
+    }),
+  updatePassword: (data, id) =>
+    new Promise((resolve, reject) => {
+      const { password, updated_at } = data;
+      db.query(
+        `UPDATE users SET password = $1, updated_at = $2 WHERE id = $3`,
+        [password, updated_at, id],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
@@ -83,6 +122,19 @@ module.exports = {
       );
     }),
   deleteUser: (id) =>
+    new Promise((resolve, reject) => {
+      db.query(
+        `UPDATE users SET status = 0, deleted_at = $1 WHERE id = $2`,
+        [new Date(Date.now()), id],
+        (err) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          resolve(id);
+        }
+      );
+    }),
+  deletePermanentUser: (id) =>
     new Promise((resolve, reject) => {
       db.query(`DELETE FROM users WHERE id = $1`, [id], (err) => {
         if (err) {
