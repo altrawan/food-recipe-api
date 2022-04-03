@@ -46,6 +46,30 @@ Linting:
 ```
 ```
 
+## Environment Variables
+The environment variables can be found and modified in the ```.env``` file. They come with these default values:
+```
+# Port number
+PORT=3001
+
+# Setting PostgreSQL
+PGHOST='YOUR HOST'
+PGUSER='YOUR USERNAME'
+PGDATABASE='YOUR DATABASE'
+PGPASSWORD='YOUR PASSWORD'
+PGPORT=5432
+
+# JWT
+# JWT secret key
+JWT_SECRET=thisisasamplesecret
+
+# SMTP configuration options for the email service
+# For testing, you can use a fake SMTP service like Ethereal: https://ethereal.email/create
+STMP_SERVICE=email-server # example: gmail
+STMP_USER=your-email
+STMP_PASS=your-password
+```
+
 ## Tools and Technologies
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1)
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
