@@ -31,19 +31,21 @@
 - **Linting:** with [ESlint](https://eslint.org/) and [Prettier](https://prettier.io/)
 
 ## Commands
-Running locally:
+Running in client mode:
 ```
 npm run start
 ```
-Running in production:
+Running in developer mode:
 ```
 npm run dev
 ```
 Testing:
 ```
+
 ```
 Linting:
 ```
+
 ```
 
 ## Environment Variables
@@ -68,6 +70,26 @@ JWT_SECRET=thisisasamplesecret
 STMP_SERVICE=email-server # example: gmail
 STMP_USER=your-email
 STMP_PASS=your-password
+```
+
+## Project Structure
+```
+├── public\             # Asset public
+├── src\                # Project source code
+    ├── config\         # Configuration database
+    ├── controllers\    # Route controllers (controller layer)
+    ├── helpers\        # Helpers
+    ├── middlewares\    # Custom express middlewares
+    ├── models\         # Models
+    ├── routes\         # Routes
+    ├── template\       # Template HTML
+    ├── validations\    # Request data validation
+    ├── app.js          # Express app
+    ├── index.js        # App entry point
+├── .env                # Setup environment
+├── .gitignore          # File Name For not uploaded on github
+├── LICENSE             # License This Project
+└── README.md           # For Readme In github
 ```
 
 ## Tools and Technologies
