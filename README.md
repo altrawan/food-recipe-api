@@ -1,4 +1,4 @@
-# Food Recipe API (Backend Development)
+# Food Recipe RESTful API
 
 ## Quick Start
 
@@ -7,7 +7,7 @@
 ## Table of contents
 - [Features](#Features)
 - [Commands](#Commands)
-- [Environment Variables](#)
+- [Environment Variables](#Environment Variables)
 - [Project Structure](#)
 - [API Documentation](#)
 - [Error Handling](#)
