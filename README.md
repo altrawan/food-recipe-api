@@ -8,14 +8,15 @@
 - [Features](#Features)
 - [Commands](#Commands)
 - [Environment Variables](#Environment-Variables)
-- [Project Structure](#)
-- [API Documentation](#)
-- [Error Handling](#)
-- [Validation](#)
-- [Authentication](#)
-- [Authorization](#)
-- [Linting](#)
-- [Contributing](#)
+- [Project Structure](#Project-Structure)
+- [API Documentation](#API-Documentation)
+- [Error Handling](#Error-Handling)
+- [Validation](#Validation)
+- [Authentication](#Authentication)
+- [Authorization](#Authorization)
+- [Linting](#Linting)
+- [Contributing](#Contributing)
+- [Support Developer](#Support-Developer)
     
 ## Features
 - **SQL database:** using [PostgreSQL](https://www.postgresql.org/)
@@ -87,11 +88,58 @@ STMP_PASS=your-password
     ├── app.js          # Express app
     ├── index.js        # App entry point
 ├── .env                # Setup environment
-├── .gitignore          # File Name For not uploaded on github
-├── LICENSE             # License This Project
+├── .gitignore          # File name for not uploaded on github
+├── LICENSE             # License this project
 └── README.md           # For Readme In github
 ```
 
+## API Documentation
+### API Endpoints
+List of available routes:
+
+**Index routes**\
+```GET /latest``` - get latest recipe
+
+**Auth Route**\
+```POST /auth/register``` - register\
+```POST /auth/login``` - login\
+```PUT /auth/verify-email``` - verify email\
+```POST /auth/refresh-token``` - refresh auth token\
+```POST /auth/logout``` - logout
+
+**User Route**\
+```GET /users``` - get all users\
+```GET /users/:id``` - get user by id\
+```PUT /users/change-profile``` - change profile user\
+```PUT /users/change-photo``` - change photo user\
+```PUT /users/change-password``` - change password\
+```PUT /users/delete/:id``` - soft delete user\
+```DELETE /users/:id``` - delete permanent user
+
+**Recipe Route**\
+**Comment Route**\
+**Liked Recipe Route**\
+**Saved Recipe Route**
+
+## Error Handling
+
+## Validation
+
+## Authentication
+
+## Authorization
+
+## Linting
+
+## Contributing
+
+## Support Developer
+1. Follow my account Github
+2. Add a Star 🌟 to this 👆 Repository
+
+<b>Note</b> : if you have any ideas or suggestions for this project contact me at muhammadalifputra8888@gmail.com
+
+<!--
 ## Tools and Technologies
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1)
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
@@ -157,9 +205,3 @@ STMP_PASS=your-password
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
-
-## Support Developer
-1. Follow my account Github
-2. Add a Star 🌟 to this 👆 Repository
-
-<b>Note</b> : if you have any ideas or suggestions for this project contact me at muhammadalifputra8888@gmail.com
