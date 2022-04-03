@@ -1,8 +1,22 @@
 # Food Recipe RESTful API
 
-## Quick Start
-
 ## Installation
+1. Clone the repo ```git clone https://github.com/altrawan/food-recipe-api.git```
+2. Run ```npm install``` to install the dependencies
+3. Import database ```pijarfood``` to your PostgreSQL ([Backup and Restore PostgreSQL](https://www.postgresql.org/docs/8.1/backup.html#BACKUP-DUMP-RESTORE))
+4. Set the environment variables:
+    - ```APP_PORT``` : fill for set the API running port
+    - ```PGHOST``` : fill with HOSTNAME in your postgreSQL configuration
+    - ```PGUSER``` : fill with USERNAME in your postgreSQL configuration
+    - ```PGDATABASE``` : fill with the DATABASE NAME or leave it filled with ```pijarfood``` if you isn't rename the database
+    - ```PGPASSWORD``` : fill with PASSWORD in your postgreSQL configuration
+    - ```PGPORT``` : fill with PORT in your postgreSQL configuration
+5. Run with :
+    - ```npm run start``` : if you want to run it in client mode (use ```node```) without auto restart on every changing code
+    - ```npm run dev``` :  if you want to run it in developer mode (use ```nodemon```) every change and save it will auto restart
+6. You are Ready to Go
+
+<b>Note</b> : if you got any problems send email to : <a href="#">muhammadalifputra8888@gmail.com</a>
 
 ## Table of contents
 - [Features](#Features)
