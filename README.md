@@ -132,6 +132,7 @@ List of available routes:
 ## Linting
 
 ## Contributing
+Contributions are more than welcome! Please check out the [contributing guide](https://github.com/altrawan/food-recipe-api/blob/master/CONTRIBUTING.md).
 
 ## Support Developer
 1. Follow my account Github
