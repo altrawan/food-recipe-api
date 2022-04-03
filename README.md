@@ -16,7 +16,7 @@
     - ```npm run dev``` :  if you want to run it in developer mode (use ```nodemon```) every change and save it will auto restart
 6. You are Ready to Go
 
-<b>Note</b> : if you got any problems send email to : <a href="#">muhammadalifputra8888@gmail.com</a>
+<b>Note</b> : if you got any problems send email to : <a>muhammadalifputra8888@gmail.com</a>
 
 ## Table of contents
 - [Features](#Features)
