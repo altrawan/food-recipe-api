@@ -6,6 +6,7 @@
 ## Installation
 
 ## Table of contents
+- [Features](https://github.com/altrawan/food-recipe-api#features)
     
 ## Features
 - **SQL Database:** using [PostgreSQL](https://www.postgresql.org/)
