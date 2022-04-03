@@ -1,15 +1,24 @@
 # Food Recipe API (Backend Development)
 
-> Pijarfood is here to help you cook delicious and simple meals. We offer recipes and cooking advice for home cooks, by home cooks.
 
 ## Quick Start
 
 ## Installation
 
 ## Table of contents
-    - [Features]()
     
 ## Features
+- **SQL Database:** using [PostgreSQL](https://www.postgresql.org/)
+- **NoSQL Database:** using [Redis](https://redis.io/)
+- **Validation:** request data validation using [express-validator](https://express-validator.github.io/docs/)
+- **API documentation:** with [Postman](https://www.postman.com/)
+- **Dependency management:** with [NPM](https://www.npmjs.com/)
+- **Environment variables:** using [dotenv](https://github.com/motdotla/dotenv)
+- **Security:** set security HTTP headers using [helmet](https://helmetjs.github.io/)
+- **Santizing:** sanitize request data against xss and query injection
+- **CORS:** Cross-Origin Resource-Sharing enabled using [cors](https://github.com/expressjs/cors)
+- **Hash Password:** using [bcrypt](https://github.com/kelektiv/node.bcrypt.js)
+- **Linting:** with [ESlint](https://eslint.org/) and [Prettier](https://prettier.io/)
 
 ## Tools and Technologies
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1)
