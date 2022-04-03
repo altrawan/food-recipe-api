@@ -1,9 +1,3 @@
-/**
- * Filename     : index.js
- * Description  : -
- * Date         : 22-03-2022
- */
-
 const { PORT } = require('./helpers/env');
 const app = require('./app');
 const router = require('./routes');
