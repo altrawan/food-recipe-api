@@ -1,16 +1,25 @@
 # Food Recipe API (Backend Development)
 
-
 ## Quick Start
 
 ## Installation
 
 ## Table of contents
 - [Features](#Features)
+- [Commands](#Commands)
+- [Environment Variables](#)
+- [Project Structure](#)
+- [API Documentation](#)
+- [Error Handling](#)
+- [Validation](#)
+- [Authentication](#)
+- [Authorization](#)
+- [Linting](#)
+- [Contributing](#)
     
 ## Features
-- **SQL Database:** using [PostgreSQL](https://www.postgresql.org/)
-- **NoSQL Database:** using [Redis](https://redis.io/)
+- **SQL database:** using [PostgreSQL](https://www.postgresql.org/)
+- **NoSQL database:** using [Redis](https://redis.io/)
 - **Validation:** request data validation using [express-validator](https://express-validator.github.io/docs/)
 - **API documentation:** with [Postman](https://www.postman.com/)
 - **Dependency management:** with [NPM](https://www.npmjs.com/)
