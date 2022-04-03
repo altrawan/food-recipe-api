@@ -1,9 +1,14 @@
 const { body, validationResult } = require('express-validator');
 
-const commentValidationRules = () => {
+const createComment = () => {
   return [
-    body('user_id').not().isEmpty().withMessage('User ID cannot be empty'),
     body('recipe_id').not().isEmpty().withMessage('Recipe ID cannot be empty'),
+    body('comment_text').not().isEmpty().withMessage('Comment cannot be empty'),
+  ];
+};
+
+const updateComment = () => {
+  return [
     body('comment_text').not().isEmpty().withMessage('Comment cannot be empty'),
   ];
 };
@@ -24,6 +29,7 @@ const validate = (req, res, next) => {
 };
 
 module.exports = {
-  commentValidationRules,
+  createComment,
+  updateComment,
   validate,
 };
