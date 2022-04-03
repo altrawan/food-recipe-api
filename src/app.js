@@ -17,7 +17,7 @@ app.use(xss());
 app.use(helmet());
 
 // parse urlencoded request body
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // parse application/json
 app.use(bodyParser.json());
