@@ -7,7 +7,7 @@
 ## Table of contents
 - [Features](#Features)
 - [Commands](#Commands)
-- [Environment Variables](#Environment Variables)
+- [Environment Variables](#Environment)
 - [Project Structure](#)
 - [API Documentation](#)
 - [Error Handling](#)
