@@ -5,7 +5,7 @@
 2. Run ```npm install``` to install the dependencies
 3. Import database ```pijarfood``` to your PostgreSQL ([Backup and Restore PostgreSQL](https://www.postgresql.org/docs/8.1/backup.html#BACKUP-DUMP-RESTORE))
 4. Set the environment variables:
-    - ```APP_PORT``` : fill for set the API running port
+    - ```PORT``` : fill for set the API running port
     - ```PGHOST``` : fill with HOSTNAME in your postgreSQL configuration
     - ```PGUSER``` : fill with USERNAME in your postgreSQL configuration
     - ```PGDATABASE``` : fill with the DATABASE NAME or leave it filled with ```pijarfood``` if you isn't rename the database
