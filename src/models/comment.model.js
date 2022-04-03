@@ -4,7 +4,8 @@ module.exports = {
   getAllComments: (key, search, sort, sortType, limit, offset) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT comments.id, comments.user_id, users.name, comments.recipe_id, recipes.title, comments.comment_text 
+        `SELECT comments.id, recipes.title, users.name, comments.comment_text, 
+        to_char(comments.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
         FROM comments INNER JOIN users ON comments.user_id = users.id
         INNER JOIN recipes ON comments.recipe_id = recipes.id 
         WHERE ${key} ILIKE $1 ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
@@ -28,17 +29,26 @@ module.exports = {
     }),
   getCommentById: (id) =>
     new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM comments WHERE id = $1`, [id], (err, res) => {
-        if (err) {
-          reject(new Error(`SQL : ${err.message}`));
+      db.query(
+        `SELECT recipes.title, users.photo, users.name, comments.comment_text, 
+        to_char(comments.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
+        FROM comments INNER JOIN users ON comments.user_id = users.id
+        INNER JOIN recipes ON comments.recipe_id = recipes.id WHERE comments.id = $1`,
+        [id],
+        (err, res) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          resolve(res);
         }
-        resolve(res);
-      });
+      );
     }),
   getCommentByRecipe: (id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT recipes.id, recipes.title, recipes.image, recipes.ingredients, recipes.video, comments.comment_text FROM comments 
+        `SELECT recipes.title, users.photo, users.name, comments.comment_text, 
+        to_char(comments.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
+        FROM comments INNER JOIN users ON comments.user_id = users.id
         INNER JOIN recipes ON comments.recipe_id = recipes.id WHERE comments.recipe_id = $1`,
         [id],
         (err, res) => {
@@ -48,6 +58,15 @@ module.exports = {
           resolve(res);
         }
       );
+    }),
+  getDetailComment: (id) =>
+    new Promise((resolve, reject) => {
+      db.query(`SELECT * FROM comments WHERE id = $1`, [id], (err, res) => {
+        if (err) {
+          reject(new Error(`SQL : ${err.message}`));
+        }
+        resolve(res);
+      });
     }),
   createComment: (data) =>
     new Promise((resolve, reject) => {
@@ -65,10 +84,10 @@ module.exports = {
     }),
   updateComment: (data, id) =>
     new Promise((resolve, reject) => {
-      const { user_id, recipe_id, comment_text, updated_at } = data;
+      const { comment_text, updated_at } = data;
       db.query(
-        `UPDATE comments SET user_id = $1, recipe_id = $2, comment_text = $3, updated_at = $4 WHERE id = $5`,
-        [user_id, recipe_id, comment_text, updated_at, id],
+        `UPDATE comments SET comment_text = $1, updated_at = $2 WHERE id = $3`,
+        [comment_text, updated_at, id],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
