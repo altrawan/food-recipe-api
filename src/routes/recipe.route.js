@@ -38,6 +38,7 @@ Router.get(
   .post(
     '/',
     middlewareAuth.authentication,
+    middlewareAuth.isUser,
     middlewareImage,
     recipeValidationRules(),
     validate,
@@ -47,6 +48,7 @@ Router.get(
   .put(
     '/:id',
     middlewareAuth.authentication,
+    middlewareAuth.isUser,
     middlewareImage,
     recipeValidationRules(),
     validate,
@@ -54,16 +56,25 @@ Router.get(
     recipeController.updateRecipe
   )
   .put(
-    '/delete/:id',
+    '/active/:id',
     middlewareAuth.authentication,
+    middlewareAuth.isAdmin,
     middlewareRedis.clearRecipe,
-    recipeController.deleteRecipe
+    recipeController.updateActive
+  )
+  .put(
+    '/not-active/:id',
+    middlewareAuth.authentication,
+    middlewareAuth.isAdmin,
+    middlewareRedis.clearRecipe,
+    recipeController.updateNotActive
   )
   .delete(
     '/:id',
     middlewareAuth.authentication,
+    middlewareAuth.isUser,
     middlewareRedis.clearRecipe,
-    recipeController.deletePermanentRecipe
+    recipeController.deleteRecipe
   );
 
 module.exports = Router;
