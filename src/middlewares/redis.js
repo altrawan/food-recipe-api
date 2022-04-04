@@ -45,7 +45,7 @@ module.exports = {
         200,
         'success',
         `Success get user by id ${id}`,
-        newResult.result.rows[0]
+        newResult.rows[0]
       );
     }
     return next();
