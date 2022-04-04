@@ -3,10 +3,10 @@ const db = require('../config/pg');
 module.exports = {
   register: (data) =>
     new Promise((resolve, reject) => {
-      const { id, name, email, password, phone, level, status, token } = data;
+      const { id, name, email, password, phone, level, is_active, token } = data;
       db.query(
         `INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [id, name, email, password, phone, level, status, token],
+        [id, name, email, password, phone, level, is_active, token],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
@@ -36,7 +36,7 @@ module.exports = {
   verifyEmail: (token) =>
     new Promise((resolve, reject) => {
       db.query(
-        `UPDATE users SET status = 1 WHERE token = $1`,
+        `UPDATE users SET is_active = 1, token = null WHERE token = $1`,
         [token],
         (err) => {
           if (err) {
