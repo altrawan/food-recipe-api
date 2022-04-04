@@ -42,12 +42,12 @@ module.exports = {
     }
     return failed(res, 403, 'failed', `You don't have access to this page`);
   },
-  // ONLY USER CHANGE TO ONLY USER / ADMIN LOGIN
-  // isUser: (req, res, next) => {
-  //   const token = req.APP_DATA.tokenDecoded;
-  //   if (token.level === 1) {
-  //     return next();
-  //   }
-  //   return failed(res, 403, 'failed', `You don't have access to this page`);
-  // },
+  // ONLY USER
+  isUser: (req, res, next) => {
+    const token = req.APP_DATA.tokenDecoded;
+    if (token.level === 1) {
+      return next();
+    }
+    return failed(res, 403, 'failed', `You don't have access to this page`);
+  },
 };
