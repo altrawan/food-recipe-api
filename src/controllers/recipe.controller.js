@@ -124,7 +124,7 @@ module.exports = {
         image: req.file ? req.file.filename : null,
         ingredients,
         video: video ? video : null,
-        status: 1,
+        is_active: 1,
         user_id: req.APP_DATA.tokenDecoded.id,
       };
 
@@ -185,6 +185,44 @@ module.exports = {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
+  updateActive: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const checkId = await recipeModel.getDetailRecipe(id);
+
+      if (checkId.rows.length < 1) {
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      }
+
+      if (checkId.rows[0].is_active === 1) {
+        return failed(res, 409, 'failed', `Recipe already active`);
+      }
+
+      const result = await recipeModel.updateActive(id);
+      return success(res, 200, 'success', `Success change status recipe to active`, result);
+    } catch (error) {
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+    }
+  },
+  updateNotActive: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const checkId = await recipeModel.getDetailRecipe(id);
+
+      if (checkId.rows.length < 1) {
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      }
+
+      if (checkId.rows[0].is_active === 0) {
+        return failed(res, 409, 'failed', `Recipe already not active`);
+      }
+
+      const result = await recipeModel.updateNotActive(id);
+      return success(res, 200, 'success', `Success change status recipe to not active`, result);
+    } catch (error) {
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+    }
+  },
   deleteRecipe: async (req, res) => {
     try {
       const { id } = req.params;
@@ -198,30 +236,7 @@ module.exports = {
         return failed(res, 403, 'failed', `You don't have access to this page`);
       }
 
-      if (checkId.rows[0].status === 0) {
-        return failed(res, 409, 'failed', `Recipe already not active`);
-      }
-
-      const result = await recipeModel.deleteUser(id);
-      return success(res, 200, 'success', `Success delete recipe id ${id}`);
-    } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
-    }
-  },
-  deletePermanentRecipe: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const checkId = await recipeModel.getDetailRecipe(id);
-
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
-      }
-
-      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
-        return failed(res, 403, 'failed', `You don't have access to this page`);
-      }
-
-      const result = await recipeModel.deletePermanentRecipe(id);
+      const result = await recipeModel.deleteRecipe(id);
       return success(res, 200, 'success', `Success delete recipe id ${id}`);
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);

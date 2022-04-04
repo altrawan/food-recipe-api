@@ -5,7 +5,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       db.query(
         `SELECT recipes.id, recipes.title, recipes.image, recipes.ingredients, recipes.video,  
-        CASE WHEN recipes.status = 0 THEN 'Not Active' ELSE 'Active' END AS status, 
+        CASE WHEN recipes.is_active = 0 THEN 'Not Active' ELSE 'Active' END AS status, 
         users.name, to_char(recipes.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
         FROM recipes INNER JOIN users ON recipes.user_id = users.id 
         WHERE ${key} ILIKE $1 ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
@@ -77,10 +77,10 @@ module.exports = {
     }),
   createRecipe: (data) =>
     new Promise((resolve, reject) => {
-      const { id, title, image, ingredients, video, status, user_id } = data;
+      const { id, title, image, ingredients, video, is_active, user_id } = data;
       db.query(
         `INSERT INTO recipes VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [id, title, image, ingredients, video, status, user_id],
+        [id, title, image, ingredients, video, is_active, user_id],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
@@ -107,20 +107,41 @@ module.exports = {
         }
       );
     }),
-  deleteRecipe: (id) =>
+  updateActive: (id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `UPDATE recipes SET status = 0, deleted_at = $1 WHERE id = $2`,
+        `UPDATE recipes SET is_active = 1, updated_at = $1 WHERE id = $2`,
         [new Date(Date.now()), id],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
           }
-          resolve(id);
+          const data = {
+            id,
+            status: 'Active'
+          }
+          resolve(data);
         }
       );
     }),
-  deletePermanentRecipe: (id) =>
+  updateNotActive: (id) =>
+    new Promise((resolve, reject) => {
+      db.query(
+        `UPDATE recipes SET is_active = 0, deleted_at = $1 WHERE id = $2`,
+        [new Date(Date.now()), id],
+        (err) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          const data = {
+            id,
+            status: 'Not Active'
+          }
+          resolve(data);
+        }
+      );
+    }),
+  deleteRecipe: (id) =>
     new Promise((resolve, reject) => {
       db.query(`DELETE FROM recipes WHERE id = $1`, [id], (err) => {
         if (err) {
