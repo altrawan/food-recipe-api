@@ -39,7 +39,7 @@ Router.get(
     userController.updateProfile
   )
   .put(
-    '/image/:id',
+    '/photo/:id',
     middlewareAuth.authentication,
     middlewareImage,
     middlewareRedis.clearUser,
@@ -54,17 +54,24 @@ Router.get(
     userController.updatePassword
   )
   .put(
-    '/delete/:id',
+    '/active/:id',
     middlewareAuth.authentication,
     middlewareAuth.isAdmin,
     middlewareRedis.clearUser,
-    userController.deleteUser
+    userController.updateActive
+  )
+  .put(
+    '/not-active/:id',
+    middlewareAuth.authentication,
+    middlewareAuth.isAdmin,
+    middlewareRedis.clearUser,
+    userController.updateNotActive
   )
   .delete(
     '/:id',
     middlewareAuth.authentication,
     middlewareRedis.clearUser,
-    userController.deletePermanentUser
+    userController.deleteUser
   );
 
 module.exports = Router;

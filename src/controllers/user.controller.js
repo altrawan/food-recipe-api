@@ -99,8 +99,9 @@ module.exports = {
       }
 
       const row = checkId.rows[0];
+      console.log(id + " " + row.id);
       // Only admin or user login
-      if (req.APP_DATA.tokenDecoded.id !== row.id) {
+      if (id !== row.id) {
         return failed(res, 403, 'failed', `You don't have access to this page`);
       }
 
@@ -139,7 +140,7 @@ module.exports = {
         return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      // Only admin or user login
+      // Only user login
       if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].id) {
         return failed(res, 403, 'failed', `You don't have access to this page`);
       }
@@ -188,7 +189,7 @@ module.exports = {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
-  deleteUser: async (req, res) => {
+  updateActive: async (req, res) => {
     try {
       const { id } = req.params;
       const checkId = await userModel.getDetailUser(id);
@@ -197,18 +198,37 @@ module.exports = {
         return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      if (checkId.rows[0].status === 0) {
+      if (checkId.rows[0].is_active === 1) {
+        return failed(res, 409, 'failed', `User already active`);
+      }
+
+      const result = await userModel.updateActive(id);
+      return success(res, 200, 'success', `Success change status to active`, result);
+    } catch (error) {
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+    }
+  },
+  updateNotActive: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const checkId = await userModel.getDetailUser(id);
+
+      if (checkId.rows.length < 1) {
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      }
+
+      if (checkId.rows[0].is_active === 0) {
         return failed(res, 409, 'failed', `User already not active`);
       }
 
-      const result = await userModel.deleteUser(id);
-      return success(res, 200, 'success', `Success delete user id ${id}`);
+      const result = await userModel.updateNotActive(id);
+      return success(res, 200, 'success', `Success change status to not active`, result);
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
   // Delete a user with the specified id in the request
-  deletePermanentUser: async (req, res) => {
+  deleteUser: async (req, res) => {
     try {
       const { id } = req.params;
       const checkId = await userModel.getDetailUser(id);
