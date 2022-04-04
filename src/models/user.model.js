@@ -5,7 +5,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       db.query(
         `SELECT id, name, email, phone, CASE WHEN level = 0 THEN 'Admin' ELSE 'User' END AS level, 
-        CASE WHEN status = 0 THEN 'Not Active' ELSE 'Active' END AS status, photo,
+        CASE WHEN is_active = 0 THEN 'Not Active' ELSE 'Active' END AS status, photo,
         to_char(created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date 
         FROM users WHERE ${key} ILIKE $1 ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
         [search, limit, offset],
@@ -60,7 +60,7 @@ module.exports = {
     }),
   getDetailUser: (id) =>
     new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM users WHERE id = $1`, [id], (er, res) => {
+      db.query(`SELECT * FROM users WHERE id = $1`, [id], (err, res) => {
         if (err) {
           reject(new Error(`SQL : ${err.message}`));
         }
@@ -121,20 +121,41 @@ module.exports = {
         }
       );
     }),
-  deleteUser: (id) =>
+  updateActive: (id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `UPDATE users SET status = 0, deleted_at = $1 WHERE id = $2`,
+        `UPDATE users SET is_active = 1, updated_at = $1 WHERE id = $2`,
         [new Date(Date.now()), id],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
           }
-          resolve(id);
+          const data = {
+            id,
+            is_active: 'Active'
+          }
+          resolve(data);
         }
       );
     }),
-  deletePermanentUser: (id) =>
+  updateNotActive: (id) =>
+    new Promise((resolve, reject) => {
+      db.query(
+        `UPDATE users SET is_active = 0, deleted_at = $1 WHERE id = $2`,
+        [new Date(Date.now()), id],
+        (err) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          const data = {
+            id,
+            is_active: 'Not Active'
+          }
+          resolve(data);
+        }
+      );
+    }),
+  deleteUser: (id) =>
     new Promise((resolve, reject) => {
       db.query(`DELETE FROM users WHERE id = $1`, [id], (err) => {
         if (err) {
