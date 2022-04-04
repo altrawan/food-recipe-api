@@ -24,7 +24,7 @@ module.exports = {
         password: bcrypt.hashSync(password, 10),
         phone,
         level: 1,
-        status: 0,
+        is_active: 0,
         token: randomToken,
       };
 
@@ -53,7 +53,7 @@ module.exports = {
         return failed(res, 403, 'failed', `Invalid token !`);
       }
 
-      if (checkToken.rows[0].status === 1) {
+      if (checkToken.rows[0].is_active === 1) {
         return failed(res, 409, 'failed', `User already registered`);
       }
 
@@ -94,12 +94,12 @@ module.exports = {
         return failed(res, 400, 'failed', `Email or password wrong`);
       }
 
-      if (result.status !== 1) {
+      if (result.is_active !== 1) {
         return failed(
           res,
           401,
           'failed',
-          'Pending Account. Please Verify Your Email'
+          'Account is not active. Please Contact Administrator'
         );
       }
 
