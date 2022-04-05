@@ -121,36 +121,19 @@ module.exports = {
         }
       );
     }),
-  updateActive: (id) =>
+  updateStatus: (is_active, id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `UPDATE users SET is_active = 1, updated_at = $1 WHERE id = $2`,
-        [new Date(Date.now()), id],
+        `UPDATE users SET is_active = $1, updated_at = $2 WHERE id = $3`,
+        [is_active, new Date(Date.now()), id],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
           }
           const data = {
             id,
-            is_active: 'Active'
-          }
-          resolve(data);
-        }
-      );
-    }),
-  updateNotActive: (id) =>
-    new Promise((resolve, reject) => {
-      db.query(
-        `UPDATE users SET is_active = 0, deleted_at = $1 WHERE id = $2`,
-        [new Date(Date.now()), id],
-        (err) => {
-          if (err) {
-            reject(new Error(`SQL : ${err.message}`));
-          }
-          const data = {
-            id,
-            is_active: 'Not Active'
-          }
+            status: is_active === 1 ? 'Active' : 'Not Active',
+          };
           resolve(data);
         }
       );

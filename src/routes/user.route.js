@@ -54,18 +54,11 @@ Router.get(
     userController.updatePassword
   )
   .put(
-    '/active/:id',
+    '/status/:id',
     middlewareAuth.authentication,
     middlewareAuth.isAdmin,
     middlewareRedis.clearUser,
-    userController.updateActive
-  )
-  .put(
-    '/not-active/:id',
-    middlewareAuth.authentication,
-    middlewareAuth.isAdmin,
-    middlewareRedis.clearUser,
-    userController.updateNotActive
+    userController.updateStatus
   )
   .delete(
     '/:id',
