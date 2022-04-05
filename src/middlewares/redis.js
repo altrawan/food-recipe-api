@@ -102,9 +102,25 @@ module.exports = {
     }
     return next();
   },
+  getRecipeActive: async (req, res, next) => {
+    const result = await redis.get(
+      `getRecipeActive:${JSON.stringify(req.query)}`
+    );
+    if (result) {
+      const newResult = JSON.parse(result);
+      return success(
+        res,
+        200,
+        'success',
+        `Success get recipe active`,
+        newResult.rows
+      );
+    }
+    return next();
+  },
   clearRecipe: async (req, res, next) => {
     const result = await redis.keys('getRecipe:*');
-    const result2 = await redis.keys('getRecipeByUser:*')
+    const result2 = await redis.keys('getRecipeByUser:*');
 
     if (result.length > 0) {
       result.map((e) => redis.del(e));
@@ -113,8 +129,8 @@ module.exports = {
     if (result2.length > 0) {
       result2.map((e) => redis.del(e));
     }
-    
-    next();
+
+    return next();
   },
   // ====================================== COMMENT ======================================
   getAllComments: async (req, res, next) => {
