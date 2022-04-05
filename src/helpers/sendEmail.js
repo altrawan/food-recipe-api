@@ -35,7 +35,7 @@ module.exports = {
       template: 'confirm-email',
       context: {
         name,
-        url: `http://localhost:${PORT}/auth/confirm/${confirmationCode}`,
+        url: `http://localhost:${PORT}/auth/verify-email?token=${confirmationCode}`,
       },
     };
 
