@@ -26,6 +26,7 @@ Router.get(
   .get(
     '/user/:id',
     middlewareAuth.authentication,
+    middlewareAuth.isUser,
     middlewareRedis.getRecipeByUser,
     recipeController.getRecipeByUser
   )
@@ -56,18 +57,11 @@ Router.get(
     recipeController.updateRecipe
   )
   .put(
-    '/active/:id',
+    '/status/:id',
     middlewareAuth.authentication,
     middlewareAuth.isAdmin,
     middlewareRedis.clearRecipe,
-    recipeController.updateActive
-  )
-  .put(
-    '/not-active/:id',
-    middlewareAuth.authentication,
-    middlewareAuth.isAdmin,
-    middlewareRedis.clearRecipe,
-    recipeController.updateNotActive
+    recipeController.updateStatus
   )
   .delete(
     '/:id',

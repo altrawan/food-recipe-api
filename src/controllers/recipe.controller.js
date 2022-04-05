@@ -26,15 +26,6 @@ module.exports = {
         totalData,
       };
 
-      const result = await recipeModel.getAllRecipes(
-        key,
-        search,
-        sort,
-        sortType,
-        limit,
-        offset
-      );
-
       if (result.rows.length < 1) {
         return failed(res, 404, 'failed', 'Data not found');
       }
@@ -47,6 +38,15 @@ module.exports = {
         `getRecipe:${JSON.stringify(req.query)}`,
         3600,
         JSON.stringify({ result, pageInfo })
+      );
+
+      const result = await recipeModel.getAllRecipes(
+        key,
+        search,
+        sort,
+        sortType,
+        limit,
+        offset
       );
 
       return success(
@@ -67,7 +67,12 @@ module.exports = {
       const result = await recipeModel.getRecipeById(id);
 
       if (result.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+        return failed(
+          res,
+          404,
+          'failed',
+          `User by id ${id} hasn't created a recipe yet`
+        );
       }
 
       redis.setEx(`getRecipe:${id}`, 3600, JSON.stringify(result));
@@ -89,11 +94,15 @@ module.exports = {
       const result = await recipeModel.getRecipeByUser(id);
 
       if (result.rows.length < 1) {
-        return failed(res, 404, `Data by user id ${id} not found !`);
+        return failed(
+          res,
+          404,
+          `Data by user id ${id} Haven't made a recipe yet`
+        );
       }
 
       const checkId = await recipeModel.getDetailRecipeByUser(id);
-      
+
       const row = checkId.rows[0];
       if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
         return failed(res, 403, 'failed', `You don't have access to this page`);
@@ -185,40 +194,24 @@ module.exports = {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
-  updateActive: async (req, res) => {
+  updateStatus: async (req, res) => {
     try {
       const { id } = req.params;
+      const { is_active } = req.body;
       const checkId = await recipeModel.getDetailRecipe(id);
 
       if (checkId.rows.length < 1) {
         return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      if (checkId.rows[0].is_active === 1) {
-        return failed(res, 409, 'failed', `Recipe already active`);
-      }
-
-      const result = await recipeModel.updateActive(id);
-      return success(res, 200, 'success', `Success change status recipe to active`, result);
-    } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
-    }
-  },
-  updateNotActive: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const checkId = await recipeModel.getDetailRecipe(id);
-
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
-      }
-
-      if (checkId.rows[0].is_active === 0) {
-        return failed(res, 409, 'failed', `Recipe already not active`);
-      }
-
-      const result = await recipeModel.updateNotActive(id);
-      return success(res, 200, 'success', `Success change status recipe to not active`, result);
+      const result = await recipeModel.updateStatus(is_active, id);
+      return success(
+        res,
+        200,
+        'success',
+        `Success change status recipe to ${result.status}`,
+        result
+      );
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
@@ -234,6 +227,11 @@ module.exports = {
 
       if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
         return failed(res, 403, 'failed', `You don't have access to this page`);
+      }
+
+      const file = checkId.rows[0].image;
+      if (file) {
+        deleteFile(`public/uploads/recipe/${file}`);
       }
 
       const result = await recipeModel.deleteRecipe(id);

@@ -57,6 +57,23 @@ module.exports = {
         }
       );
     }),
+  getRecipeActive: (key, search, sort, sortType, limit, offset) =>
+    new Promise((resolve, reject) => {
+      db.query(
+        `SELECT recipes.title, recipes.image, recipes.ingredients, recipes.video, users.name, 
+        CASE WHEN recipes.is_active = 0 THEN 'Not Active' ELSE 'Active' END AS status,
+        to_char(recipes.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
+        FROM recipes INNER JOIN users ON recipes.user_id = users.id WHERE recipes.is_active = 1
+        AND ${key} ILIKE $1 ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
+        [search, limit, offset],
+        (err, res) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          resolve(res);
+        }
+      );
+    }),
   getDetailRecipe: (id) =>
     new Promise((resolve, reject) => {
       db.query(`SELECT * FROM recipes WHERE id = $1`, [id], (err, res) => {
@@ -107,36 +124,19 @@ module.exports = {
         }
       );
     }),
-  updateActive: (id) =>
+  updateStatus: (is_active, id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `UPDATE recipes SET is_active = 1, updated_at = $1 WHERE id = $2`,
-        [new Date(Date.now()), id],
+        `UPDATE recipes SET is_active = $1, updated_at = $2 WHERE id = $3`,
+        [is_active, new Date(Date.now()), id],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
           }
           const data = {
             id,
-            status: 'Active'
-          }
-          resolve(data);
-        }
-      );
-    }),
-  updateNotActive: (id) =>
-    new Promise((resolve, reject) => {
-      db.query(
-        `UPDATE recipes SET is_active = 0, deleted_at = $1 WHERE id = $2`,
-        [new Date(Date.now()), id],
-        (err) => {
-          if (err) {
-            reject(new Error(`SQL : ${err.message}`));
-          }
-          const data = {
-            id,
-            status: 'Not Active'
-          }
+            status: is_active === 1 ? 'Active' : 'Not Active',
+          };
           resolve(data);
         }
       );
