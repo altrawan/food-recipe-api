@@ -19,15 +19,12 @@ const upload = multer({
   storage,
   limits: { fileSize: 2 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    if (
-      file.mimetype !== 'image/jpeg' &&
-      file.mimetype !== 'image/jpg' &&
-      file.mimetype !== 'image/png'
-    ) {
-      cb(null, false);
-      return cb(new Error('Only image type: JPEG, JPG, PNG'));
+    const ext = path.extname(file.originalname);
+    if (ext === '.jpg' || ext === '.png') {
+      return cb(null, true);
     }
-    return cb(null, true);
+    cb(null, false);
+    return cb(new Error('file must be type jpg or png'));
   },
 }).single('photo');
 
@@ -36,11 +33,11 @@ const uploadFilter = (req, res, next) => {
   upload(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
-      return failed(res, 401, 'failed', err.message)
+      return failed(res, 401, 'failed', 'image to large, max size is 2MB!');
     }
     if (err) {
       // An unknown error occurred when uploading.
-      return failed(res, 401, 'failed', err.message)
+      return failed(res, 401, 'failed', err.message);
     }
     return next();
   });
