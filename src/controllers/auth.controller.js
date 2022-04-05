@@ -46,7 +46,7 @@ module.exports = {
   },
   verifyEmail: async (req, res) => {
     try {
-      const { token } = req.params;
+      const { token } = req.query;
       const checkToken = await authModel.getUserByToken(token);
 
       if (checkToken.rows.length < 1) {
@@ -63,8 +63,7 @@ module.exports = {
         res,
         200,
         'success',
-        `Success activated user`,
-        checkToken.rows[0]
+        `Success activated user`
       );
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);

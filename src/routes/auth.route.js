@@ -19,9 +19,9 @@ Router.post(
   validate,
   authController.register
 )
-  .put('/confirm/:token', authController.verifyEmail)
+  .get('/verify-email', authController.verifyEmail)
   .post('/login', loginValidationRules(), validate, authController.login)
-  .post('/refresh', authController.refreshToken)
+  .post('/refresh', middlewareAuth.authentication, authController.refreshToken)
   .post('/logout', middlewareAuth.authentication, authController.logout);
 
 module.exports = Router;
