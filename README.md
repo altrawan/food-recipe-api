@@ -121,6 +121,8 @@ List of available routes:
 ```POST /auth/register``` - register\
 ```POST /auth/login``` - login\
 ```GET /auth/verify-email``` - verify email\
+```POST /auth/forgot-password``` - send reset password email\
+```GET /auth/reset-password``` - reset password\
 ```POST /auth/refresh-token``` - refresh auth token\
 ```POST /auth/logout``` - logout
 
