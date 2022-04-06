@@ -29,6 +29,7 @@
 - [Authentication](#Authentication)
 - [Authorization](#Authorization)
 - [Linting](#Linting)
+- [Documentation](#Documentation)
 - [Contributing](#Contributing)
 - [Support Developer](#Support-Developer)
     
@@ -156,6 +157,8 @@ List of available routes:
 ## Authorization
 
 ## Linting
+
+## Documentation
 
 ## Contributing
 Contributions are more than welcome! Please check out the [contributing guide](https://github.com/altrawan/food-recipe-api/blob/master/CONTRIBUTING.md).
