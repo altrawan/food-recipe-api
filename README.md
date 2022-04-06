@@ -112,12 +112,14 @@ STMP_PASS=your-password
 List of available routes:
 
 **Index routes**\
-```GET /latest``` - get latest recipe
+```GET /``` - get all recipes active\
+```GET /latest``` - get latest recipe\
+```GET /popular``` - get popular recipe
 
 **Auth Route**\
 ```POST /auth/register``` - register\
 ```POST /auth/login``` - login\
-```PUT /auth/verify-email``` - verify email\
+```GET /auth/verify-email``` - verify email\
 ```POST /auth/refresh-token``` - refresh auth token\
 ```POST /auth/logout``` - logout
 
@@ -128,11 +130,21 @@ List of available routes:
 ```PUT /users/change-photo``` - change photo user\
 ```PUT /users/change-password``` - change password\
 ```PUT /users/delete/:id``` - soft delete user\
+```PUT /users/change-status/:id``` - change status user active or not active\
 ```DELETE /users/:id``` - delete permanent user
 
 **Recipe Route**\
+```GET /recipes``` - get all recipes\
+```GET /recipes``` - get recipe by id\
+
 **Comment Route**\
+```GET /comments``` - get all comments\
+```GET /comments/:id``` - get comment by id\
+
+
 **Liked Recipe Route**\
+```GET /liked-recipe``` - get all liked recipe\
+
 **Saved Recipe Route**
 
 ## Error Handling
