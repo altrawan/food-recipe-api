@@ -132,21 +132,39 @@ List of available routes:
 ```PUT /users/change-password``` - change password\
 ```PUT /users/delete/:id``` - soft delete user\
 ```PUT /users/change-status/:id``` - change status user active or not active\
-```DELETE /users/:id``` - delete permanent user
+```DELETE /users/:id``` - delete user by id
 
 **Recipe Route**\
 ```GET /recipes``` - get all recipes\
 ```GET /recipes``` - get recipe by id\
+```GET /recipes/user/:id``` - get recipe by user\
+```POST /recipes``` - create new recipe\
+```PUT /recipes/:id``` - update recipe by id\
+```PUT /recipes/change-status/:id``` - change status recipe active or not active\
+```DELETE /recipes/:id``` - delete recipe by id 
 
 **Comment Route**\
 ```GET /comments``` - get all comments\
 ```GET /comments/:id``` - get comment by id\
-
+```GET /comments/recipe/:id``` get comment by recipe\
+```POST /comments``` - create new comment\
+```PUT /comments/:id``` - update comment by id\
+```PUT /comments/change-status/:id``` - change status comment active or not active\
+```DELETE /comments/:id``` - delete comment by id
 
 **Liked Recipe Route**\
 ```GET /liked-recipe``` - get all liked recipe\
+```GET /liked-recipe/:id``` - get liked recipe by id\
+```GET /liked-recipe/user/:id``` - get liked recipe by user\
+```POST /liked-recipe``` - create liked recipe\
+```DELETE /liked-recipe/:id``` - delete liked recipe by id
 
 **Saved Recipe Route**
+```GET /saved-recipe``` - get all saved recipe\
+```GET /saved-recipe/:id``` - get saved recipe by id\
+```GET /saved-recipe/user/:id``` - get saved recipe by user\
+```POST /saved-recipe``` - create saved recipe\
+```DELETE /saved-recipe/:id``` - delete saved recipe by id
 
 ## Error Handling
 
