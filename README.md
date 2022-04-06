@@ -56,7 +56,7 @@ npm run dev
 ```
 Testing:
 ```
-
+npm run test
 ```
 Linting:
 ```
