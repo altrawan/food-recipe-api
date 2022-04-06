@@ -60,7 +60,7 @@ Testing:
 ```
 Linting:
 ```
-
+npm run lint -- --fix
 ```
 
 ## Environment Variables
