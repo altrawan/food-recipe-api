@@ -38,7 +38,7 @@ module.exports = {
         url: `http://localhost:${PORT}/auth/verify-email?token=${confirmationCode}`,
       },
     };
-
+ 
     transport.sendMail(mailOptions, (err) => {
       if (err) {
         console.log(err);
