@@ -16,7 +16,7 @@ if (RDS_HOST) {
 // });
 
 // client.on('error', (err) => console.log(`Redis Client Error : ${err}`));
-// client.on('connect', () => console.log(`You're now connected db redis`));
+client.on('connect', () => console.log(`You're now connected db redis`));
 
 // client.connect();
 
