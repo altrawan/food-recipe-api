@@ -1,12 +1,10 @@
 const redis = require('redis');
-const { RDS_HOST, RDS_PORT, RDS_PASS } = require('../helpers/env');
+const { RDS_URL } = require('../helpers/env');
 
 let client;
 if (RDS_HOST) {
   client = redis.createClient({
-    host: RDS_HOST,
-    port: RDS_PORT,
-    password: RDS_PASS,
+    url: RDS_URL,
   });
 } else {
   client = redis.createClient();
