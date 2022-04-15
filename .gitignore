@@ -2,7 +2,7 @@
 /node_modules
 
 # production
+docs
+assets
 .env
 note.txt
-assets
-/docs
