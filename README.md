@@ -29,8 +29,9 @@
 - [Authentication](#Authentication)
 - [Authorization](#Authorization)
 - [Linting](#Linting)
+- [Documentation](#Documentation)
 - [Contributing](#Contributing)
-- [Support Developer](#Support-Developer)
+- [License](#License)
     
 ## Features
 - **SQL database:** using [PostgreSQL](https://www.postgresql.org/)
@@ -56,11 +57,11 @@ npm run dev
 ```
 Testing:
 ```
-
+npm run test
 ```
 Linting:
 ```
-
+npm run lint -- --fix
 ```
 
 ## Environment Variables
@@ -112,12 +113,16 @@ STMP_PASS=your-password
 List of available routes:
 
 **Index routes**\
-```GET /latest``` - get latest recipe
+```GET /``` - get all recipes active\
+```GET /latest``` - get latest recipe\
+```GET /popular``` - get popular recipe
 
 **Auth Route**\
 ```POST /auth/register``` - register\
 ```POST /auth/login``` - login\
-```PUT /auth/verify-email``` - verify email\
+```GET /auth/verify-email``` - verify email\
+```POST /auth/forgot-password``` - send reset password email\
+```GET /auth/reset-password``` - reset password\
 ```POST /auth/refresh-token``` - refresh auth token\
 ```POST /auth/logout``` - logout
 
@@ -128,12 +133,40 @@ List of available routes:
 ```PUT /users/change-photo``` - change photo user\
 ```PUT /users/change-password``` - change password\
 ```PUT /users/delete/:id``` - soft delete user\
-```DELETE /users/:id``` - delete permanent user
+```PUT /users/change-status/:id``` - change status user active or not active\
+```DELETE /users/:id``` - delete user by id
 
 **Recipe Route**\
+```GET /recipes``` - get all recipes\
+```GET /recipes``` - get recipe by id\
+```GET /recipes/user/:id``` - get recipe by user\
+```POST /recipes``` - create new recipe\
+```PUT /recipes/:id``` - update recipe by id\
+```PUT /recipes/change-status/:id``` - change status recipe active or not active\
+```DELETE /recipes/:id``` - delete recipe by id 
+
 **Comment Route**\
+```GET /comments``` - get all comments\
+```GET /comments/:id``` - get comment by id\
+```GET /comments/recipe/:id``` get comment by recipe\
+```POST /comments``` - create new comment\
+```PUT /comments/:id``` - update comment by id\
+```PUT /comments/change-status/:id``` - change status comment active or not active\
+```DELETE /comments/:id``` - delete comment by id
+
 **Liked Recipe Route**\
+```GET /liked-recipe``` - get all liked recipe\
+```GET /liked-recipe/:id``` - get liked recipe by id\
+```GET /liked-recipe/user/:id``` - get liked recipe by user\
+```POST /liked-recipe``` - create liked recipe\
+```DELETE /liked-recipe/:id``` - delete liked recipe by id
+
 **Saved Recipe Route**
+```GET /saved-recipe``` - get all saved recipe\
+```GET /saved-recipe/:id``` - get saved recipe by id\
+```GET /saved-recipe/user/:id``` - get saved recipe by user\
+```POST /saved-recipe``` - create saved recipe\
+```DELETE /saved-recipe/:id``` - delete saved recipe by id
 
 ## Error Handling
 
@@ -145,14 +178,12 @@ List of available routes:
 
 ## Linting
 
+## Documentation
+
 ## Contributing
 Contributions are more than welcome! Please check out the [contributing guide](https://github.com/altrawan/food-recipe-api/blob/master/CONTRIBUTING.md).
 
-## Support Developer
-1. Follow my account Github
-2. Add a Star 🌟 to this 👆 Repository
-
-<b>Note</b> : if you have any ideas or suggestions for this project contact me at muhammadalifputra8888@gmail.com
+## License
 
 <!--
 ## Tools and Technologies
