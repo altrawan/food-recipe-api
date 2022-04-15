@@ -1,9 +1,8 @@
 const redis = require('redis');
-const { RDS_URL, RDS_PASS } = require('../helpers/env');
+const { RDS_URL } = require('../helpers/env');
 
 client = redis.createClient({
   url: RDS_URL,
-  password: RDS_PASS,
 });
 
 // const client = redis.createClient({

@@ -17,5 +17,4 @@ module.exports = {
   STMP_PASS: process.env.STMP_PASS,
 
   RDS_URL: process.env.RDS_URL,
-  RDS_PASS: process.env.RDS_PASS,
 };
