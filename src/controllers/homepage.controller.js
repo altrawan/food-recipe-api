@@ -6,7 +6,7 @@ module.exports = {
   getLatestRecipe: async (req, res) => {
     try {
       let { limit } = req.query;
-      limit = Number(limit) || 5;
+      limit = Number(limit) || 1;
 
       const result = await homepageModel.getLatestRecipe(limit);
 
@@ -27,7 +27,5 @@ module.exports = {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
-  getPopularRecipe: async (req, res) => {
-    
-  },
+  getPopularRecipe: async (req, res) => {},
 };
