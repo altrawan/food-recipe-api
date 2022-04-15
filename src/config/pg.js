@@ -1,20 +1,15 @@
 const { Pool } = require('pg');
-const {
-  PGHOST,
-  PGUSER,
-  PGPASSWORD,
-  PGDATABASE,
-  PGPORT,
-} = require('../helpers/env');
+const { DATABASE_URL } = require('../helpers/env');
 
 // pools will use environment variables
 // for connection information
 const db = new Pool({
-  host: PGHOST,
-  user: PGUSER,
-  password: PGPASSWORD,
-  database: PGDATABASE,
-  port: PGPORT,
+  connectionString: DATABASE_URL,
+  // host: PGHOST,
+  // user: PGUSER,
+  // password: PGPASSWORD,
+  // database: PGDATABASE,
+  // port: PGPORT,
 });
 
 // check connection
