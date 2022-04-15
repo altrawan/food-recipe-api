@@ -7,7 +7,7 @@ const client = redis.createClient({
   password: RDS_PASS,
 });
 
-// client.on('error', (err) => console.log(`Redis Client Error : ${err}`));
+client.on('error', (err) => console.log(`Redis Client Error : ${err}`));
 client.on('connect', () => console.log(`You're now connected db redis`));
 
 client.connect();
