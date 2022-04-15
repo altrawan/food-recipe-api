@@ -4,3 +4,5 @@
 # production
 .env
 note.txt
+assets
+/docs
