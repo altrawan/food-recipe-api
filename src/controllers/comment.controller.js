@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const commentModel = require('../models/comment.model');
 const { success, failed } = require('../helpers/response');
-const redis = require('../config/redis');
+// const redis = require('../config/redis');
 
 module.exports = {
   getAllComments: async (req, res) => {
@@ -42,11 +42,11 @@ module.exports = {
         return failed(res, 400, 'failed', `Data only up to page ${totalPage}`);
       }
 
-      redis.setEx(
-        `getComment:${JSON.stringify(req.query)}`,
-        3600,
-        JSON.stringify({ result, pageInfo })
-      );
+      // redis.setEx(
+      //   `getComment:${JSON.stringify(req.query)}`,
+      //   3600,
+      //   JSON.stringify({ result, pageInfo })
+      // );
 
       return success(
         res,
@@ -69,7 +69,7 @@ module.exports = {
         return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      redis.setEx(`getComment:${id}`, 3600, JSON.stringify(result));
+      // redis.setEx(`getComment:${id}`, 3600, JSON.stringify(result));
 
       return success(
         res,
@@ -91,7 +91,7 @@ module.exports = {
         return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      redis.setEx(`getCommentByRecipe:${id}`, 3600, JSON.stringify(result));
+      // redis.setEx(`getCommentByRecipe:${id}`, 3600, JSON.stringify(result));
 
       return success(
         res,

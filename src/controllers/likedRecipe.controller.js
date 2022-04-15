@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const likedRecipeModel = require('../models/likedRecipe.model');
 const { success, failed } = require('../helpers/response');
-const redis = require('../config/redis');
+// const redis = require('../config/redis');
 
 module.exports = {
   getAllLikedRecipe: async (req, res) => {
@@ -43,11 +43,11 @@ module.exports = {
         return failed(res, 400, 'failed', `Data only up to page ${totalPage}`);
       }
 
-      redis.setEx(
-        `getLikedRecipe:${JSON.stringify(req.query)}`,
-        3600,
-        JSON.stringify({ result, pageInfo })
-      );
+      // redis.setEx(
+      //   `getLikedRecipe:${JSON.stringify(req.query)}`,
+      //   3600,
+      //   JSON.stringify({ result, pageInfo })
+      // );
 
       return success(
         res,
@@ -70,7 +70,7 @@ module.exports = {
         return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      redis.setEx(`getLikedRecipe:${id}`, 3600, JSON.stringify(result));
+      // redis.setEx(`getLikedRecipe:${id}`, 3600, JSON.stringify(result));
 
       return success(
         res,
@@ -97,7 +97,7 @@ module.exports = {
         return failed(res, 403, 'failed', `You don't have access to this page`);
       }
 
-      redis.setEx(`getLikedRecipeByUser:${id}`, 3600, JSON.stringify(result));
+      // redis.setEx(`getLikedRecipeByUser:${id}`, 3600, JSON.stringify(result));
 
       return success(
         res,

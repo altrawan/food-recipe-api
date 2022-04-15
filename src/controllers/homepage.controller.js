@@ -1,6 +1,6 @@
 const homepageModel = require('../models/homepage.model');
 const { success, failed } = require('../helpers/response');
-const redis = require('../config/redis');
+// const redis = require('../config/redis');
 
 module.exports = {
   getLatestRecipe: async (req, res) => {
@@ -10,11 +10,11 @@ module.exports = {
 
       const result = await homepageModel.getLatestRecipe(limit);
 
-      redis.setEx(
-        `getLatestRecipe:${JSON.stringify(req.query)}`,
-        3600,
-        JSON.stringify(result)
-      );
+      // redis.setEx(
+      //   `getLatestRecipe:${JSON.stringify(req.query)}`,
+      //   3600,
+      //   JSON.stringify(result)
+      // );
 
       return success(
         res,

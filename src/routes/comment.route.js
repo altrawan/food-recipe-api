@@ -5,7 +5,7 @@ const Router = express.Router();
 // Authentication
 const middlewareAuth = require('../middlewares/auth');
 // Redis
-const middlewareRedis = require('../middlewares/redis');
+// const middlewareRedis = require('../middlewares/redis');
 // Validation
 const {
   createComment,
@@ -19,19 +19,19 @@ Router.get(
   '/',
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
-  middlewareRedis.getAllComments,
+  // middlewareRedis.getAllComments,
   commentController.getAllComments
 )
   .get(
     '/recipe/:id',
     middlewareAuth.authentication,
-    middlewareRedis.getCommentByRecipe,
+    // middlewareRedis.getCommentByRecipe,
     commentController.getCommentByRecipe
   )
   .get(
     '/:id',
     middlewareAuth.authentication,
-    middlewareRedis.getCommentById,
+    // middlewareRedis.getCommentById,
     commentController.getCommentById
   )
   .post(
@@ -39,7 +39,7 @@ Router.get(
     middlewareAuth.authentication,
     createComment(),
     validate,
-    middlewareRedis.clearComment,
+    // middlewareRedis.clearComment,
     commentController.createComment
   )
   .put(
@@ -47,13 +47,13 @@ Router.get(
     middlewareAuth.authentication,
     updateComment(),
     validate,
-    middlewareRedis.clearComment,
+    // middlewareRedis.clearComment,
     commentController.updateComment
   )
   .delete(
     '/:id',
     middlewareAuth.authentication,
-    middlewareRedis.clearComment,
+    // middlewareRedis.clearComment,
     commentController.deleteComment
   );
 

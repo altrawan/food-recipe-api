@@ -5,7 +5,7 @@ const { success, failed, successWithToken } = require('../helpers/response');
 const jwtToken = require('../helpers/generateToken');
 const sendEmail = require('../helpers/sendEmail');
 const randomToken = require('../helpers/randomToken');
-const redis = require('../config/redis');
+// const redis = require('../config/redis');
 // TOKEN
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../helpers/env');
@@ -113,64 +113,64 @@ module.exports = {
   },
   logout: async (req, res) => {
     try {
-      let token = req.headers.authorization;
-      token = token.split(' ')[1];
+      // let token = req.headers.authorization;
+      // token = token.split(' ')[1];
 
-      const result = await redis.get(`accessToken:${token}`);
-      if (result) {
-        return failed(
-          res,
-          403,
-          'failed',
-          `Your token is destroyed please login again`
-        );
-      }
+      // const result = await redis.get(`accessToken:${token}`);
+      // if (result) {
+      //   return failed(
+      //     res,
+      //     403,
+      //     'failed',
+      //     `Your token is destroyed please login again`
+      //   );
+      // }
 
-      redis.setEx(`accessToken:${token}`, 3600 * 24, token);
-      return success(res, 200, 'success', `Success logout`);
+      // redis.setEx(`accessToken:${token}`, 3600 * 24, token);
+      // return success(res, 200, 'success', `Success logout`);
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
   refreshToken: async (req, res) => {
     try {
-      const { refreshToken } = req.body;
+      // const { refreshToken } = req.body;
 
-      const check = await redis.get(`refreshToken:${refreshToken}`);
-      if (check) {
-        return failed(res, 403, 'failed', `Your refresh token cannot be use`);
-      }
+      // const check = await redis.get(`refreshToken:${refreshToken}`);
+      // if (check) {
+      //   return failed(res, 403, 'failed', `Your refresh token cannot be use`);
+      // }
 
-      jwt.verify(refreshToken, JWT_SECRET, (error, result) => {
-        if (error) {
-          return failed(res, 403, 'failed', error.message);
-        }
+      // jwt.verify(refreshToken, JWT_SECRET, (error, result) => {
+      //   if (error) {
+      //     return failed(res, 403, 'failed', error.message);
+      //   }
 
-        delete result.iat;
-        delete result.exp;
+      //   delete result.iat;
+      //   delete result.exp;
 
-        const token = jwt.sign(result, JWT_SECRET, {
-          expiresIn: '1h',
-        });
+      //   const token = jwt.sign(result, JWT_SECRET, {
+      //     expiresIn: '1h',
+      //   });
 
-        const newRefreshToken = jwt.sign(result, JWT_SECRET, {
-          expiresIn: '24h',
-        });
+      //   const newRefreshToken = jwt.sign(result, JWT_SECRET, {
+      //     expiresIn: '24h',
+      //   });
 
-        redis.setEx(`refreshToken:${refreshToken}`, 3600 * 24, refreshToken);
+      //   redis.setEx(`refreshToken:${refreshToken}`, 3600 * 24, refreshToken);
 
-        return successWithToken(
-          res,
-          200,
-          'success',
-          'Success Refresh Token !',
-          {
-            id: result.id,
-            token,
-            refreshToken: newRefreshToken,
-          }
-        );
-      });
+      //   return successWithToken(
+      //     res,
+      //     200,
+      //     'success',
+      //     'Success Refresh Token !',
+      //     {
+      //       id: result.id,
+      //       token,
+      //       refreshToken: newRefreshToken,
+      //     }
+      //   );
+      // });
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }

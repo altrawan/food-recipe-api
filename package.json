@@ -33,7 +33,7 @@
     "nodemailer": "^6.7.3",
     "nodemailer-express-handlebars": "^5.0.0",
     "pg": "^8.7.3",
-    "redis": "^3.1.2",
+    "redis": "^4.0.6",
     "uuid": "^8.3.2",
     "xss-clean": "^0.1.1"
   },

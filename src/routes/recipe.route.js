@@ -5,7 +5,7 @@ const Router = express.Router();
 // Authentication
 const middlewareAuth = require('../middlewares/auth');
 // Redis
-const middlewareRedis = require('../middlewares/redis');
+// const middlewareRedis = require('../middlewares/redis');
 // Upload image
 const middlewareImage = require('../middlewares/imageRecipe');
 // Validation
@@ -20,20 +20,20 @@ Router.get(
   '/',
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
-  middlewareRedis.getAllRecipes,
+  // middlewareRedis.getAllRecipes,
   recipeController.getAllRecipes
 )
   .get(
     '/user/:id',
     middlewareAuth.authentication,
     middlewareAuth.isUser,
-    middlewareRedis.getRecipeByUser,
+    // middlewareRedis.getRecipeByUser,
     recipeController.getRecipeByUser
   )
   .get(
     '/:id',
     middlewareAuth.authentication,
-    middlewareRedis.getRecipeById,
+    // middlewareRedis.getRecipeById,
     recipeController.getRecipeById
   )
   .post(
@@ -43,7 +43,7 @@ Router.get(
     middlewareImage,
     recipeValidationRules(),
     validate,
-    middlewareRedis.clearRecipe,
+    // middlewareRedis.clearRecipe,
     recipeController.createRecipe
   )
   .put(
@@ -53,21 +53,21 @@ Router.get(
     middlewareImage,
     recipeValidationRules(),
     validate,
-    middlewareRedis.clearRecipe,
+    // middlewareRedis.clearRecipe,
     recipeController.updateRecipe
   )
   .put(
     '/status/:id',
     middlewareAuth.authentication,
     middlewareAuth.isAdmin,
-    middlewareRedis.clearRecipe,
+    // middlewareRedis.clearRecipe,
     recipeController.updateStatus
   )
   .delete(
     '/:id',
     middlewareAuth.authentication,
     middlewareAuth.isUser,
-    middlewareRedis.clearRecipe,
+    // middlewareRedis.clearRecipe,
     recipeController.deleteRecipe
   );
 

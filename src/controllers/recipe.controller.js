@@ -2,7 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const recipeModel = require('../models/recipe.model');
 const { success, failed } = require('../helpers/response');
 const deleteFile = require('../helpers/deleteFile');
-const redis = require('../config/redis');
+// const redis = require('../config/redis');
 
 module.exports = {
   getAllRecipes: async (req, res) => {
@@ -34,11 +34,11 @@ module.exports = {
         return failed(res, 400, 'failed', `Data only up to page ${totalPage}`);
       }
 
-      redis.setEx(
-        `getRecipe:${JSON.stringify(req.query)}`,
-        3600,
-        JSON.stringify({ result, pageInfo })
-      );
+      // redis.setEx(
+      //   `getRecipe:${JSON.stringify(req.query)}`,
+      //   3600,
+      //   JSON.stringify({ result, pageInfo })
+      // );
 
       const result = await recipeModel.getAllRecipes(
         key,
@@ -75,7 +75,7 @@ module.exports = {
         );
       }
 
-      redis.setEx(`getRecipe:${id}`, 3600, JSON.stringify(result));
+      // redis.setEx(`getRecipe:${id}`, 3600, JSON.stringify(result));
 
       return success(
         res,
@@ -108,7 +108,7 @@ module.exports = {
         return failed(res, 403, 'failed', `You don't have access to this page`);
       }
 
-      redis.setEx(`getRecipeByUser:${id}`, 3600, JSON.stringify(result));
+      // redis.setEx(`getRecipeByUser:${id}`, 3600, JSON.stringify(result));
 
       return success(
         res,

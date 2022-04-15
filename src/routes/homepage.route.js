@@ -9,7 +9,6 @@ const homepageController = require('../controllers/homepage.controller');
 
 Router.get(
   '/latest',
-  middlewareRedis.getLatestRecipe,
   homepageController.getLatestRecipe
 );
 

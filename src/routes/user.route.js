@@ -5,7 +5,7 @@ const Router = express.Router();
 // Authentication
 const middlewareAuth = require('../middlewares/auth');
 // Redis
-const middlewareRedis = require('../middlewares/redis');
+// const middlewareRedis = require('../middlewares/redis');
 // Upload image
 const middlewareImage = require('../middlewares/imageUser');
 // Validation
@@ -21,13 +21,13 @@ Router.get(
   '/',
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
-  middlewareRedis.getAllUsers,
+  // middlewareRedis.getAllUsers,
   userController.getAllUsers
 )
   .get(
     '/:id',
     middlewareAuth.authentication,
-    middlewareRedis.getUserById,
+    // middlewareRedis.getUserById,
     userController.getUserById
   )
   .put(
@@ -35,14 +35,14 @@ Router.get(
     middlewareAuth.authentication,
     updateProfile(),
     validate,
-    middlewareRedis.clearUser,
+    // middlewareRedis.clearUser,
     userController.updateProfile
   )
   .put(
     '/photo/:id',
     middlewareAuth.authentication,
     middlewareImage,
-    middlewareRedis.clearUser,
+    // middlewareRedis.clearUser,
     userController.updateImage
   )
   .put(
@@ -50,20 +50,20 @@ Router.get(
     middlewareAuth.authentication,
     updatePassword(),
     validate,
-    middlewareRedis.clearUser,
+    // middlewareRedis.clearUser,
     userController.updatePassword
   )
   .put(
     '/status/:id',
     middlewareAuth.authentication,
     middlewareAuth.isAdmin,
-    middlewareRedis.clearUser,
+    // middlewareRedis.clearUser,
     userController.updateStatus
   )
   .delete(
     '/:id',
     middlewareAuth.authentication,
-    middlewareRedis.clearUser,
+    // middlewareRedis.clearUser,
     userController.deleteUser
   );
 
