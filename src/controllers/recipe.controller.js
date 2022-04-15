@@ -13,7 +13,7 @@ module.exports = {
       sort = sort || 'recipes.created_at';
       sortType = sortType || 'DESC';
       page = Number(page) || 1;
-      limit = Number(limit) || 3;
+      limit = Number(limit) || 6;
 
       const offset = page * limit - limit;
       const totalData = await recipeModel.getCountRecipe();
