@@ -1,5 +1,11 @@
 const { Pool } = require('pg');
-const { PGHOST, PGUSER, PGPASSWORD, PGDATABASE, PGPORT } = require('../helpers/env');
+const {
+  PGHOST,
+  PGUSER,
+  PGPASSWORD,
+  PGDATABASE,
+  PGPORT,
+} = require('../helpers/env');
 
 // pools will use environment variables
 // for connection information
@@ -9,6 +15,7 @@ const db = new Pool({
   password: PGPASSWORD,
   database: PGDATABASE,
   port: PGPORT,
+  ssl: true,
 });
 
 // check connection
