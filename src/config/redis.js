@@ -1,7 +1,7 @@
 const redis = require('redis');
 const { RDS_URL } = require('../helpers/env');
 
-client = redis.createClient({
+const client = redis.createClient({
   url: RDS_URL,
 });
 
