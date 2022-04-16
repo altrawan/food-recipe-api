@@ -23,6 +23,8 @@ Router.get(
   // middlewareRedis.getAllRecipes,
   recipeController.getAllRecipes
 )
+  .get('/list', recipeController.getListRecipe)
+  .get('/latest', recipeController.getLatestRecipe)
   .get(
     '/user/:id',
     middlewareAuth.authentication,

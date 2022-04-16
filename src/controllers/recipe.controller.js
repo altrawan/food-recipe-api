@@ -5,6 +5,87 @@ const deleteFile = require('../helpers/deleteFile');
 // const redis = require('../config/redis');
 
 module.exports = {
+  getListRecipe: async (req, res) => {
+    try {
+      let { key, search, sort, sortType, page, limit } = req.query;
+      key = key || 'recipes.title';
+      search = search ? `%${search}%` : '%';
+      sort = sort || 'recipes.created_at';
+      sortType = sortType || 'DESC';
+      page = Number(page) || 1;
+      limit = Number(limit) || 6;
+
+      const offset = page * limit - limit;
+      const totalData = await recipeModel.getCountRecipe();
+      const totalPage = Math.ceil(totalData / limit);
+
+      const pageInfo = {
+        currentPage: page,
+        dataPerPage: limit,
+        totalPage,
+        totalData,
+      };
+
+      const result = await recipeModel.getListRecipe(
+        key,
+        search,
+        sort,
+        sortType,
+        limit,
+        offset
+      );
+
+      if (result.rows.length < 1) {
+        return failed(res, 404, 'failed', 'Data not found');
+      }
+
+      if (page > totalPage) {
+        return failed(res, 400, 'failed', `Data only up to page ${totalPage}`);
+      }
+
+      // redis.setEx(
+      //   `getRecipe:${JSON.stringify(req.query)}`,
+      //   3600,
+      //   JSON.stringify({ result, pageInfo })
+      // );
+
+      return success(
+        res,
+        200,
+        'success',
+        'success get all data recipes',
+        result.rows,
+        pageInfo
+      );
+    } catch (error) {
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+    }
+  },
+  getLatestRecipe: async (req, res) => {
+    try {
+      let { limit } = req.query;
+      limit = Number(limit) || 1;
+
+      const result = await recipeModel.getLatestRecipe(limit);
+
+      // redis.setEx(
+      //   `getLatestRecipe:${JSON.stringify(req.query)}`,
+      //   3600,
+      //   JSON.stringify(result)
+      // );
+
+      return success(
+        res,
+        200,
+        'success',
+        `Success get latest recipe`,
+        result.rows
+      );
+    } catch (error) {
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+    }
+  },
+  getPopularRecipe: async (req, res) => {},
   getAllRecipes: async (req, res) => {
     try {
       let { key, search, sort, sortType, page, limit } = req.query;
