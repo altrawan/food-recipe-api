@@ -4,7 +4,7 @@ module.exports = {
   getListRecipe: (key, search, sort, sortType, limit, offset) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT recipes.title, recipes.image, recipes.ingredients, recipes.video, users.name, 
+        `SELECT recipes.id recipes.title, recipes.image, recipes.ingredients, recipes.video, users.name, 
         CASE WHEN recipes.is_active = 0 THEN 'Not Active' ELSE 'Active' END AS status,
         to_char(recipes.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
         FROM recipes INNER JOIN users ON recipes.user_id = users.id WHERE recipes.is_active = 1
