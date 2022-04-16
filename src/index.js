@@ -6,7 +6,10 @@ const router = require('./routes');
 app.use('/', router);
 
 // handling error route doesn't exist
-app.use('/*', (req, res) => res.status(404).send(`'Path not found !'`, res));
+app.use('/*', (req, res) => {
+  res.status(404).send(`'Path not found !'`);
+  console.log(res);
+});
 
 // set port or using default port, listen for requests
 const port = PORT || 3001
