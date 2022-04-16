@@ -9,7 +9,7 @@ const commentRoute = require('./comment.route');
 const likedRecipeRoute = require('./likedRecipe.route');
 const savedRecipeRoute = require('./savedRecipe.route');
 
-Router.use('/', authRoute);
+Router.use('/saya', authRoute);
 Router.use('/user', userRoute);
 Router.use('/recipe', recipeRoute);
 Router.use('/comment', commentRoute);
