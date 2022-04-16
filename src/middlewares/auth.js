@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../helpers/env');
 const { failed } = require('../helpers/response');
-const redis = require('../config/redis');
+// const redis = require('../config/redis');
 
 module.exports = {
   authentication: async (req, res, next) => {
@@ -14,15 +14,15 @@ module.exports = {
 
       token = token.split(' ')[1];
       
-      const result = await redis.get(`accessToken:${token}`);
-      if (result) {
-        return failed(
-          res,
-          403,
-          'failed',
-          `Your token is destroyed please login again`
-        );
-      }
+      // const result = await redis.get(`accessToken:${token}`);
+      // if (result) {
+      //   return failed(
+      //     res,
+      //     403,
+      //     'failed',
+      //     `Your token is destroyed please login again`
+      //   );
+      // }
 
       const decoded = jwt.verify(token, JWT_SECRET);
       req.APP_DATA = {

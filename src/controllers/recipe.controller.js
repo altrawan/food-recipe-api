@@ -107,6 +107,15 @@ module.exports = {
         totalData,
       };
 
+      const result = await recipeModel.getAllRecipes(
+        key,
+        search,
+        sort,
+        sortType,
+        limit,
+        offset
+      );
+
       if (result.rows.length < 1) {
         return failed(res, 404, 'failed', 'Data not found');
       }
@@ -120,15 +129,6 @@ module.exports = {
       //   3600,
       //   JSON.stringify({ result, pageInfo })
       // );
-
-      const result = await recipeModel.getAllRecipes(
-        key,
-        search,
-        sort,
-        sortType,
-        limit,
-        offset
-      );
 
       return success(
         res,
@@ -245,9 +245,9 @@ module.exports = {
       }
 
       const row = checkId.rows[0];
-      if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
-        return failed(res, 403, 'failed', `You don't have access to this page`);
-      }
+      // if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
+      //   return failed(res, 403, 'failed', `You don't have access to this page`);
+      // }
 
       const data = {
         title,

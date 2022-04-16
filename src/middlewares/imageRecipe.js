@@ -19,8 +19,8 @@ const upload = multer({
   storage,
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
   fileFilter: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    if (ext === '.jpg' || ext === '.png') {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ext === '.jpg' || ext === '.png' || ext === '.webp') {
       return cb(null, true);
     }
     cb(null, false);
