@@ -21,7 +21,7 @@ module.exports = {
   getLatestRecipe: (limit) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT recipes.title, recipes.image, users.name, 
+        `SELECT recipes.id, recipes.title, recipes.image, users.name, 
         to_char(recipes.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date 
         FROM recipes INNER JOIN users ON recipes.user_id = users.id 
         ORDER BY recipes.created_at DESC LIMIT $1`,
