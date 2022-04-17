@@ -34,7 +34,7 @@ Router.get(
   )
   .get(
     '/:id',
-    middlewareAuth.authentication,
+    // middlewareAuth.authentication,
     // middlewareRedis.getRecipeById,
     recipeController.getRecipeById
   )
@@ -51,7 +51,7 @@ Router.get(
   .put(
     '/:id',
     middlewareAuth.authentication,
-    // middlewareAuth.isUser,
+    middlewareAuth.isUser,
     middlewareImage,
     recipeValidationRules(),
     validate,
