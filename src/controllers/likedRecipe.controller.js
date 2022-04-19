@@ -88,14 +88,14 @@ module.exports = {
       const { id } = req.params;
       const result = await likedRecipeModel.getLikedRecipeByUser(id);
 
-      if (result.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
-      }
+      // if (result.rows.length < 1) {
+      //   return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      // }
 
-      const checkId = await likedRecipeModel.getDetailLikedRecipeByUser(id);
-      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
-        return failed(res, 403, 'failed', `You don't have access to this page`);
-      }
+      // const checkId = await likedRecipeModel.getDetailLikedRecipeByUser(id);
+      // if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
+      //   return failed(res, 403, 'failed', `You don't have access to this page`);
+      // }
 
       // redis.setEx(`getLikedRecipeByUser:${id}`, 3600, JSON.stringify(result));
 
