@@ -88,13 +88,13 @@ module.exports = {
       const { id } = req.params;
       const result = await savedRecipeModel.getSavedRecipeByUser(id);
 
-      // if (result.rows.length < 1) {
-      //   return failed(res, 404, 'failed', `Data by id ${id} not found !`);
-      // }
+      if (result.rows.length < 1) {
+        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      }
 
-      // if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
-      //   return failed(res, 403, 'failed', `You don't have access to this page`);
-      // }
+      if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
+        return failed(res, 403, 'failed', `You don't have access to this page`);
+      }
 
       // redis.setEx(`getSavedRecipeByUser:${id}`, 3600, JSON.stringify(result));
 
@@ -102,7 +102,8 @@ module.exports = {
         res,
         200,
         'success',
-        `Success get saved recipe by user id ${id}`
+        `Success get saved recipe by user id ${id}`,
+        result.rows
       );
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
