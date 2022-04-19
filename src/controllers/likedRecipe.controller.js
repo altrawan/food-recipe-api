@@ -103,7 +103,8 @@ module.exports = {
         res,
         200,
         'success',
-        `Success get liked recipe by user id ${id}`
+        `Success get liked recipe by user id ${id}`,
+        result.rows
       );
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
