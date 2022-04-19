@@ -300,11 +300,11 @@ module.exports = {
   deleteRecipe: async (req, res) => {
     try {
       const { id } = req.params;
-      const checkId = await recipeModel.getDetailRecipe(id);
+      // const checkId = await recipeModel.getDetailRecipe(id);
 
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
-      }
+      // if (checkId.rows.length < 1) {
+      //   return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      // }
 
       if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
         return failed(res, 403, 'failed', `You don't have access to this page`);
