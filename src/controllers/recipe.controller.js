@@ -174,20 +174,20 @@ module.exports = {
       let { id } = req.params;
       const result = await recipeModel.getRecipeByUser(id);
 
-      if (result.rows.length < 1) {
-        return failed(
-          res,
-          404,
-          `Data by user id ${id} Haven't made a recipe yet`
-        );
-      }
+      // if (result.rows.length < 1) {
+      //   return failed(
+      //     res,
+      //     404,
+      //     `Data by user id ${id} Haven't made a recipe yet`
+      //   );
+      // }
 
-      const checkId = await recipeModel.getDetailRecipeByUser(id);
+      // const checkId = await recipeModel.getDetailRecipeByUser(id);
 
-      const row = checkId.rows[0];
-      if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
-        return failed(res, 403, 'failed', `You don't have access to this page`);
-      }
+      // const row = checkId.rows[0];
+      // if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
+      //   return failed(res, 403, 'failed', `You don't have access to this page`);
+      // }
 
       // redis.setEx(`getRecipeByUser:${id}`, 3600, JSON.stringify(result));
 
