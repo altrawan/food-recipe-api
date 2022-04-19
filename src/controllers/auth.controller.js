@@ -14,7 +14,7 @@ module.exports = {
   register: async (req, res) => {
     try {
       // get name, email, password and phone from req.body
-      const { name, email, password, phone } = req.body;
+      const { name, email, password, phone, photo } = req.body;
 
       // create new object
       const data = {
@@ -26,6 +26,7 @@ module.exports = {
         level: 1,
         is_active: 0,
         token: randomToken,
+        photo: req.file ? req.file.filename : null
       };
 
       // send object to model

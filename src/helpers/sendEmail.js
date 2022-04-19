@@ -5,13 +5,13 @@ const { STMP_USER, STMP_PASS } = require('./env');
 const { failed } = require('../helpers/response');
 
 const transport = nodemailer.createTransport({
-  host: "stmp.gmail.com",
+  host: 'smtp.gmail.com',
   port: 587,
   secure: false,
   auth: {
     user: STMP_USER,
-    pass: STMP_PASS
-  }
+    pass: STMP_PASS,
+  },
 });
 
 module.exports = {
@@ -40,7 +40,7 @@ module.exports = {
         url: `https://mama-recipe.herokuapp.com/auth/verify-email?token=${confirmationCode}`,
       },
     };
- 
+
     transport.sendMail(mailOptions, (err) => {
       if (err) {
         console.log(err);

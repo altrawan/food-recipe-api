@@ -4,6 +4,8 @@ const Router = express.Router();
 
 // Authentication
 const middlewareAuth = require('../middlewares/auth');
+// Upload image
+const middlewareImage = require('../middlewares/imageUser');
 // Validations
 const {
   registerValidationRules,
@@ -15,6 +17,7 @@ const authController = require('../controllers/auth.controller');
 
 Router.post(
   '/register',
+  middlewareImage,
   registerValidationRules(),
   validate,
   authController.register
