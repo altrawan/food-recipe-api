@@ -106,14 +106,15 @@ module.exports = {
   },
   createComment: async (req, res) => {
     try {
-      let isNull;
-      const { recipe_id, comment_text } = req.body;
+      const { comment_text } = req.body;
+      const { id } = req.params;
 
       const data = {
         id: uuidv4(),
         user_id: req.APP_DATA.tokenDecoded.id,
-        recipe_id,
+        recipe_id: id,
         comment_text,
+        is_active: 1
       };
 
       const result = await commentModel.createComment(data);
@@ -137,7 +138,7 @@ module.exports = {
       if (checkId.rows.length < 1) {
         return success(res, 404, 'failed', `Data by id ${id} not found !`);
       }
-      
+
       const row = checkId.rows[0];
       if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
         return failed(res, 403, 'failed', `You don't have access to this page`);
