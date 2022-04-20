@@ -87,9 +87,9 @@ module.exports = {
       const { id } = req.params;
       const result = await commentModel.getCommentByRecipe(id);
 
-      if (result.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
-      }
+      // if (result.rows.length < 1) {
+      //   return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      // }
 
       // redis.setEx(`getCommentByRecipe:${id}`, 3600, JSON.stringify(result));
 
