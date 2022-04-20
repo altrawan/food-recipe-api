@@ -34,6 +34,7 @@ Router.get(
   )
   .get(
     '/:id',
+    middlewareAuth.authentication,
     // middlewareAuth.authentication,
     // middlewareRedis.getRecipeById,
     recipeController.getRecipeById
