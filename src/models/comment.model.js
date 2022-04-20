@@ -70,10 +70,10 @@ module.exports = {
     }),
   createComment: (data) =>
     new Promise((resolve, reject) => {
-      const { id, user_id, recipe_id, comment_text } = data;
+      const { id, user_id, recipe_id, comment_text, is_active } = data;
       db.query(
-        `INSERT INTO comments VALUES ($1, $2, $3, $4)`,
-        [id, user_id, recipe_id, comment_text],
+        `INSERT INTO comments VALUES ($1, $2, $3, $4, $5)`,
+        [id, user_id, recipe_id, comment_text, is_active],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
