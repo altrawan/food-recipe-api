@@ -47,7 +47,7 @@ module.exports = {
   getUserById: (id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT name, email, phone, photo, to_char(created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date 
+        `SELECT id, name, email, phone, photo, to_char(created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date 
         FROM users WHERE id = $1`,
         [id],
         (err, res) => {
