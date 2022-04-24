@@ -67,8 +67,8 @@ module.exports = {
   getRecipeById: (id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT recipes.id, recipes.title, recipes.image, recipes.ingredients, recipes.video, users.name, 
-        to_char(recipes.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
+        `SELECT recipes.id, recipes.title, recipes.image, recipes.ingredients, recipes.video, 
+        users.name, users.photo, recipes.created_at AS date
         FROM recipes INNER JOIN users ON recipes.user_id = users.id WHERE recipes.id = $1`,
         [id],
         (err, res) => {

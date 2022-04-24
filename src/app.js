@@ -15,7 +15,8 @@ app.use(xss());
 
 // set security HTTP headers
 app.use(helmet({
-  crossOriginResourcePolicy: false,
+  crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
 }));
 
 // parse urlencoded request body
