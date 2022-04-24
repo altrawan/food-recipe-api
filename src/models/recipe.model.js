@@ -6,7 +6,7 @@ module.exports = {
       db.query(
         `SELECT recipes.id, recipes.title, recipes.image, recipes.ingredients, recipes.video, users.name, 
         CASE WHEN recipes.is_active = 0 THEN 'Not Active' ELSE 'Active' END AS status,
-        to_char(recipes.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
+        recipe.created_at AS date
         FROM recipes INNER JOIN users ON recipes.user_id = users.id WHERE recipes.is_active = 1
         AND ${key} ILIKE $1 ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
         [search, limit, offset],
