@@ -140,9 +140,9 @@ module.exports = {
       }
 
       // Only user login
-      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].id) {
-        return failed(res, 403, 'failed', `You don't have access to this page`);
-      }
+      // if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].id) {
+      //   return failed(res, 403, 'failed', `You don't have access to this page`);
+      // }
 
       const data = {
         photo: req.file ? req.file.filename : null,
