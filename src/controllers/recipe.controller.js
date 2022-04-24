@@ -257,9 +257,11 @@ module.exports = {
         updated_at: new Date(Date.now()),
       };
 
-      const file = row.image;
-      if (file) {
-        deleteFile(`public/uploads/recipe/${file}`);
+      if (req.files.image) {
+        const file = row.image;
+        if (file) {
+          deleteFile(`public/uploads/recipe/${file}`);
+        }
       }
 
       const result = await recipeModel.updateRecipe(data, id);
