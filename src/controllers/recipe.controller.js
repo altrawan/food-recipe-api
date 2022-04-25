@@ -257,7 +257,7 @@ module.exports = {
         updated_at: new Date(Date.now()),
       };
 
-      if (req.files.image) {
+      if (data.image) {
         const file = row.image;
         if (file) {
           deleteFile(`public/uploads/recipe/${file}`);
