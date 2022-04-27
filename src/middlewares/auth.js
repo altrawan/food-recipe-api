@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET } = require('../helpers/env');
 const { failed } = require('../helpers/response');
+const userModel = require('../models/user.model');
 // const redis = require('../config/redis');
 
 module.exports = {
@@ -13,7 +14,7 @@ module.exports = {
       }
 
       token = token.split(' ')[1];
-      
+
       // const result = await redis.get(`accessToken:${token}`);
       // if (result) {
       //   return failed(
@@ -32,6 +33,16 @@ module.exports = {
       return next();
     } catch (error) {
       return failed(res, 400, 'failed', 'Invalid token', error);
+    }
+  },
+  // VERIFIED EMAIL
+  isVerified: async (req, res, next) => {
+    const email = await userModel.getUserByEmail(rew.body.email);
+
+    if (!email.rowCount) {
+      next();
+    } else {
+      failed(res, 401, 'failed', 'Your email is not verified yet')
     }
   },
   // ONLY ADMIN

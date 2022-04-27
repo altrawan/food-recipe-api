@@ -251,17 +251,15 @@ module.exports = {
 
       const data = {
         title,
-        image: req.file ? req.file.filename : null,
+        image: req.file ? req.file.filename : row.image,
         ingredients,
         video: video ? video : null,
         updated_at: new Date(Date.now()),
       };
 
-      if (data.image) {
+      if (req.file) {
         const file = row.image;
-        if (file) {
-          deleteFile(`public/uploads/recipe/${file}`);
-        }
+        deleteFile(`public/uploads/recipe/${file}`);
       }
 
       const result = await recipeModel.updateRecipe(data, id);
@@ -308,9 +306,9 @@ module.exports = {
         return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
-        return failed(res, 403, 'failed', `You don't have access to this page`);
-      }
+      // if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
+      //   return failed(res, 403, 'failed', `You don't have access to this page`);
+      // }
 
       const file = checkId.rows[0].image;
       if (file) {

@@ -5,6 +5,8 @@ const { success, failed, successWithToken } = require('../helpers/response');
 const jwtToken = require('../helpers/generateToken');
 const sendEmail = require('../helpers/sendEmail');
 const randomToken = require('../helpers/randomToken');
+const ejs = require('ejs');
+const path = require('path');
 // const redis = require('../config/redis');
 // TOKEN
 const jwt = require('jsonwebtoken');
@@ -26,7 +28,7 @@ module.exports = {
         level: 1,
         is_active: 0,
         token: randomToken,
-        photo: req.file ? req.file.filename : null
+        photo: req.file ? req.file.filename : null,
       };
 
       // send object to model
@@ -58,14 +60,14 @@ module.exports = {
         return failed(res, 409, 'failed', `User already registered`);
       }
 
-      const result = await authModel.verifyEmail(token);
+      await authModel.verifyEmail(token);
 
-      return success(
-        res,
-        200,
-        'success',
-        `Success activated user`
-      );
+      // ejs.renderFile(path.resolve("./src/views/welcome.ejs"), {
+      //   user_firstname: checkToken.rows[0].name,
+      //   confirm_link: 'http://localhost:3000/login',
+      // });
+
+      return success(res, 200, 'success', `Success activated user`);
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
@@ -80,7 +82,7 @@ module.exports = {
 
       // validation email doesn't exist
       if (checkEmail.rows.length < 1) {
-        return failed(res, 400, `Email or password wrong`);
+        return failed(res, 400, 'failed', `Email or password wrong`);
       }
 
       // check password
@@ -112,11 +114,16 @@ module.exports = {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
+  registeredEmail: async (req, res) => {
+    try {
+    } catch (error) {
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+    }
+  },
   logout: async (req, res) => {
     try {
       // let token = req.headers.authorization;
       // token = token.split(' ')[1];
-
       // const result = await redis.get(`accessToken:${token}`);
       // if (result) {
       //   return failed(
@@ -126,7 +133,6 @@ module.exports = {
       //     `Your token is destroyed please login again`
       //   );
       // }
-
       // redis.setEx(`accessToken:${token}`, 3600 * 24, token);
       // return success(res, 200, 'success', `Success logout`);
     } catch (error) {
@@ -136,30 +142,23 @@ module.exports = {
   refreshToken: async (req, res) => {
     try {
       // const { refreshToken } = req.body;
-
       // const check = await redis.get(`refreshToken:${refreshToken}`);
       // if (check) {
       //   return failed(res, 403, 'failed', `Your refresh token cannot be use`);
       // }
-
       // jwt.verify(refreshToken, JWT_SECRET, (error, result) => {
       //   if (error) {
       //     return failed(res, 403, 'failed', error.message);
       //   }
-
       //   delete result.iat;
       //   delete result.exp;
-
       //   const token = jwt.sign(result, JWT_SECRET, {
       //     expiresIn: '1h',
       //   });
-
       //   const newRefreshToken = jwt.sign(result, JWT_SECRET, {
       //     expiresIn: '24h',
       //   });
-
       //   redis.setEx(`refreshToken:${refreshToken}`, 3600 * 24, refreshToken);
-
       //   return successWithToken(
       //     res,
       //     200,

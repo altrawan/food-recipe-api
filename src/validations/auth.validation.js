@@ -1,7 +1,7 @@
 const { body, validationResult } = require('express-validator');
 const { getUserByEmail, getUserByPhone } = require('../models/user.model');
 
-const registerValidationRules = () => {
+const register = () => {
   return [
     body('name')
       .not()
@@ -61,7 +61,7 @@ const registerValidationRules = () => {
   ];
 };
 
-const loginValidationRules = () => {
+const login = () => {
   return [
     body('email')
       .not()
@@ -82,6 +82,28 @@ const loginValidationRules = () => {
   ];
 };
 
+const forgotPassword = () => {
+  return [
+    body('email')
+      .not()
+      .isEmpty()
+      .withMessage('Email cannot be empty')
+      .isEmail()
+      .withMessage('Invalid E-mail address'),
+  ];
+};
+
+const resetPassword = () => {
+  return [
+    body('code')
+      .not()
+      .isEmpty()
+      .withMessage('Reset Code cannot be empty')
+      .isNumeric()
+      .withMessage('Only number allowed'),
+  ];
+};
+
 const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
@@ -98,7 +120,9 @@ const validate = (req, res, next) => {
 };
 
 module.exports = {
-  registerValidationRules,
-  loginValidationRules,
+  register,
+  login,
+  forgotPassword,
+  resetPassword,
   validate,
 };
