@@ -147,14 +147,14 @@ module.exports = {
       const { id } = req.params;
       const result = await recipeModel.getRecipeById(id);
 
-      if (result.rows.length < 1) {
-        return failed(
-          res,
-          404,
-          'failed',
-          `User by id ${id} hasn't created a recipe yet`
-        );
-      }
+      // if (result.rows.length < 1) {
+      //   return failed(
+      //     res,
+      //     404,
+      //     'failed',
+      //     `User by id ${id} hasn't created a recipe yet`
+      //   );
+      // }
 
       // redis.setEx(`getRecipe:${id}`, 3600, JSON.stringify(result));
 
