@@ -132,9 +132,9 @@ STMP_PASS=your-password
 
 ## REST API
 
-You can view my Postman collection [here](https://www.postman.com/warped-shadow-374852/workspace/blanja/overview)
+You can view my Postman collection [here](https://www.postman.com/warped-shadow-374852/workspace/food-recipe/overview)
 </br>
-[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/19659051-cdd14dbd-b11b-492b-b4b5-83065267d690?action=collection%2Ffork&collection-url=entityId%3D19659051-cdd14dbd-b11b-492b-b4b5-83065267d690%26entityType%3Dcollection%26workspaceId%3D2d0c24df-fbb7-405f-93af-c4ef984f8428)
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/19659051-a8f34c89-7c8f-409f-8665-ecac960c85df?action=collection%2Ffork&collection-url=entityId%3D19659051-a8f34c89-7c8f-409f-8665-ecac960c85df%26entityType%3Dcollection%26workspaceId%3D783fdc2c-762c-4182-8433-bf1de8619a50)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
