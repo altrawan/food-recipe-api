@@ -24,6 +24,7 @@
 </div>
 
 <!-- TABLE OF CONTENTS -->
+## Table of Contents
 <details>
   <summary>Table of Contents</summary>
   <ol>
