@@ -108,7 +108,9 @@ Create .env file in your root project folder.
 
 ```env
 # app
+APP_NAME=
 PORT='YOUR PORT'
+NODE_ENV=
 
 # Setting PostgreSQL
 PG_HOST='YOUR HOST'
