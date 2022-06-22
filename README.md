@@ -107,7 +107,7 @@ Create .env file in your root project folder.
 
 ```env
 # app
-PORT=3001
+PORT='YOUR PORT'
 
 # Setting PostgreSQL
 PGHOST='YOUR HOST'
