@@ -1,73 +1,112 @@
-# Food Recipe RESTful API
+<div id="top"></div>
 
-## Installation
-1. Clone the repo ```git clone https://github.com/altrawan/food-recipe-api.git```
-2. Run ```npm install``` to install the dependencies
-3. Import database ```pijarfood``` to your PostgreSQL ([Backup and Restore PostgreSQL](https://www.postgresql.org/docs/8.1/backup.html#BACKUP-DUMP-RESTORE))
-4. Set the environment variables:
-    - ```PORT``` : fill for set the API running port
-    - ```PGHOST``` : fill with HOSTNAME in your postgreSQL configuration
-    - ```PGUSER``` : fill with USERNAME in your postgreSQL configuration
-    - ```PGDATABASE``` : fill with the DATABASE NAME or leave it filled with ```pijarfood``` if you isn't rename the database
-    - ```PGPASSWORD``` : fill with PASSWORD in your postgreSQL configuration
-    - ```PGPORT``` : fill with PORT in your postgreSQL configuration
-5. Run with :
-    - ```npm run start``` : if you want to run it in client mode (use ```node```) without auto restart on every changing code
-    - ```npm run dev``` :  if you want to run it in developer mode (use ```nodemon```) every change and save it will auto restart
-6. You are Ready to Go
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/altrawan/food-recipe-api">
+    <img src="https://lh3.googleusercontent.com/d/1AuO1tJ469WqoXQufUeR-OkzqAW258aXT" alt="Logo" width="150px">
+  </a>
 
-<b>Note</b> : if you got any problems send email to : <a>muhammadalifputra8888@gmail.com</a>
+  <h3 align="center">Mama Recipe</h3>
 
-## Table of contents
-- [Features](#Features)
-- [Commands](#Commands)
-- [Environment Variables](#Environment-Variables)
-- [Project Structure](#Project-Structure)
-- [API Documentation](#API-Documentation)
-- [Error Handling](#Error-Handling)
-- [Validation](#Validation)
-- [Authentication](#Authentication)
-- [Authorization](#Authorization)
-- [Linting](#Linting)
-- [Documentation](#Documentation)
-- [Contributing](#Contributing)
-- [License](#License)
-    
-## Features
-- **SQL database:** using [PostgreSQL](https://www.postgresql.org/)
-- **NoSQL database:** using [Redis](https://redis.io/)
-- **Validation:** request data validation using [express-validator](https://express-validator.github.io/docs/)
-- **API documentation:** with [Postman](https://www.postman.com/)
-- **Dependency management:** with [NPM](https://www.npmjs.com/)
-- **Environment variables:** using [dotenv](https://github.com/motdotla/dotenv)
-- **Security:** set security HTTP headers using [helmet](https://helmetjs.github.io/)
-- **Santizing:** sanitize request data against xss and query injection
-- **CORS:** Cross-Origin Resource-Sharing enabled using [cors](https://github.com/expressjs/cors)
-- **Hash Password:** using [bcrypt](https://github.com/kelektiv/node.bcrypt.js)
-- **Linting:** with [ESlint](https://eslint.org/) and [Prettier](https://prettier.io/)
+  <p align="center">
+    Create a Node.js app for building food recipe RESTful APIs using Express.
+    <br />
+    <a href="#table-of-contents"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://mama-recipe.herokuapp.com/">View Web Service</a>
+    ·
+    <a href="https://github.com/altrawan/food-recipe-api/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/altrawan/food-recipe-api/issues">Request Feature</a>
+  </p>
+</div>
 
-## Commands
-Running in client mode:
-```
-npm run start
-```
-Running in developer mode:
-```
-npm run dev
-```
-Testing:
-```
-npm run test
-```
-Linting:
-```
-npm run lint -- --fix
-```
+<!-- TABLE OF CONTENTS -->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#requirements">Requirements</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#setup-env-example">Setup .env example</a></li>
+      </ul>
+    </li>
+    <li><a href="#rest-api">REST API</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#related-project">Related Project</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#license">License</a></li>
+  </ol>
+</details>
 
-## Environment Variables
-The environment variables can be found and modified in the ```.env``` file. They come with these default values:
+<!-- ABOUT THE PROJECT -->
+## About The Project
+Create a Node.js app for building food recipe RESTful APIs using Express.
+
+### Built With
+This app was built with some technologies below:
+- [Node.js](https://nodejs.org/en/)
+- [Express.js](https://expressjs.com/)
+- [JSON Web Tokens](https://jwt.io/)
+- [Nodemailer](https://nodemailer.com/about/)
+- [PostgreSQL](https://www.postgresql.org/)
+- and other
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+<!-- GETTING STARTED -->
+## Getting Started
+
+### Prerequisites
+
+This is an example of how to list things you need to use the software and how to install them.
+
+* [Node.js](https://nodejs.org/en/download/)
+
+### Requirements
+* [Node.js](https://nodejs.org/en/)
+* [Postman](https://www.getpostman.com/) for testing
+* [Database](./blanja.sql)
+
+### Installation
+
+- Clone the Repo
 ```
-# Port number
+git clone https://github.com/altrawan/food-recipe-api.git
+```
+- Go To Folder Repo
+```
+cd food-recipe-api
+```
+- Install Module
+```
+npm install
+```
+- Make a new database and import [mama_recipe.sql](./blanja.sql)
+- <a href="#setup-env-example">Setup .env</a>
+- Type ` npm run dev` To Start Development
+- Type ` npm run start` To Start Production
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### Setup .env example
+
+Create .env file in your root project folder.
+
+```env
+# app
 PORT=3001
 
 # Setting PostgreSQL
@@ -88,166 +127,48 @@ STMP_USER=your-email
 STMP_PASS=your-password
 ```
 
-## Project Structure
-```
-├── public\             # Asset public
-├── src\                # Project source code
-    ├── config\         # Configuration database
-    ├── controllers\    # Route controllers (controller layer)
-    ├── helpers\        # Helpers
-    ├── middlewares\    # Custom express middlewares
-    ├── models\         # Models
-    ├── routes\         # Routes
-    ├── template\       # Template HTML
-    ├── validations\    # Request data validation
-    ├── app.js          # Express app
-    ├── index.js        # App entry point
-├── .env                # Setup environment
-├── .gitignore          # File name for not uploaded on github
-├── LICENSE             # License this project
-└── README.md           # For Readme In github
-```
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-## API Documentation
-### API Endpoints
-List of available routes:
+## REST API
 
-**Index routes**\
-```GET /``` - get all recipes active\
-```GET /latest``` - get latest recipe\
-```GET /popular``` - get popular recipe
+You can view my Postman collection [here](https://www.postman.com/warped-shadow-374852/workspace/blanja/overview)
+</br>
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/19659051-cdd14dbd-b11b-492b-b4b5-83065267d690?action=collection%2Ffork&collection-url=entityId%3D19659051-cdd14dbd-b11b-492b-b4b5-83065267d690%26entityType%3Dcollection%26workspaceId%3D2d0c24df-fbb7-405f-93af-c4ef984f8428)
 
-**Auth Route**\
-```POST /auth/register``` - register\
-```POST /auth/login``` - login\
-```GET /auth/verify-email``` - verify email\
-```POST /auth/forgot-password``` - send reset password email\
-```GET /auth/reset-password``` - reset password\
-```POST /auth/refresh-token``` - refresh auth token\
-```POST /auth/logout``` - logout
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-**User Route**\
-```GET /users``` - get all users\
-```GET /users/:id``` - get user by id\
-```PUT /users/change-profile``` - change profile user\
-```PUT /users/change-photo``` - change photo user\
-```PUT /users/change-password``` - change password\
-```PUT /users/delete/:id``` - soft delete user\
-```PUT /users/change-status/:id``` - change status user active or not active\
-```DELETE /users/:id``` - delete user by id
-
-**Recipe Route**\
-```GET /recipes``` - get all recipes\
-```GET /recipes``` - get recipe by id\
-```GET /recipes/user/:id``` - get recipe by user\
-```POST /recipes``` - create new recipe\
-```PUT /recipes/:id``` - update recipe by id\
-```PUT /recipes/change-status/:id``` - change status recipe active or not active\
-```DELETE /recipes/:id``` - delete recipe by id 
-
-**Comment Route**\
-```GET /comments``` - get all comments\
-```GET /comments/:id``` - get comment by id\
-```GET /comments/recipe/:id``` get comment by recipe\
-```POST /comments``` - create new comment\
-```PUT /comments/:id``` - update comment by id\
-```PUT /comments/change-status/:id``` - change status comment active or not active\
-```DELETE /comments/:id``` - delete comment by id
-
-**Liked Recipe Route**\
-```GET /liked-recipe``` - get all liked recipe\
-```GET /liked-recipe/:id``` - get liked recipe by id\
-```GET /liked-recipe/user/:id``` - get liked recipe by user\
-```POST /liked-recipe``` - create liked recipe\
-```DELETE /liked-recipe/:id``` - delete liked recipe by id
-
-**Saved Recipe Route**
-```GET /saved-recipe``` - get all saved recipe\
-```GET /saved-recipe/:id``` - get saved recipe by id\
-```GET /saved-recipe/user/:id``` - get saved recipe by user\
-```POST /saved-recipe``` - create saved recipe\
-```DELETE /saved-recipe/:id``` - delete saved recipe by id
-
-## Error Handling
-
-## Validation
-
-## Authentication
-
-## Authorization
-
-## Linting
-
-## Documentation
-
+<!-- CONTRIBUTING -->
 ## Contributing
-Contributions are more than welcome! Please check out the [contributing guide](https://github.com/altrawan/food-recipe-api/blob/master/CONTRIBUTING.md).
+
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Related Project
+:rocket: [`Backend Mama Recipe`](https://github.com/altrawan/food-recipe-api)
+
+:rocket: [`Frontend Mama Recipe`](https://github.com/altrawan/mama-recipe-app)
+
+:rocket: [`Demo Mama Recipe`](https://bit.ly/mama-recipe-app)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Contact
+
+My Email : muhammadalifputra8888@gmail.com
+
+Project Link: [https://github.com/altrawan/food-recipe-api](https://github.com/altrawan/food-recipe-api)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## License
+Distributed under the [MIT](/LICENSE) License.
 
-<!--
-## Tools and Technologies
-![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1)
-![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
-![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
-![NPM](https://img.shields.io/badge/NPM-%23000000.svg?style=for-the-badge&logo=npm&logoColor=white)
-![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
-![Visual Studio Code](https://img.shields.io/badge/Visual%20Studio%20Code-0078d7.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white)
-![Postman](https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=postman&logoColor=white)
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-## Packages Included
-- NPM dependencies
-
-    ![](https://img.shields.io/badge/bcrypt-v5.0.1-blue)
-    ![](https://img.shields.io/badge/body--parser-v1.19.2-blue)
-    ![](https://img.shields.io/badge/cors-v2.8.5-blue)
-    ![](https://img.shields.io/badge/dotenv-v16.0.0-blue)
-    ![](https://img.shields.io/badge/express-v4.17.3-blue)
-    ![](https://img.shields.io/badge/express--validator-v5.3.1-blue)
-    ![](https://img.shields.io/badge/helmet-v5.0.2-blue)
-    ![](https://img.shields.io/badge/pg-v8.7.3-blue)
-    ![](https://img.shields.io/badge/uuid-v8.3.2-blue)
-    ![](https://img.shields.io/badge/xss--clean-v0.1.1-blue)
-- NPM devDependencies
-    
-    ![](https://img.shields.io/badge/eslint-v8.11.0-brightgreen)
-    ![](https://img.shields.io/badge/eslint--config--airbnb--base-v15.0.0-brightgreen)
-    ![](https://img.shields.io/badge/eslint--plugin--import-v2.25.4-brightgreen)
-    ![](https://img.shields.io/badge/nodemon-v2.0.15-brightgreen)
-
-## Instructions to Use
-1. Run ```npm install``` to install packages required
-2. Import database ```pijarfood``` to your PostgreSQL ([Backup and Restore PostgreSQL](https://www.postgresql.org/docs/8.1/backup.html#BACKUP-DUMP-RESTORE))
-3. Rename ".env example" file to ".env" and set ".env" file in root:
-    - ```APP_PORT``` : fill for set the API running port
-    - ```PGHOST``` : fill with HOSTNAME in your postgreSQL configuration
-    - ```PGUSER``` : fill with USERNAME in your postgreSQL configuration
-    - ```PGDATABASE``` : fill with the DATABASE NAME or leave it filled with ```pijarfood``` if you isn't rename the database
-    - ```PGPASSWORD``` : fill with PASSWORD in your postgreSQL configuration
-    - ```PGPORT``` : fill with PORT in your postgreSQL configuration
-4. Run with :
-    - ```npm run start``` : if you want to run it in client mode (use ```node```) without auto restart on every changing code
-    - ```npm run dev``` :  if you want to run it in developer mode (use ```nodemon```) every change and save it will auto restart
-5. You are Ready to Go
-
-<b>Note</b> : DM on <a>discord</a> if you got any problems or email : <a>muhammadalifputra8888@gmail.com</a>
-
-## Documentations
-
-- Flowchart
-    - Flowchart Flow Backend\
-        [https://drive.google.com/file/d/1Eqtv8oM9QdhSHDFXTcA9BJ7uzCZy5nLk/view?usp=sharing](https://drive.google.com/file/d/1Eqtv8oM9QdhSHDFXTcA9BJ7uzCZy5nLk/view?usp=sharing)
-    - Flowchart Food Recipe Application\
-        [https://drive.google.com/file/d/1Xi513noYtrvLAQV1w4us84YeVlqIpJ8Y/view?usp=sharing](https://drive.google.com/file/d/1Xi513noYtrvLAQV1w4us84YeVlqIpJ8Y/view?usp=sharing
-)
-- Database<br>
-    [https://drive.google.com/file/d/1efaqywqW42Rlf4-2Wf-NJhFtFiWRBFqG/view?usp=sharing](https://drive.google.com/file/d/1efaqywqW42Rlf4-2Wf-NJhFtFiWRBFqG/view?usp=sharing)
-- Postman<br>
-    [https://www.postman.com/collections/1e44db0bfaa83e49d791](https://www.postman.com/collections/1e44db0bfaa83e49d791)
-- Microsoft Power Point Slide Persentation<br>
-    [https://docs.google.com/presentation/d/1KkLHU3mD1022GCdS39r_GaWXMMovH0nc](https://docs.google.com/presentation/d/1KkLHU3mD1022GCdS39r_GaWXMMovH0nc)
-
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
