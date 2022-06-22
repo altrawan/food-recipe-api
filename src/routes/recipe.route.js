@@ -50,7 +50,7 @@ Router.get(
     recipeController.createRecipe
   )
   .put(
-    '/:id',
+    '/recipe/:id',
     middlewareAuth.authentication,
     // middlewareAuth.isUser,
     middlewareImage,
@@ -60,14 +60,14 @@ Router.get(
     recipeController.updateRecipe
   )
   .put(
-    '/status/:id',
+    '/recipe/status/:id',
     middlewareAuth.authentication,
     middlewareAuth.isAdmin,
     // middlewareRedis.clearRecipe,
     recipeController.updateStatus
   )
   .delete(
-    '/:id',
+    '/recipe/:id',
     middlewareAuth.authentication,
     middlewareAuth.isUser,
     // middlewareRedis.clearRecipe,

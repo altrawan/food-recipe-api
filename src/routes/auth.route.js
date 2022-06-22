@@ -18,7 +18,7 @@ const {
 const authController = require('../controllers/auth.controller');
 
 Router.post(
-  '/register',
+  '/auth/register',
   middlewareImage,
   register(),
   validate,

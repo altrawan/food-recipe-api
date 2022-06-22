@@ -10,7 +10,7 @@ const middlewareAuth = require('../middlewares/auth');
 const likedRecipeController = require('../controllers/likedRecipe.controller');
 
 Router.get(
-  '/',
+  '/liked',
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
   // middlewareRedis.getAllLikedRecipe,
