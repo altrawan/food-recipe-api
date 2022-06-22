@@ -16,26 +16,26 @@ const {
 const commentController = require('../controllers/comment.controller');
 
 Router.get(
-  '/',
+  '/comment',
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
   // middlewareRedis.getAllComments,
   commentController.getAllComments
 )
   .get(
-    '/recipe/:id',
+    '/comment/recipe/:id',
     middlewareAuth.authentication,
     // middlewareRedis.getCommentByRecipe,
     commentController.getCommentByRecipe
   )
   .get(
-    '/:id',
+    '/comment/:id',
     middlewareAuth.authentication,
     // middlewareRedis.getCommentById,
     commentController.getCommentById
   )
   .post(
-    '/',
+    '/comment',
     middlewareAuth.authentication,
     createComment(),
     validate,
@@ -43,7 +43,7 @@ Router.get(
     commentController.createComment
   )
   .put(
-    '/:id',
+    '/comment/:id',
     middlewareAuth.authentication,
     updateComment(),
     validate,
@@ -51,7 +51,7 @@ Router.get(
     commentController.updateComment
   )
   .delete(
-    '/:id',
+    '/comment/:id',
     middlewareAuth.authentication,
     // middlewareRedis.clearComment,
     commentController.deleteComment

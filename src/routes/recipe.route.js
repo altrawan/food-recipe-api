@@ -17,30 +17,30 @@ const {
 const recipeController = require('../controllers/recipe.controller');
 
 Router.get(
-  '/',
+  '/recipe',
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
   // middlewareRedis.getAllRecipes,
   recipeController.getAllRecipes
 )
-  .get('/list', recipeController.getListRecipe)
-  .get('/latest', recipeController.getLatestRecipe)
+  .get('/recipe/list', recipeController.getListRecipe)
+  .get('/recipe/latest', recipeController.getLatestRecipe)
   .get(
-    '/user/:id',
+    '/recipe/user/:id',
     middlewareAuth.authentication,
     // middlewareAuth.isUser,
     // middlewareRedis.getRecipeByUser,
     recipeController.getRecipeByUser
   )
   .get(
-    '/:id',
+    '/recipe/:id',
     middlewareAuth.authentication,
     // middlewareAuth.authentication,
     // middlewareRedis.getRecipeById,
     recipeController.getRecipeById
   )
   .post(
-    '/',
+    '/recipe',
     middlewareAuth.authentication,
     // middlewareAuth.isUser,
     middlewareImage,

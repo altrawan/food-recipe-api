@@ -20,7 +20,7 @@ module.exports = {
 
       // create new object
       const data = {
-        id: uuidv4(),
+        id: uuidv4(), // 2 Panggil uidv4()
         name,
         email,
         password: bcrypt.hashSync(password, 10),

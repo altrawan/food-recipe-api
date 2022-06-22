@@ -18,20 +18,20 @@ const {
 const userController = require('../controllers/user.controller');
 
 Router.get(
-  '/',
+  '/user',
   middlewareAuth.authentication,
   middlewareAuth.isAdmin,
   // middlewareRedis.getAllUsers,
   userController.getAllUsers
 )
   .get(
-    '/:id',
+    '/user/:id',
     middlewareAuth.authentication,
     // middlewareRedis.getUserById,
     userController.getUserById
   )
   .put(
-    '/profile/:id',
+    '/user/profile/:id',
     middlewareAuth.authentication,
     updateProfile(),
     validate,
@@ -39,14 +39,14 @@ Router.get(
     userController.updateProfile
   )
   .put(
-    '/photo/:id',
+    '/user/photo/:id',
     middlewareAuth.authentication,
     middlewareImage,
     // middlewareRedis.clearUser,
     userController.updateImage
   )
   .put(
-    '/password/:id',
+    '/user/password/:id',
     middlewareAuth.authentication,
     updatePassword(),
     validate,
@@ -54,14 +54,14 @@ Router.get(
     userController.updatePassword
   )
   .put(
-    '/status/:id',
+    '/user/status/:id',
     middlewareAuth.authentication,
     middlewareAuth.isAdmin,
     // middlewareRedis.clearUser,
     userController.updateStatus
   )
   .delete(
-    '/:id',
+    '/user/:id',
     middlewareAuth.authentication,
     // middlewareRedis.clearUser,
     userController.deleteUser

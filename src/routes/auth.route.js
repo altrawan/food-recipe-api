@@ -24,11 +24,15 @@ Router.post(
   validate,
   authController.register
 )
-  .get('/verify-email', authController.verifyEmail)
-  .post('/login', login(), validate, authController.login)
-  .post('/refresh', middlewareAuth.authentication, authController.refreshToken)
-  .post('/logout', middlewareAuth.authentication, authController.logout)
-  .get('/forgot-password', authController.verifyEmail)
-  .get('/forgot-password', authController.verifyEmail);
+  .get('/auth/verify-email', authController.verifyEmail)
+  .post('/auth/login', login(), validate, authController.login)
+  .post(
+    '/auth/refresh',
+    middlewareAuth.authentication,
+    authController.refreshToken
+  )
+  .post('/auth/logout', middlewareAuth.authentication, authController.logout)
+  .get('/auth/forgot-password', authController.verifyEmail)
+  .get('/auth/forgot-password', authController.verifyEmail);
 
 module.exports = Router;

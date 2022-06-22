@@ -150,9 +150,9 @@ module.exports = {
         return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
-      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
-        return failed(res, 403, 'failed', `You don't have access to this page`);
-      }
+      // if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
+      //   return failed(res, 403, 'failed', `You don't have access to this page`);
+      // }
 
       const result = await likedRecipeModel.deleteLikedRecipe(id);
       return success(res, 200, 'success', `Liked Recipe Deleted Successfully`);

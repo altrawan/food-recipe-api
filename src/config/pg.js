@@ -1,30 +1,35 @@
 const { Pool } = require('pg');
 const {
-  PGHOST,
-  PGUSER,
-  PGPASSWORD,
-  PGDATABASE,
-  PGPORT,
+  NODE_ENV,
+  PG_HOST,
+  PG_USER,
+  PG_PASSWORD,
+  PG_DATABASE,
+  PG_PORT,
 } = require('../helpers/env');
 
-// pools will use environment variables
-// for connection information
-const db = new Pool({
-  host: PGHOST,
-  user: PGUSER,
-  password: PGPASSWORD,
-  database: PGDATABASE,
-  port: PGPORT,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+const config = {
+  host: PG_HOST,
+  user: PG_USER,
+  password: PG_PASSWORD,
+  database: PG_DATABASE,
+  port: PG_PORT,
+};
 
-// check connection
+if (NODE_ENV === 'production') {
+  config.ssl = {
+    rejectUnauthorized: false,
+  };
+}
+
+const db = new Pool(config);
+
 db.connect((err) => {
   if (err) {
-    console.log(err);
+    console.log('Failed to connect database...', err.message);
+    process.exit(1);
   }
+  console.log('Successfully connect database...');
 });
 
 module.exports = db;

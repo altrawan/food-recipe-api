@@ -6,7 +6,7 @@ module.exports = {
       const { id, name, email, password, phone, level, is_active, token, photo } = data;
       db.query(
         `INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-        [id, name, email, password, phone, level, is_active, token, photo],
+        [id, [name, email, password, phone], level, is_active, token, photo],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));

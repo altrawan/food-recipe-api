@@ -17,25 +17,25 @@ Router.get(
   likedRecipeController.getAllLikedRecipe
 )
   .get(
-    '/user/:id',
+    '/liked/user/:id',
     middlewareAuth.authentication,
     // middlewareRedis.getLikedRecipeById,
     likedRecipeController.getLikedRecipeByUser
   )
   .get(
-    '/:id',
+    '/liked/:id',
     middlewareAuth.authentication,
     // middlewareRedis.getLikedRecipeByUser,
     likedRecipeController.getLikedRecipeById
   )
   .post(
-    '/',
+    '/liked',
     middlewareAuth.authentication,
     // middlewareRedis.clearLikedRecipe,
     likedRecipeController.createLikedRecipe
   )
   .delete(
-    '/:id',
+    '/liked/:id',
     middlewareAuth.authentication,
     // middlewareRedis.clearLikedRecipe,
     likedRecipeController.deleteLikedRecipe

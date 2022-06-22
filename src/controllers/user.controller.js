@@ -1,4 +1,4 @@
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid'); // Import Dulu Package
 const bcrypt = require('bcrypt');
 const userModel = require('../models/user.model');
 const { success, failed } = require('../helpers/response');
@@ -151,7 +151,7 @@ module.exports = {
 
       const file = checkId.rows[0].photo;
       if (file) {
-        deleteFile(`public/uploads/user/${file}`);
+        deleteFile(`public/uploads/user/${file}`); //
       }
 
       const result = await userModel.updateImage(data, id);

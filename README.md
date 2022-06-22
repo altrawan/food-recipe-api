@@ -1,24 +1,26 @@
 # Food Recipe RESTful API
 
 ## Installation
-1. Clone the repo ```git clone https://github.com/altrawan/food-recipe-api.git```
-2. Run ```npm install``` to install the dependencies
-3. Import database ```pijarfood``` to your PostgreSQL ([Backup and Restore PostgreSQL](https://www.postgresql.org/docs/8.1/backup.html#BACKUP-DUMP-RESTORE))
+
+1. Clone the repo `git clone https://github.com/altrawan/food-recipe-api.git`
+2. Run `npm install` to install the dependencies
+3. Import database `pijarfood` to your PostgreSQL ([Backup and Restore PostgreSQL](https://www.postgresql.org/docs/8.1/backup.html#BACKUP-DUMP-RESTORE))
 4. Set the environment variables:
-    - ```PORT``` : fill for set the API running port
-    - ```PGHOST``` : fill with HOSTNAME in your postgreSQL configuration
-    - ```PGUSER``` : fill with USERNAME in your postgreSQL configuration
-    - ```PGDATABASE``` : fill with the DATABASE NAME or leave it filled with ```pijarfood``` if you isn't rename the database
-    - ```PGPASSWORD``` : fill with PASSWORD in your postgreSQL configuration
-    - ```PGPORT``` : fill with PORT in your postgreSQL configuration
+   - `PORT` : fill for set the API running port
+   - `PG_HOST` : fill with HOSTNAME in your postgreSQL configuration
+   - `PG_USER` : fill with USERNAME in your postgreSQL configuration
+   - `PG_DATABASE` : fill with the DATABASE NAME or leave it filled with `pijarfood` if you isn't rename the database
+   - `PG_PASSWORD` : fill with PASSWORD in your postgreSQL configuration
+   - `PG_PORT` : fill with PORT in your postgreSQL configuration
 5. Run with :
-    - ```npm run start``` : if you want to run it in client mode (use ```node```) without auto restart on every changing code
-    - ```npm run dev``` :  if you want to run it in developer mode (use ```nodemon```) every change and save it will auto restart
+   - `npm run start` : if you want to run it in client mode (use `node`) without auto restart on every changing code
+   - `npm run dev` : if you want to run it in developer mode (use `nodemon`) every change and save it will auto restart
 6. You are Ready to Go
 
 <b>Note</b> : if you got any problems send email to : <a>muhammadalifputra8888@gmail.com</a>
 
 ## Table of contents
+
 - [Features](#Features)
 - [Commands](#Commands)
 - [Environment Variables](#Environment-Variables)
@@ -32,8 +34,9 @@
 - [Documentation](#Documentation)
 - [Contributing](#Contributing)
 - [License](#License)
-    
+
 ## Features
+
 - **SQL database:** using [PostgreSQL](https://www.postgresql.org/)
 - **NoSQL database:** using [Redis](https://redis.io/)
 - **Validation:** request data validation using [express-validator](https://express-validator.github.io/docs/)
@@ -47,35 +50,45 @@
 - **Linting:** with [ESlint](https://eslint.org/) and [Prettier](https://prettier.io/)
 
 ## Commands
+
 Running in client mode:
+
 ```
 npm run start
 ```
+
 Running in developer mode:
+
 ```
 npm run dev
 ```
+
 Testing:
+
 ```
 npm run test
 ```
+
 Linting:
+
 ```
 npm run lint -- --fix
 ```
 
 ## Environment Variables
-The environment variables can be found and modified in the ```.env``` file. They come with these default values:
+
+The environment variables can be found and modified in the `.env` file. They come with these default values:
+
 ```
 # Port number
 PORT=3001
 
 # Setting PostgreSQL
-PGHOST='YOUR HOST'
-PGUSER='YOUR USERNAME'
-PGDATABASE='YOUR DATABASE'
-PGPASSWORD='YOUR PASSWORD'
-PGPORT=5432
+PG_HOST='YOUR HOST'
+PG_USER='YOUR USERNAME'
+PG_DATABASE='YOUR DATABASE'
+PG_PASSWORD='YOUR PASSWORD'
+PG_PORT=5432
 
 # JWT
 # JWT secret key
@@ -89,6 +102,7 @@ STMP_PASS=your-password
 ```
 
 ## Project Structure
+
 ```
 ├── public\             # Asset public
 ├── src\                # Project source code
@@ -109,64 +123,66 @@ STMP_PASS=your-password
 ```
 
 ## API Documentation
+
 ### API Endpoints
+
 List of available routes:
 
 **Index routes**\
-```GET /``` - get all recipes active\
-```GET /latest``` - get latest recipe\
-```GET /popular``` - get popular recipe
+`GET /` - get all recipes active\
+`GET /latest` - get latest recipe\
+`GET /popular` - get popular recipe
 
 **Auth Route**\
-```POST /auth/register``` - register\
-```POST /auth/login``` - login\
-```GET /auth/verify-email``` - verify email\
-```POST /auth/forgot-password``` - send reset password email\
-```GET /auth/reset-password``` - reset password\
-```POST /auth/refresh-token``` - refresh auth token\
-```POST /auth/logout``` - logout
+`POST /auth/register` - register\
+`POST /auth/login` - login\
+`GET /auth/verify-email` - verify email\
+`POST /auth/forgot-password` - send reset password email\
+`GET /auth/reset-password` - reset password\
+`POST /auth/refresh-token` - refresh auth token\
+`POST /auth/logout` - logout
 
 **User Route**\
-```GET /users``` - get all users\
-```GET /users/:id``` - get user by id\
-```PUT /users/change-profile``` - change profile user\
-```PUT /users/change-photo``` - change photo user\
-```PUT /users/change-password``` - change password\
-```PUT /users/delete/:id``` - soft delete user\
-```PUT /users/change-status/:id``` - change status user active or not active\
-```DELETE /users/:id``` - delete user by id
+`GET /users` - get all users\
+`GET /users/:id` - get user by id\
+`PUT /users/change-profile` - change profile user\
+`PUT /users/change-photo` - change photo user\
+`PUT /users/change-password` - change password\
+`PUT /users/delete/:id` - soft delete user\
+`PUT /users/change-status/:id` - change status user active or not active\
+`DELETE /users/:id` - delete user by id
 
 **Recipe Route**\
-```GET /recipes``` - get all recipes\
-```GET /recipes``` - get recipe by id\
-```GET /recipes/user/:id``` - get recipe by user\
-```POST /recipes``` - create new recipe\
-```PUT /recipes/:id``` - update recipe by id\
-```PUT /recipes/change-status/:id``` - change status recipe active or not active\
-```DELETE /recipes/:id``` - delete recipe by id 
+`GET /recipes` - get all recipes\
+`GET /recipes` - get recipe by id\
+`GET /recipes/user/:id` - get recipe by user\
+`POST /recipes` - create new recipe\
+`PUT /recipes/:id` - update recipe by id\
+`PUT /recipes/change-status/:id` - change status recipe active or not active\
+`DELETE /recipes/:id` - delete recipe by id
 
 **Comment Route**\
-```GET /comments``` - get all comments\
-```GET /comments/:id``` - get comment by id\
-```GET /comments/recipe/:id``` get comment by recipe\
-```POST /comments``` - create new comment\
-```PUT /comments/:id``` - update comment by id\
-```PUT /comments/change-status/:id``` - change status comment active or not active\
-```DELETE /comments/:id``` - delete comment by id
+`GET /comments` - get all comments\
+`GET /comments/:id` - get comment by id\
+`GET /comments/recipe/:id` get comment by recipe\
+`POST /comments` - create new comment\
+`PUT /comments/:id` - update comment by id\
+`PUT /comments/change-status/:id` - change status comment active or not active\
+`DELETE /comments/:id` - delete comment by id
 
 **Liked Recipe Route**\
-```GET /liked-recipe``` - get all liked recipe\
-```GET /liked-recipe/:id``` - get liked recipe by id\
-```GET /liked-recipe/user/:id``` - get liked recipe by user\
-```POST /liked-recipe``` - create liked recipe\
-```DELETE /liked-recipe/:id``` - delete liked recipe by id
+`GET /liked-recipe` - get all liked recipe\
+`GET /liked-recipe/:id` - get liked recipe by id\
+`GET /liked-recipe/user/:id` - get liked recipe by user\
+`POST /liked-recipe` - create liked recipe\
+`DELETE /liked-recipe/:id` - delete liked recipe by id
 
 **Saved Recipe Route**
-```GET /saved-recipe``` - get all saved recipe\
-```GET /saved-recipe/:id``` - get saved recipe by id\
-```GET /saved-recipe/user/:id``` - get saved recipe by user\
-```POST /saved-recipe``` - create saved recipe\
-```DELETE /saved-recipe/:id``` - delete saved recipe by id
+`GET /saved-recipe` - get all saved recipe\
+`GET /saved-recipe/:id` - get saved recipe by id\
+`GET /saved-recipe/user/:id` - get saved recipe by user\
+`POST /saved-recipe` - create saved recipe\
+`DELETE /saved-recipe/:id` - delete saved recipe by id
 
 ## Error Handling
 
@@ -181,6 +197,7 @@ List of available routes:
 ## Documentation
 
 ## Contributing
+
 Contributions are more than welcome! Please check out the [contributing guide](https://github.com/altrawan/food-recipe-api/blob/master/CONTRIBUTING.md).
 
 ## License
@@ -220,11 +237,11 @@ Contributions are more than welcome! Please check out the [contributing guide](h
 2. Import database ```pijarfood``` to your PostgreSQL ([Backup and Restore PostgreSQL](https://www.postgresql.org/docs/8.1/backup.html#BACKUP-DUMP-RESTORE))
 3. Rename ".env example" file to ".env" and set ".env" file in root:
     - ```APP_PORT``` : fill for set the API running port
-    - ```PGHOST``` : fill with HOSTNAME in your postgreSQL configuration
-    - ```PGUSER``` : fill with USERNAME in your postgreSQL configuration
-    - ```PGDATABASE``` : fill with the DATABASE NAME or leave it filled with ```pijarfood``` if you isn't rename the database
-    - ```PGPASSWORD``` : fill with PASSWORD in your postgreSQL configuration
-    - ```PGPORT``` : fill with PORT in your postgreSQL configuration
+    - ```PG_HOST``` : fill with HOSTNAME in your postgreSQL configuration
+    - ```PG_USER``` : fill with USERNAME in your postgreSQL configuration
+    - ```PG_DATABASE``` : fill with the DATABASE NAME or leave it filled with ```pijarfood``` if you isn't rename the database
+    - ```PG_PASSWORD``` : fill with PASSWORD in your postgreSQL configuration
+    - ```PG_PORT``` : fill with PORT in your postgreSQL configuration
 4. Run with :
     - ```npm run start``` : if you want to run it in client mode (use ```node```) without auto restart on every changing code
     - ```npm run dev``` :  if you want to run it in developer mode (use ```nodemon```) every change and save it will auto restart
