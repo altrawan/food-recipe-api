@@ -156,6 +156,8 @@ Contributions are what make the open source community such an amazing place to b
 
 :rocket: [`Frontend Mama Recipe`](https://github.com/altrawan/mama-recipe-app)
 
+:rocket: [`Web Service`](https://mama-recipe.herokuapp.com/)
+
 :rocket: [`Demo Mama Recipe`](https://bit.ly/mama-recipe-app)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
