@@ -7,7 +7,7 @@
     <img src="https://lh3.googleusercontent.com/d/1AuO1tJ469WqoXQufUeR-OkzqAW258aXT" alt="Logo" width="150px">
   </a>
 
-  <h3 align="center">Mama Recipe</h3>
+  <h3 align="center">Mama Recipe : Backend Food Recipe</h3>
 
   <p align="center">
     Create a Node.js app for building food recipe RESTful APIs using Express.
