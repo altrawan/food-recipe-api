@@ -3,7 +3,9 @@ const { check } = require('express-validator');
 const register = [
   // name
   check('name', 'Name cannot be empty').not().isEmpty(),
-  check('name', 'Name only letter allowed').matches(/^[A-Za-z ]+$/),
+  check('name', 'Name only can contains alphabet').isAlpha('en-US', {
+    ignore: ' ',
+  }),
   check('name', 'Name must be between 3 and 50 characters').isLength({
     min: 3,
     max: 50,
@@ -17,10 +19,10 @@ const register = [
   // phone number
   check('phone', 'Phone Number cannot be empty').not().isEmpty(),
   check('phone', 'Phone Number only number allowed').isNumeric(),
-  check(
-    'phone',
-    'Phone Number must be between 11 and 13 characters'
-  ).isLength({ min: 11, max: 13 }),
+  check('phone', 'Phone Number must be between 11 and 13 characters').isLength({
+    min: 11,
+    max: 13,
+  }),
 
   // password
   check('password', 'Password cannot be empty').not().isEmpty(),
