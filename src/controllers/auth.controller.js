@@ -1,50 +1,85 @@
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const { success, failed } = require('../helpers/response');
+const jwtToken = require('../utils/generateJwtToken');
 const authModel = require('../models/auth.model');
-const { success, failed, successWithToken } = require('../helpers/response');
-const jwtToken = require('../helpers/generateToken');
-const sendEmail = require('../helpers/sendEmail');
-const randomToken = require('../helpers/randomToken');
-const ejs = require('ejs');
-const path = require('path');
-// const redis = require('../config/redis');
-// TOKEN
-const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../helpers/env');
+const sendEmail = require('../utils/sendEmail');
+const { APP_NAME, EMAIL_FROM, API_URL, APP_CLIENT } = require('../helpers/env');
+const activateAccount = require('../templates/confirm-email');
+const resetAccount = require('../templates/reset-password');
+const redis = require('../config/redis');
 
 module.exports = {
   register: async (req, res) => {
     try {
-      // get name, email, password and phone from req.body
-      const { name, email, password, phone, photo } = req.body;
+      // check email already exist
+      const checkEmail = await UserModel.findBy('email', email);
+      if (checkEmail.rowCount > 0) {
+        if (req.files) {
+          if (req.files.photo) {
+            deleteFile(req.files.photo[0].path);
+          }
+        }
+        return failed(res, {
+          code: 409,
+          message: 'Email already exist',
+          error: 'Conflict',
+        });
+      }
 
-      // create new object
-      const data = {
-        id: uuidv4(), // 2 Panggil uidv4()
-        name,
-        email,
+      // check phone number already exists
+      const checkPhone = await UserModel.findBy('phone', phone);
+      if (checkPhone.rowCount > 0) {
+        if (req.files) {
+          if (req.files.photo) {
+            deleteFile(req.files.photo[0].path);
+          }
+        }
+        return failed(res, {
+          code: 409,
+          message: 'Phone Number already exist',
+          error: 'Conflict',
+        });
+      }
+
+      let photo = null;
+      if (req.files) {
+        if (req.files.photo) {
+          photo = req.files.photo[0].filename;
+        }
+      }
+
+      // insert data to database
+      const result = await authModel.register({
+        id: uuidv4(),
+        ...req.body,
         password: bcrypt.hashSync(password, 10),
-        phone,
-        level: 1,
-        is_active: 0,
-        token: randomToken,
-        photo: req.file ? req.file.filename : null,
-      };
+        verifyToken: crypto.randomBytes(30).toString('hex'),
+        photo,
+      });
 
-      // send object to model
-      const result = await authModel.register(data);
-      sendEmail.sendConfirmationEmail(name, email, randomToken);
+      // send verification email
+      const templateEmail = {
+        from: `"${APP_NAME}" <${EMAIL_FROM}>`,
+        to: req.body.email.toLowerCase(),
+        subject: 'Activate Your Account!',
+        html: activateAccount(`${API_URL}auth/activation/${token}`, name),
+      };
+      sendEmail(templateEmail);
 
       // response REST API success
-      return success(
-        res,
-        200,
-        'success',
-        `User was registered successfully! Plaese check your email`,
-        result
-      );
+      return success(res, {
+        code: 201,
+        message: 'Success Registered, please verification your email',
+        data: result,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
   verifyEmail: async (req, res) => {
@@ -69,7 +104,11 @@ module.exports = {
 
       return success(res, 200, 'success', `Success activated user`);
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
   login: async (req, res) => {
@@ -111,66 +150,64 @@ module.exports = {
       // response REST API success with token
       return successWithToken(res, 200, 'success', `Login success`, token);
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
-    }
-  },
-  registeredEmail: async (req, res) => {
-    try {
-    } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
   logout: async (req, res) => {
     try {
-      // let token = req.headers.authorization;
-      // token = token.split(' ')[1];
-      // const result = await redis.get(`accessToken:${token}`);
-      // if (result) {
-      //   return failed(
-      //     res,
-      //     403,
-      //     'failed',
-      //     `Your token is destroyed please login again`
-      //   );
-      // }
-      // redis.setEx(`accessToken:${token}`, 3600 * 24, token);
-      // return success(res, 200, 'success', `Success logout`);
+      let token = req.headers.authorization;
+      token = token.split(' ')[1];
+      const result = await redis.get(`accessToken:${token}`);
+      if (result) {
+        return failed(
+          res,
+          403,
+          'failed',
+          `Your token is destroyed please login again`
+        );
+      }
+      redis.setEx(`accessToken:${token}`, 3600 * 24, token);
+      return success(res, 200, 'success', `Success logout`);
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
   refreshToken: async (req, res) => {
     try {
-      // const { refreshToken } = req.body;
-      // const check = await redis.get(`refreshToken:${refreshToken}`);
-      // if (check) {
-      //   return failed(res, 403, 'failed', `Your refresh token cannot be use`);
-      // }
-      // jwt.verify(refreshToken, JWT_SECRET, (error, result) => {
-      //   if (error) {
-      //     return failed(res, 403, 'failed', error.message);
-      //   }
-      //   delete result.iat;
-      //   delete result.exp;
-      //   const token = jwt.sign(result, JWT_SECRET, {
-      //     expiresIn: '1h',
-      //   });
-      //   const newRefreshToken = jwt.sign(result, JWT_SECRET, {
-      //     expiresIn: '24h',
-      //   });
-      //   redis.setEx(`refreshToken:${refreshToken}`, 3600 * 24, refreshToken);
-      //   return successWithToken(
-      //     res,
-      //     200,
-      //     'success',
-      //     'Success Refresh Token !',
-      //     {
-      //       id: result.id,
-      //       token,
-      //       refreshToken: newRefreshToken,
-      //     }
-      //   );
-      // });
+      const { refreshToken } = req.body;
+      const check = await redis.get(`refreshToken:${refreshToken}`);
+      if (check) {
+        return failed(res, 403, 'failed', `Your refresh token cannot be use`);
+      }
+      jwt.verify(refreshToken, JWT_SECRET, (error, result) => {
+        if (error) {
+          return failed(res, 403, 'failed', error.message);
+        }
+        delete result.iat;
+        delete result.exp;
+        const token = jwt.sign(result, JWT_SECRET, {
+          expiresIn: '1h',
+        });
+        const newRefreshToken = jwt.sign(result, JWT_SECRET, {
+          expiresIn: '24h',
+        });
+        redis.setEx(`refreshToken:${refreshToken}`, 3600 * 24, refreshToken);
+        return successWithToken(
+          res,
+          200,
+          'success',
+          'Success Refresh Token !',
+          {
+            id: result.id,
+            token,
+            refreshToken: newRefreshToken,
+          }
+        );
+      });
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }

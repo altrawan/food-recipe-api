@@ -2,13 +2,21 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const xss = require('xss-clean');
+const morgan = require('morgan');
+const compression = require('compression');
 const bodyParser = require('body-parser');
+const http = require('http');
+const socketIo = require('socket.io');
+const listenSocket = require('./src/socket');
 const { APP_NAME, NODE_ENV, PORT } = require('./src/helpers/env');
 const { failed } = require('./src/helpers/response');
 
 const app = express();
 
 app.use(express.json());
+
+// morgan
+app.use(morgan('dev'));
 
 // enable cors
 app.use(cors());
@@ -25,8 +33,11 @@ app.use(
 // sanitize request data
 app.use(xss());
 
+// compression
+app.use(compression());
+
 // parse urlencoded request body
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
@@ -43,6 +54,7 @@ app.get('/', (req, res) =>
 
 // Main Route
 app.use(require('./src/routes/auth.route'));
+app.use(require('./src/routes/chat.route'));
 app.use(require('./src/routes/comment.route'));
 app.use(require('./src/routes/likedRecipe.route'));
 app.use(require('./src/routes/recipe.route'));
@@ -54,7 +66,18 @@ app.use((req, res) => {
   return failed(res, 404, 'failed', 'Resource on that url not found');
 });
 
-app.listen(PORT, () => {
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: '*',
+  },
+});
+io.on('connection', (socket) => {
+  console.log('New client connected');
+  listenSocket(io, socket);
+});
+
+server.listen(PORT, () => {
   console.log(
     `Server running running at port ${PORT} with ${NODE_ENV} environment`
   );
