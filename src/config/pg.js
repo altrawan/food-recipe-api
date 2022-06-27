@@ -1,19 +1,19 @@
 const { Pool } = require('pg');
 const {
   NODE_ENV,
-  PG_HOST,
-  PG_USER,
-  PG_PASSWORD,
-  PG_DATABASE,
-  PG_PORT,
+  DB_HOST,
+  DB_USER,
+  DB_PASSWORD,
+  DB_NAME,
+  DB_PORT,
 } = require('../helpers/env');
 
 const config = {
-  host: PG_HOST,
-  user: PG_USER,
-  password: PG_PASSWORD,
-  database: PG_DATABASE,
-  port: PG_PORT,
+  host: DB_HOST,
+  user: DB_USER,
+  password: DB_PASSWORD,
+  database: DB_NAME,
+  port: DB_PORT,
 };
 
 if (NODE_ENV === 'production') {
