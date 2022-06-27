@@ -6,6 +6,7 @@
     "node": true
   },
   "extends": ["airbnb-base", "prettier"],
+  "plugins": ["prettier"],
   "parserOptions": {
     "ecmaVersion": "latest"
   },
@@ -16,7 +17,7 @@
         "endOfLine": "auto"
       }
     ],
-    "quotes": ["error", "single"],
-    "no-console": "off"
+    "no-console": "off",
+    "treatUndefinedAsUnspecified": true
   }
 }

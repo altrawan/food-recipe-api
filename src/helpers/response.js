@@ -1,27 +1,37 @@
 module.exports = {
-  success: (res, code, status, message, data, pagination) => {
-    const result = {};
-    result.code = code || 200;
-    result.status = status || 'success';
-    result.message = message;
-    result.data = data;
-    result.pagination = pagination;
-    return res.status(result.code).json(result);
+  success: (res, payload) => {
+    const { code, message, data, pagination = false, token = false } = payload;
+
+    const response = {
+      code: code || 200,
+      status: 'success',
+      message,
+      data,
+    };
+
+    // success with pagination
+    if (pagination) {
+      response.pagination = pagination;
+    }
+
+    // sucess with token
+    if (token) {
+      response.token = token;
+      delete response.data;
+    }
+
+    res.status(code).json(response);
   },
-  failed: (res, code, status, message, error) => {
-    const result = {};
-    result.code = code || 400;
-    result.status = status || 'failed';
-    result.message = message;
-    result.error = error;
-    return res.status(result.code).json(result);
-  },
-  successWithToken: (res, code, status, message, token) => {
-    const result = {};
-    result.code = code || 200;
-    result.status = status || 'success';
-    result.message = message;
-    result.token = token;
-    return res.status(result.code).json(result);
+  failed: (res, payload) => {
+    const { code, message, error } = payload;
+
+    const response = {
+      code: code || 500,
+      status: 'failed',
+      message,
+      error,
+    };
+
+    res.status(code).json(response);
   },
 };

@@ -1,4 +1,4 @@
-// const redis = require('redis');
+const redis = require('redis');
 // const { RDS_HOST, RDS_PORT, RDS_PASS } = require('../helpers/env');
 
 // const client = redis.createClient({
@@ -7,9 +7,9 @@
 //   password: RDS_PASS,
 // });
 
-// const client = redis.createClient();
+const client = redis.createClient();
 
-// client.on('error', (err) => console.log(`Redis Client Error : ${err}`));
-// client.on('connect', () => console.log("You're now connected db redis ..."));
+client.on('error', (err) => console.log(`Redis Client Error : ${err}`));
+client.on('connect', () => console.log("You're now connected db redis ..."));
 
-// module.exports = client;
+module.exports = client;

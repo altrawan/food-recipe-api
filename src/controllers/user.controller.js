@@ -203,8 +203,22 @@ module.exports = {
         return failed(res, 404, 'failed', `Data by id ${id} not found !`);
       }
 
+      const nums = '0123456789';
+      let token = '';
+      for (let i = 0; i < 6; i++) {
+        token += nums[Math.floor(Math.random() * nums.length)];
+      }
+
+      module.exports = token;
+
       const result = await userModel.updateStatus(is_active, id);
-      return success(res, 200, 'success', `Success change status to ${result.status}`, result);
+      return success(
+        res,
+        200,
+        'success',
+        `Success change status to ${result.status}`,
+        result
+      );
     } catch (error) {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
