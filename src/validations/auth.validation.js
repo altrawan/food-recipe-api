@@ -15,10 +15,10 @@ const register = [
   check('email', 'Email maximum length is 50 characters').isLength({ max: 50 }),
 
   // phone number
-  check('phoneNumber', 'Phone Number cannot be empty').not().isEmpty(),
-  check('phoneNumber', 'Phone Number only number allowed').isNumeric(),
+  check('phone', 'Phone Number cannot be empty').not().isEmpty(),
+  check('phone', 'Phone Number only number allowed').isNumeric(),
   check(
-    'phoneNumber',
+    'phone',
     'Phone Number must be between 11 and 13 characters'
   ).isLength({ min: 11, max: 13 }),
 
