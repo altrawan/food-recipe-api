@@ -3,10 +3,23 @@ const db = require('../config/pg');
 module.exports = {
   register: (data) =>
     new Promise((resolve, reject) => {
-      const { id, name, email, password, phone, level, is_active, token, photo } = data;
+      const { id, name, email, password, phone, verifyToken, photo } = data;
       db.query(
-        `INSERT INTO users VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-        [id, [name, email, password, phone], level, is_active, token, photo],
+        `INSERT INTO users 
+        (id, name, email, password, phone, level, photo, verify_token, is_verified, is_active) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+        [
+          id,
+          name,
+          email.toLowerCase(),
+          password,
+          phone,
+          1,
+          photo,
+          verifyToken,
+          false,
+          false,
+        ],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
@@ -15,28 +28,11 @@ module.exports = {
         }
       );
     }),
-  getUserById: (id) =>
-    new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM users WHERE id = $1`, [id], (err, res) => {
-        if (err) {
-          reject(new Error(`SQL : ${err.message}`));
-        }
-        resolve(res);
-      });
-    }),
-  getUserByToken: (token) =>
-    new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM users WHERE token = $1`, [token], (err, res) => {
-        if (err) {
-          reject(new Error(`SQL : ${err.message}`));
-        }
-        resolve(res);
-      });
-    }),
-  verifyEmail: (token) =>
+  activateEmail: (token) =>
     new Promise((resolve, reject) => {
       db.query(
-        `UPDATE users SET is_active = 1, token = null WHERE token = $1`,
+        `UPDATE users SET verify_token = null, is_verified = true, is_active = true 
+        WHERE verify_token = $1`,
         [token],
         (err) => {
           if (err) {
@@ -46,13 +42,38 @@ module.exports = {
         }
       );
     }),
-  getUserByEmail: (email) =>
+  updateToken: (token, id) =>
     new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM users WHERE email = $1`, [email], (err, res) => {
-        if (err) {
-          reject(new Error(`SQL : ${err.message}`));
+      db.query(
+        `UPDATE users SET verify_token = $1 WHERE id = $2`,
+        [token, id],
+        (err) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          const newData = {
+            id,
+            token,
+          };
+          resolve(newData);
         }
-        resolve(res);
-      });
+      );
+    }),
+  resetPassword: (password, id) =>
+    new Promise((resolve, reject) => {
+      db.query(
+        `UPDATE users SET password = $1, verify_token = null WHERE id = $2`,
+        [password, id],
+        (err) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          const newData = {
+            id,
+            password,
+          };
+          resolve(newData);
+        }
+      );
     }),
 };

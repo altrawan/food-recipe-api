@@ -84,25 +84,32 @@ module.exports = {
   },
   verifyEmail: async (req, res) => {
     try {
-      const { token } = req.query;
-      const checkToken = await authModel.getUserByToken(token);
+      const { token } = req.params;
+      const checkToken = await userModel.findBy('token', token);
 
-      if (checkToken.rows.length < 1) {
-        return failed(res, 403, 'failed', `Invalid token !`);
+      if (checkToken.rowCount) {
+        if (!checkToken.rowCount) {
+          res.send(`
+          <div>
+            <h1>Activation Failed</h1>
+            <h3>Token invalid</h3>
+          </div>`);
+          return;
+        }
+
+        await authModel.activateEmail(token);
+        res.render('./welcome.ejs', {
+          email: checkToken.rows[0].email,
+          url_home: `${APP_CLIENT}`,
+          url_login: `${APP_CLIENT}/auth/login`,
+        });
+      } else {
+        failed(res, {
+          code: 404,
+          message: 'Token not found',
+          error: 'Not Found',
+        });
       }
-
-      if (checkToken.rows[0].is_active === 1) {
-        return failed(res, 409, 'failed', `User already registered`);
-      }
-
-      await authModel.verifyEmail(token);
-
-      // ejs.renderFile(path.resolve("./src/views/welcome.ejs"), {
-      //   user_firstname: checkToken.rows[0].name,
-      //   confirm_link: 'http://localhost:3000/login',
-      // });
-
-      return success(res, 200, 'success', `Success activated user`);
     } catch (error) {
       return failed(res, {
         code: 500,
@@ -117,38 +124,116 @@ module.exports = {
       const { email, password } = req.body;
 
       // check email address
-      const checkEmail = await authModel.getUserByEmail(email);
+      const checkUser = await userModel.findBy('email', email);
 
-      // validation email doesn't exist
-      if (checkEmail.rows.length < 1) {
-        return failed(res, 400, 'failed', `Email or password wrong`);
+      if (checkUser.rowCount > 0) {
+        if (checkUser.rows[0].is_active) {
+          // compare password from req.body and password from db
+          const match = await bcrypt.compare(
+            password,
+            checkUser.rows[0].password
+          );
+          if (match) {
+            // generate dynamic token using jwt
+            const jwt = jwtToken(checkUser.rows[0]);
+            // response REST API success with token
+            return success(res, {
+              code: 200,
+              message: 'Login sucess',
+              token: jwt,
+            });
+          } else {
+            // validation password doesn't match
+            return failed(res, {
+              code: 401,
+              message: 'Wrong email or password',
+              error: 'Unauthorized',
+            });
+          }
+        } else {
+          return failed(res, {
+            code: 403,
+            message: 'Your account has been banned',
+            error: 'Forbidden',
+          });
+        }
+      } else {
+        // validation email doesn't exist
+        return failed(res, {
+          code: 401,
+          message: 'Wrong email or password',
+          error: 'Unauthorized',
+        });
       }
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  forgotPassword: async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = await userModel.findBy('email', email);
+      if (user.rowCount) {
+        const verifyToken = crypto.randomBytes(30).toString('hex');
 
-      // check password
-      const result = checkEmail.rows[0];
+        // send email for reset password
+        const templateEmail = {
+          from: `"${APP_NAME}" <${EMAIL_FROM}>`,
+          to: req.body.email.toLowerCase(),
+          subject: 'Reset Your Password!',
+          html: resetAccount(`${APP_CLIENT}auth/reset/${verifyToken}`),
+        };
+        sendEmail(templateEmail);
 
-      // compare password from req.body and password from db
-      const checkPassword = bcrypt.compareSync(password, result.password);
-
-      // validation password doesn't match
-      if (!checkPassword) {
-        return failed(res, 400, 'failed', `Email or password wrong`);
-      }
-
-      if (result.is_active !== 1) {
-        return failed(
-          res,
-          401,
-          'failed',
-          'Account is not active. Please Contact Administrator'
+        const result = await authModel.updateToken(
+          verifyToken,
+          user.rows[0].id
         );
+        return success(res, {
+          code: 200,
+          message: 'Password reset has been sent via email',
+          data: result,
+        });
+      } else {
+        return failed(res, {
+          code: 404,
+          message: 'Email not found',
+          error: 'Not Found',
+        });
+      }
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  resetPassword: async (req, res) => {
+    try {
+      const { token } = req.params;
+      const user = await userModel.findBy('token', token);
+
+      if (!user.rowCount) {
+        return failed(res, {
+          code: '401',
+          message: 'Invalid token',
+          error: 'Unauthorized',
+        });
       }
 
-      // generate dynamic token using jwt
-      const token = jwtToken(result);
+      const password = await bcrypt.hash(req.body.password, 10);
+      const result = await authModel.updatePassword(password, user.rows[0].id);
 
-      // response REST API success with token
-      return successWithToken(res, 200, 'success', `Login success`, token);
+      return success(res, {
+        code: 200,
+        message: 'Reset Password Success',
+        data: result,
+      });
     } catch (error) {
       return failed(res, {
         code: 500,
@@ -163,17 +248,27 @@ module.exports = {
       token = token.split(' ')[1];
       const result = await redis.get(`accessToken:${token}`);
       if (result) {
-        return failed(
+        return (
           res,
-          403,
-          'failed',
-          `Your token is destroyed please login again`
+          {
+            code: 403,
+            message: 'Your token is destroyed please login again',
+            error: 'Forbidden',
+          }
         );
       }
       redis.setEx(`accessToken:${token}`, 3600 * 24, token);
-      return success(res, 200, 'success', `Success logout`);
+      return success(res, {
+        code: 200,
+        message: 'Sucess logout',
+        data: null,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
   refreshToken: async (req, res) => {
@@ -181,11 +276,19 @@ module.exports = {
       const { refreshToken } = req.body;
       const check = await redis.get(`refreshToken:${refreshToken}`);
       if (check) {
-        return failed(res, 403, 'failed', `Your refresh token cannot be use`);
+        return failed(res, {
+          code: 403,
+          message: 'Your resfresh token cannot be use',
+          error: 'Forbidden',
+        });
       }
       jwt.verify(refreshToken, JWT_SECRET, (error, result) => {
         if (error) {
-          return failed(res, 403, 'failed', error.message);
+          return failed(res, {
+            code: 403,
+            message: error.message,
+            error: 'Forbidden',
+          });
         }
         delete result.iat;
         delete result.exp;
@@ -196,20 +299,22 @@ module.exports = {
           expiresIn: '24h',
         });
         redis.setEx(`refreshToken:${refreshToken}`, 3600 * 24, refreshToken);
-        return successWithToken(
-          res,
-          200,
-          'success',
-          'Success Refresh Token !',
-          {
+        return success(res, {
+          code: 200,
+          message: 'Success get refresh token',
+          token: {
             id: result.id,
             token,
             refreshToken: newRefreshToken,
-          }
-        );
+          },
+        });
       });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
 };

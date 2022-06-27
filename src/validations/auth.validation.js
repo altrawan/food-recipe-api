@@ -1,128 +1,98 @@
-const { body, validationResult } = require('express-validator');
-const { getUserByEmail, getUserByPhone } = require('../models/user.model');
+const { check } = require('express-validator');
 
-const register = () => {
-  return [
-    body('name')
-      .not()
-      .isEmpty()
-      .withMessage('Name cannot be empty')
-      .matches(/^[A-Za-z ]+$/)
-      .withMessage('Only letter allowed')
-      .isLength({ min: 3, max: 50 })
-      .withMessage('must be between 3 and 50 characters'),
-    body('email')
-      .not()
-      .isEmpty()
-      .withMessage('Email cannot be empty')
-      .isEmail()
-      .withMessage('Invalid E-mail address')
-      .custom((value) => {
-        return getUserByEmail(value).then((res) => {
-          if (res.rowCount > 0) {
-            throw new Error('E-mail already exist');
-          }
-        });
-      }),
-    body('password')
-      .not()
-      .isEmpty()
-      .withMessage('Password cannot be empty')
-      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/, 'i')
-      .withMessage(
-        'Password must be greater than 8 and contain at least one uppercase letter, one lowercase letter, and one number'
-      ),
-    body('phone')
-      .not()
-      .isEmpty()
-      .withMessage('Phone Number cannot be empty')
-      .isNumeric()
-      .withMessage('Only number allowed')
-      .isLength({ min: 11, max: 13 })
-      .withMessage('must be between 11 and 13 characters')
-      .custom((value) => {
-        return getUserByPhone(value).then((res) => {
-          if (res.rowCount > 0) {
-            throw new Error('Phone Number already in use');
-          }
-        });
-      }),
-    body('passwordConfirmation')
-      .not()
-      .isEmpty()
-      .withMessage('Password confirmation cannot be empty')
-      .custom((value, { req }) => {
-        if (value !== req.body.password) {
-          throw new Error('Password confirmation does not match password');
-        }
-        // Indicates the success of this synchronous custom validator
-        return true;
-      }),
-  ];
-};
+const register = [
+  // name
+  check('name', 'Name cannot be empty').not().isEmpty(),
+  check('name', 'Name only letter allowed').matches(/^[A-Za-z ]+$/),
+  check('name', 'Name must be between 3 and 50 characters').isLength({
+    min: 3,
+    max: 50,
+  }),
 
-const login = () => {
-  return [
-    body('email')
-      .not()
-      .isEmpty()
-      .withMessage('Email cannot be empty')
-      .isEmail()
-      .withMessage('Invalid E-mail address'),
-    body('password')
-      .not()
-      .isEmpty()
-      .withMessage('Password cannot be empty')
-      .matches(/^[A-Za-z0-9]+$/)
-      .withMessage('Only letter and number allowed')
-      .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$/, 'i')
-      .withMessage(
-        'Password must be greater than 8 and contain at least one uppercase letter, one lowercase letter, and one number'
-      ),
-  ];
-};
+  // email
+  check('email', 'Email cannot be empty').not().isEmpty(),
+  check('email', 'Please enter email correctly').isEmail(),
+  check('email', 'Email maximum length is 50 characters').isLength({ max: 50 }),
 
-const forgotPassword = () => {
-  return [
-    body('email')
-      .not()
-      .isEmpty()
-      .withMessage('Email cannot be empty')
-      .isEmail()
-      .withMessage('Invalid E-mail address'),
-  ];
-};
+  // phone number
+  check('phoneNumber', 'Phone Number cannot be empty').not().isEmpty(),
+  check('phoneNumber', 'Phone Number only number allowed').isNumeric(),
+  check(
+    'phoneNumber',
+    'Phone Number must be between 11 and 13 characters'
+  ).isLength({ min: 11, max: 13 }),
 
-const resetPassword = () => {
-  return [
-    body('code')
-      .not()
-      .isEmpty()
-      .withMessage('Reset Code cannot be empty')
-      .isNumeric()
-      .withMessage('Only number allowed'),
-  ];
-};
+  // password
+  check('password', 'Password cannot be empty').not().isEmpty(),
+  check('password', 'Password require 8 or more characters').isLength({
+    min: 8,
+  }),
+  check(
+    'password',
+    'Password must include one lowercase character, one uppercase character, a number, and a special character.'
+  ).matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/, 'i'),
+];
 
-const validate = (req, res, next) => {
-  const errors = validationResult(req);
-  if (errors.isEmpty()) {
-    return next();
-  }
-  const extractedErrors = [];
-  errors.array().map((err) => extractedErrors.push(err.msg));
+const login = [
+  // email
+  check('email', 'Email cannot be empty').not().isEmpty(),
+  check('email', 'Please enter email correctly').isEmail(),
+  check('email', 'Email maximum length is 50 characters').isLength({ max: 50 }),
+  // password
+  check('password', 'Password cannot be empty').not().isEmpty(),
+  check('password', 'Password require 8 or more characters').isLength({
+    min: 8,
+  }),
+  check(
+    'password',
+    'Password must include one lowercase character, one uppercase character, a number, and a special character.'
+  ).matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/, 'i'),
+];
 
-  return res.status(422).json({
-    code: 422,
-    status: 'failed',
-    errors: extractedErrors,
-  });
-};
+const forgot = [
+  // email
+  check('email', 'Username required').not().isEmpty(),
+  check('email', 'Please enter email correctly').isEmail(),
+  check('email', 'Email maximum length is 50 characters').isLength({ max: 50 }),
+];
+
+const code = [
+  // code
+  check('verifyCode', 'Code verification required').not().isEmpty(),
+  check('verifyCode', 'Code verification only number allowed').isNumeric(),
+  check('verifyCode', 'Code verification must be 6 digit').isLength({
+    min: 6,
+    max: 6,
+  }),
+];
+
+const reset = [
+  // password
+  check('password', 'Password cannot be empty').not().isEmpty(),
+  check('password', 'Password require 8 or more characters').isLength({
+    min: 8,
+  }),
+  check(
+    'password',
+    'Password must include one lowercase character, one uppercase character, a number, and a special character.'
+  ).matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/, 'i'),
+
+  // confirm password
+  check('passwordConfirmation', 'Password confirmation cannot be empty')
+    .not()
+    .isEmpty(),
+  check('passwordConfirmation').custom((value, { req }) => {
+    if (value !== req.body.password) {
+      throw new Error('Password confirmation does not match password');
+    }
+    return true;
+  }),
+];
 
 module.exports = {
   register,
   login,
-  forgotPassword,
-  resetPassword,
-  validate,
+  code,
+  forgot,
+  reset,
 };
