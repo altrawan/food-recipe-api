@@ -4,10 +4,10 @@ module.exports = {
   getAllComment: (field, search, sort, sortType, limit, offset, level) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT * FROM comments WHERE ${field} ILIKE $1 ${
+        `SELECT * FROM comments WHERE ${field} ILIKE ('%${search}%')  ${
           level === 1 ? 'AND is_active = true' : ''
-        } ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
-        [search, limit, offset],
+        } ORDER BY ${sort} ${sortType} LIMIT $1 OFFSET $2`,
+        [limit, offset],
         (err, res) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));

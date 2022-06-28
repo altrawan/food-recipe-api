@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const commentModel = require('../models/comment.model');
 const { success, failed } = require('../helpers/response');
+const pagination = require('../utils/pagination');
 const redis = require('../config/redis');
 
 module.exports = {
@@ -8,19 +9,14 @@ module.exports = {
     try {
       let { field, search, sort, sortType, page, limit } = req.query;
       field = field || 'comment_text';
-      search = !search ? '%' : `%${search}%`;
+      search = search || '';
       sort = sort || 'created_at';
       sortType = sortType || 'DESC';
       page = Number(page) || 1;
       limit = Number(limit) || 3;
 
       const offset = page * limit - limit;
-      // const count = await commentModel.getCountComment();
-      const totalData = await commentModel.getCountComment();
-      // const totalData = Number(count.rows[0].total);
-
-      // console.log(Number(totalData);
-      const totalPage = Math.ceil(Number(totalData) / limit);
+      const count = await commentModel.getCountComment();
 
       const result = await commentModel.getAllComment(
         field,
@@ -40,40 +36,34 @@ module.exports = {
         });
       }
 
-      // Response pagination
-      const pagination = {
-        currentPage: page,
-        dataPerPage: limit,
-        totalPage: search ? Math.ceil(result.rowCount / limit) : totalPage,
-        totalData: totalData,
-      };
-
       // Pagination with search
       if (search) {
+        const paging = pagination(result.rowCount, page, limit);
         redis.setex(
           `getComment:${JSON.stringify(req.query)}`,
           3600,
-          JSON.stringify({ result: result.rows, pagination })
+          JSON.stringify({ result: result.rows, pagination: paging.response })
         );
         return success(res, {
           code: 200,
           message: `Success get data comment`,
           data: result.rows,
-          pagination,
+          pagination: paging.response,
         });
       }
 
       // Pagination without search
+      const paging = pagination(Number(count), page, limit);
       redis.setex(
         `getComment:${JSON.stringify(req.query)}`,
         3600,
-        JSON.stringify({ result: result.rows, pagination })
+        JSON.stringify({ result: result.rows, pagination: paging.response })
       );
       return success(res, {
         code: 200,
         message: `Success get data comment`,
         data: result.rows,
-        pagination,
+        pagination: paging.response,
       });
     } catch (error) {
       return failed(res, {

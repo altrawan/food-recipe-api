@@ -15,7 +15,7 @@ module.exports = {
     try {
       let { field, search, sort, sortType, page, limit } = req.query;
       field = field || 'name';
-      search = !search ? '%' : `%${search}%`;
+      search = search || '';
       sort = sort || 'created_at';
       sortType = sortType || 'DESC';
       page = Number(page) || 1;
