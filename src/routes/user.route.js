@@ -2,69 +2,60 @@ const express = require('express');
 
 const Router = express.Router();
 
-// Authentication
-const middlewareAuth = require('../middlewares/auth');
-// Redis
-// const middlewareRedis = require('../middlewares/redis');
-// Upload image
-const middlewareImage = require('../middlewares/imageUser');
-// Validation
+const jwtAuth = require('../middlewares/jwtAuth');
+const { isAdmin, mySelf } = require('../middlewares/authorizations');
+const upload = require('../middlewares/upload');
+const photoLimit = require('../middlewares/photoLimit');
+const { update, password } = require('../validations/user.validation');
+const validation = require('../middlewares/validation');
 const {
+  getAllUser,
+  getUserById,
+  getRecipeByUser,
+  clearUser,
+} = require('../middlewares/redis');
+const {
+  list,
+  detail,
   updateProfile,
+  updatePhoto,
   updatePassword,
-  validate,
-} = require('../validations/user.validation');
-// Controller
-const userController = require('../controllers/user.controller');
+  updateStatus,
+  destroy,
+  listRecipe,
+} = require('../controllers/user.controller');
 
-Router.get(
-  '/user',
-  middlewareAuth.authentication,
-  middlewareAuth.isAdmin,
-  // middlewareRedis.getAllUsers,
-  userController.getAllUsers
-)
-  .get(
-    '/user/:id',
-    middlewareAuth.authentication,
-    // middlewareRedis.getUserById,
-    userController.getUserById
-  )
+Router.get('/user', jwtAuth, isAdmin, getAllUser, list)
+  .get('/user/:id', jwtAuth, getUserById, detail)
+  .get('/user/recipe/:id', jwtAuth, getRecipeByUser, listRecipe)
   .put(
-    '/user/profile/:id',
-    middlewareAuth.authentication,
-    updateProfile(),
-    validate,
-    // middlewareRedis.clearUser,
-    userController.updateProfile
+    '/user/:id',
+    jwtAuth,
+    update,
+    validation,
+    mySelf,
+    clearUser,
+    updateProfile
   )
   .put(
     '/user/photo/:id',
-    middlewareAuth.authentication,
-    middlewareImage,
-    // middlewareRedis.clearUser,
-    userController.updateImage
+    jwtAuth,
+    upload,
+    photoLimit,
+    mySelf,
+    clearUser,
+    updatePhoto
   )
   .put(
     '/user/password/:id',
-    middlewareAuth.authentication,
-    updatePassword(),
-    validate,
-    // middlewareRedis.clearUser,
-    userController.updatePassword
+    jwtAuth,
+    password,
+    validation,
+    mySelf,
+    clearUser,
+    updatePassword
   )
-  .put(
-    '/user/status/:id',
-    middlewareAuth.authentication,
-    middlewareAuth.isAdmin,
-    // middlewareRedis.clearUser,
-    userController.updateStatus
-  )
-  .delete(
-    '/user/:id',
-    middlewareAuth.authentication,
-    // middlewareRedis.clearUser,
-    userController.deleteUser
-  );
+  .put('/user/status/:id', jwtAuth, isAdmin, clearUser, updateStatus)
+  .delete('/user/:id', jwtAuth, mySelf, clearUser, destroy);
 
 module.exports = Router;

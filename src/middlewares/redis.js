@@ -2,7 +2,67 @@ const redis = require('../config/redis');
 const { success } = require('../helpers/response');
 
 module.exports = {
-  // ====================================== HOMEPAGE ======================================
+  // ====================================== USER ======================================
+  getAllUser: (req, res, next) => {
+    redis.get(`getUser:${JSON.stringify(req.query)}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get data user',
+          data: newResult.result,
+          pagination: newResult.pagination,
+        });
+      }
+      return next();
+    });
+  },
+  getUserById: (req, res, next) => {
+    const { id } = req.params;
+    redis.get(`getUser:${id}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get data user by id',
+          data: newResult,
+        });
+      }
+      return next();
+    });
+  },
+  getRecipeByUser: (req, res, next) => {
+    const { id } = req.params;
+    redis.get(`getUserRecipe:${id}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get list recipe user',
+          data: newResult,
+        });
+      }
+      return next();
+    });
+  },
+  clearUser: (req, res, next) => {
+    redis.keys('getUser:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
+    redis.keys('getUserRecipe:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
+    return next();
+  },
+  // ====================================== RECIPE ======================================
   getLatestRecipe: async (req, res, next) => {
     const result = await redis.get(
       `getLatestRecipe:${JSON.stringify(req.query)}`
@@ -19,45 +79,6 @@ module.exports = {
     }
     return next();
   },
-  // ====================================== USER ======================================
-  getAllUsers: async (req, res, next) => {
-    const result = await redis.get(`getUser:${JSON.stringify(req.query)}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        'Success get all data users',
-        newResult.result.rows,
-        newResult.pageInfo
-      );
-    }
-    return next();
-  },
-  getUserById: async (req, res, next) => {
-    const { id } = req.params;
-    const result = await redis.get(`getUser:${id}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        `Success get user by id ${id}`,
-        newResult.rows[0]
-      );
-    }
-    return next();
-  },
-  clearUser: async (req, res, next) => {
-    const result = await redis.keys('getUser:*');
-    if (result.length > 0) {
-      result.map((e) => redis.del(e));
-    }
-    next();
-  },
-  // ====================================== RECIPE ======================================
   getAllRecipes: async (req, res, next) => {
     const result = await redis.get(`getRecipe:${JSON.stringify(req.query)}`);
     if (result) {
@@ -84,20 +105,6 @@ module.exports = {
         'success',
         `Success get recipe by id ${id}`,
         newResult.result.rows[0]
-      );
-    }
-    return next();
-  },
-  getRecipeByUser: async (req, res, next) => {
-    const { id } = req.params;
-    const result = await redis.get(`getRecipeByUser:${id}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        `Success get recipe by user id ${id}`
       );
     }
     return next();

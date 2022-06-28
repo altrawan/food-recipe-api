@@ -1,16 +1,20 @@
-const { v4: uuidv4 } = require('uuid'); // Import Dulu Package
+const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/user.model');
+const recipeModel = require('../models/recipe.model');
 const { success, failed } = require('../helpers/response');
-const deleteFile = require('../helpers/deleteFile');
-// const redis = require('../config/redis');
+const pagination = require('../utils/pagination');
+const deleteFile = require('../utils/deleteFile');
+const uploadGoogleDrive = require('../utils/uploadGoogleDrive');
+const deleteGoogleDrive = require('../utils/deleteGoogleDrive');
+const redis = require('../config/redis');
 
 module.exports = {
   // Retrieve all users from the database.
-  getAllUsers: async (req, res) => {
+  list: async (req, res) => {
     try {
-      let { key, search, sort, sortType, page, limit } = req.query; //
-      key = key || 'name';
+      let { field, search, sort, sortType, page, limit } = req.query;
+      field = field || 'name';
       search = !search ? '%' : `%${search}%`;
       sort = sort || 'created_at';
       sortType = sortType || 'DESC';
@@ -18,102 +22,155 @@ module.exports = {
       limit = Number(limit) || 3;
 
       const offset = page * limit - limit;
-      const totalData = await userModel.getCountUser();
-      const totalPage = Math.ceil(totalData / limit);
+      const count = await userModel.getCountUser();
 
-      const pageInfo = {
-        currentPage: page,
-        dataPerPage: limit,
-        totalPage,
-        totalData,
-      };
-
-      const result = await userModel.getAllUsers(
-        key,
+      const result = await userModel.getAllUser(
+        field,
         search,
         sort,
         sortType,
         limit,
-        offset
+        offset,
+        req.APP_DATA.tokenDecoded.level
       );
 
-      if (result.rows.length < 1) {
-        return failed(res, 404, 'failed', 'Data not found');
+      if (!result.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: 'Data not found',
+          error: 'Not Found',
+        });
       }
 
-      if (page > totalPage) {
-        return failed(res, 400, 'failed', `Data only up to page ${totalPage}`);
+      // Pagination with search
+      if (search) {
+        const paging = pagination(result.rowCount, page, limit);
+        redis.setex(
+          `getUser:${JSON.stringify(req.query)}`,
+          3600,
+          JSON.stringify({ result: result.rows, pagination: paging.response })
+        );
+        return success(res, {
+          code: 200,
+          message: `Success get data user`,
+          data: result.rows,
+          pagination: paging.response,
+        });
       }
 
-      // redis.setEx(
-      //   `getUser:${JSON.stringify(req.query)}`,
-      //   3600,
-      //   JSON.stringify({ result, pageInfo })
-      // );
-
-      return success(
-        res,
-        200,
-        'success',
-        'Success get all data users',
-        result.rows,
-        pageInfo
+      // Pagination without search
+      const paging = pagination(Number(count), page, limit);
+      redis.setex(
+        `getUser:${JSON.stringify(req.query)}`,
+        3600,
+        JSON.stringify({ result: result.rows, pagination: paging.response })
       );
+      return success(res, {
+        code: 200,
+        message: `Success get data user`,
+        data: result.rows,
+        pagination: paging.response,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
   // Find a single user with an id
-  getUserById: async (req, res) => {
+  detail: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await userModel.getUserById(id);
+      const user = await userModel.findBy('id', id);
 
-      if (result.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      if (!user.rowCount) {
+        failed(res, {
+          code: 404,
+          message: `User with id ${id} not found !`,
+          error: 'Not Found',
+        });
       }
 
-      // redis.setEx(`getUser:${id}`, 3600, JSON.stringify(result));
+      redis.setex(`getUser:${id}`, 3600, JSON.stringify(user.rows[0]));
 
-      return success(
-        res,
-        200,
-        'success',
-        `Success get data by id ${id}`,
-        result.rows[0]
-      );
+      return success(res, {
+        code: 200,
+        message: 'Success get detail user',
+        data: user.rows[0],
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  // Update a user by the id in the request
+  listRecipe: async (req, res) => {
+    try {
+      let { id } = req.params;
+
+      const user = await userModel.findBy('id', id);
+      // if user not exist
+      if (!user.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: `User with id ${id} not found`,
+          error: 'Not Found',
+        });
+      }
+
+      const result = await recipeModel.getRecipeByUser(id);
+      redis.setex(`getRecipeByUser:${id}`, 3600, JSON.stringify(result.rows));
+      return success(res, {
+        code: 200,
+        message: 'Success get recipe user',
+        data: result.rows,
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  // // Update a user by the id in the request
   updateProfile: async (req, res) => {
     try {
       const { id } = req.params;
       const { name, email, phone } = req.body;
 
-      // check user
-      const checkId = await userModel.getDetailUser(id);
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      const user = await userModel.findBy('id', id);
+      // if user not exist
+      if (!user.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: `User with id ${id} not found`,
+          error: 'Not Found',
+        });
       }
 
-      const row = checkId.rows[0];
-      // Only admin or user login
-      if (req.APP_DATA.tokenDecoded.id !== row.id) {
-        return failed(res, 403, 'failed', `You don't have access to this page`);
-      }
-
-      // validation email already exist
-      const checkEmail = await userModel.getUserByEmail(email);
-      if (email !== row.email && checkEmail.rowCount > 0) {
-        return failed(res, 409, 'failed', `Email already exist`);
+      // validation email already in use
+      const checkEmail = await userModel.findBy('email', email);
+      if (email !== user.rows[0].email && checkEmail.rowCount) {
+        return failed(res, {
+          code: 409,
+          message: 'Email already in use',
+          error: 'Conflict',
+        });
       }
 
       // validation phone already in use
-      const checkPhone = await userModel.getUserByPhone(phone);
-      if (phone !== row.phone && checkPhone.rowCount > 0) {
-        return failed(res, 409, 'failed', `Phone number already in use`);
+      const checkPhone = await userModel.findBy('phone', phone);
+      if (phone !== user.rows[0].phone && checkPhone.rowCount) {
+        return failed(res, {
+          code: 409,
+          message: 'Phone number already in use',
+          error: 'Conflict',
+        });
       }
 
       const data = {
@@ -124,129 +181,184 @@ module.exports = {
       };
 
       const result = await userModel.updateProfile(data, id);
-      return success(res, 200, 'success', `Success update profile`, result);
+      return success(res, {
+        code: 200,
+        message: 'Success edit profile',
+        data: result,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  updateImage: async (req, res) => {
+  updatePhoto: async (req, res) => {
     try {
       const { id } = req.params;
 
       // check user
-      const checkId = await userModel.getDetailUser(id);
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      const user = await userModel.findBy('id', id);
+      if (!user.rowCount) {
+        if (req.files) {
+          if (req.files.photo) {
+            deleteFile(req.files.photo[0].path);
+          }
+        }
+        return failed(res, {
+          code: 404,
+          message: `User with id ${id} not found`,
+          error: 'Not Found',
+        });
       }
 
-      // Only user login
-      // if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].id) {
-      //   return failed(res, 403, 'failed', `You don't have access to this page`);
-      // }
-
+      // upload image to google drive
+      let { photo } = user.rows[0];
+      if (req.files) {
+        if (req.files.photo) {
+          if (photo) {
+            // remove old image google drive
+            deleteGoogleDrive(photo);
+          }
+          // upload new image to google drive
+          const photoGd = await uploadGoogleDrive(req.files.photo[0]);
+          photo = photoGd.id;
+          // remove image after upload
+          deleteFile(req.files.photo[0].path);
+        }
+      }
       const data = {
-        photo: req.file ? req.file.filename : null,
+        photo,
         updated_at: new Date(Date.now()),
       };
 
-      const file = checkId.rows[0].photo;
-      if (file) {
-        deleteFile(`public/uploads/user/${file}`); //
-      }
-
-      const result = await userModel.updateImage(data, id);
-      return success(
-        res,
-        200,
-        'success',
-        `Success update photo profile`,
-        result
-      );
+      const result = await userModel.updatePhoto(data, id);
+      return success(res, {
+        code: 200,
+        message: 'Success update photo profile',
+        data: result,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      if (req.files) {
+        if (req.files.photo) {
+          deleteFile(req.files.photo[0].path);
+        }
+      }
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
   updatePassword: async (req, res) => {
     try {
       const { id } = req.params;
-      const { newPassword } = req.body;
+      const { password } = req.body;
 
       // check user
-      const checkId = await userModel.getDetailUser(id);
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      const user = await userModel.findBy('id', id);
+      if (!user.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: `User with id ${id} not found !`,
+          error: 'Not Found',
+        });
       }
 
-      // Only admin or user login
-      // if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].id) {
-      //   return failed(res, 403, 'failed', `You don't have access to this page`);
-      // }
-
       const data = {
-        password: bcrypt.hashSync(newPassword, 10),
+        password: bcrypt.hashSync(password, 10),
         updated_at: new Date(Date.now()),
       };
 
       const result = await userModel.updatePassword(data, id);
-      return success(res, 200, 'success', `Change password success`, result);
+      return success(res, {
+        code: 200,
+        message: 'Change password success',
+        data: result,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
   updateStatus: async (req, res) => {
     try {
       const { id } = req.params;
-      const { is_active } = req.body;
-      const checkId = await userModel.getDetailUser(id);
+      const { isActive } = req.body;
 
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      const user = await userModel.findBy('id', id);
+      if (!user.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: `User with id ${id} not found !`,
+          error: 'Not Found',
+        });
       }
 
-      const nums = '0123456789';
-      let token = '';
-      for (let i = 0; i < 6; i++) {
-        token += nums[Math.floor(Math.random() * nums.length)];
+      let status;
+      if (isActive.toLowerCase() === 'active') {
+        status = 1;
+      } else if (isActive.toLowerCase() === 'deactive') {
+        status = 0;
+      } else {
+        throw new Error("status only must be 'active' or 'deactive'");
       }
 
-      module.exports = token;
-
-      const result = await userModel.updateStatus(is_active, id);
-      return success(
-        res,
-        200,
-        'success',
-        `Success change status to ${result.status}`,
-        result
-      );
+      const result = await userModel.updateStatus(status, id);
+      return success(res, {
+        code: 200,
+        message: `Success change status to ${isActive.toLowerCase()}`,
+        data: result,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
   // Delete a user with the specified id in the request
-  deleteUser: async (req, res) => {
+  destroy: async (req, res) => {
     try {
       const { id } = req.params;
-      const checkId = await userModel.getDetailUser(id);
 
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      const user = await userModel.findBy('id', id);
+      if (!user.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: `User with id ${id} not found !`,
+          error: 'Not Found',
+        });
       }
 
-      // Only admin or user login
-      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].id) {
-        return failed(res, 403, 'failed', `You don't have access to this page`);
+      let { photo } = user.rows[0];
+      if (req.files) {
+        if (req.files.photo) {
+          if (photo) {
+            // remove old image google drive
+            deleteGoogleDrive(photo);
+          }
+        }
       }
 
-      const file = checkId.rows[0].photo;
-      if (file) {
-        deleteFile(`public/uploads/user/${file}`);
-      }
-
-      const result = await userModel.deleteUser(id);
-      return success(res, 200, 'success', `Success delete user id ${id}`);
+      await userModel.deleteUser(id);
+      return success(res, {
+        code: 200,
+        message: 'Success delete user',
+        data: null,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
 };

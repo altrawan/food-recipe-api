@@ -14,13 +14,12 @@ module.exports = {
         }
       );
     }),
-  getAllUser: (key, search, sort, sortType, limit, offset) =>
+  getAllUser: (field, search, sort, sortType, limit, offset, level) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT id, name, email, phone, CASE WHEN level = 0 THEN 'Admin' ELSE 'User' END AS level, 
-        CASE WHEN is_active = 0 THEN 'Not Active' ELSE 'Active' END AS status, photo,
-        to_char(created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date 
-        FROM users WHERE ${key} ILIKE $1 ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
+        `SELECT * FROM users WHERE ${field} ILIKE $1 ${
+          level === 1 ? 'AND is_active = true' : ''
+        } ORDER BY ${sort} ${sortType} LIMIT $2 OFFSET $3`,
         [search, limit, offset],
         (err, res) => {
           if (err) {
@@ -37,15 +36,6 @@ module.exports = {
           reject(new Error(`SQL : ${err.message}`));
         }
         resolve(res.rows[0].total);
-      });
-    }),
-  getDetailUser: (id) =>
-    new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM users WHERE id = $1`, [id], (err, res) => {
-        if (err) {
-          reject(new Error(`SQL : ${err.message}`));
-        }
-        resolve(res);
       });
     }),
   updateProfile: (data, id) =>
@@ -66,7 +56,7 @@ module.exports = {
         }
       );
     }),
-  updateImage: (data, id) =>
+  updatePhoto: (data, id) =>
     new Promise((resolve, reject) => {
       const { photo, updated_at } = data;
       db.query(
@@ -102,18 +92,18 @@ module.exports = {
         }
       );
     }),
-  updateStatus: (is_active, id) =>
+  updateStatus: (status, id) =>
     new Promise((resolve, reject) => {
       db.query(
         `UPDATE users SET is_active = $1, updated_at = $2 WHERE id = $3`,
-        [is_active, new Date(Date.now()), id],
+        [status, new Date(Date.now()), id],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));
           }
           const data = {
             id,
-            status: is_active === 1 ? 'Active' : 'Not Active',
+            status: status === 1 ? 'active' : 'deactive',
           };
           resolve(data);
         }

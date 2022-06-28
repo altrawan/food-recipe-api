@@ -59,11 +59,15 @@ app.use(require('./src/routes/chat.route'));
 // app.use(require('./src/routes/likedRecipe.route'));
 // app.use(require('./src/routes/recipe.route'));
 // app.use(require('./src/routes/savedRecipe.route'));
-// app.use(require('./src/routes/user.route'));
+app.use(require('./src/routes/user.route'));
 
 // 404 Route
 app.use((req, res) => {
-  return failed(res, 404, 'failed', 'Resource on that url not found');
+  return failed(res, {
+    code: 404,
+    message: 'Resource on that url not found',
+    error: 'Not Found',
+  });
 });
 
 const server = http.createServer(app);

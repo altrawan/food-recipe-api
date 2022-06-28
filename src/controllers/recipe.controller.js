@@ -169,39 +169,6 @@ module.exports = {
       return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
     }
   },
-  getRecipeByUser: async (req, res) => {
-    try {
-      let { id } = req.params;
-      const result = await recipeModel.getRecipeByUser(id);
-
-      // if (result.rows.length < 1) {
-      //   return failed(
-      //     res,
-      //     404,
-      //     `Data by user id ${id} Haven't made a recipe yet`
-      //   );
-      // }
-
-      // const checkId = await recipeModel.getDetailRecipeByUser(id);
-
-      // const row = checkId.rows[0];
-      // if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
-      //   return failed(res, 403, 'failed', `You don't have access to this page`);
-      // }
-
-      // redis.setEx(`getRecipeByUser:${id}`, 3600, JSON.stringify(result));
-
-      return success(
-        res,
-        200,
-        'success',
-        `Success get recipe by user id ${id}`,
-        result.rows
-      );
-    } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
-    }
-  },
   createRecipe: async (req, res) => {
     try {
       // get data from req.body
