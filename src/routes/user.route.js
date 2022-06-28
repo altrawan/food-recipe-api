@@ -5,7 +5,6 @@ const Router = express.Router();
 const jwtAuth = require('../middlewares/jwtAuth');
 const { isAdmin, mySelf } = require('../middlewares/authorizations');
 const upload = require('../middlewares/upload');
-const photoLimit = require('../middlewares/photoLimit');
 const { update, password } = require('../validations/user.validation');
 const validation = require('../middlewares/validation');
 const {
@@ -37,15 +36,7 @@ Router.get('/user', jwtAuth, isAdmin, getAllUser, list)
     clearUser,
     updateProfile
   )
-  .put(
-    '/user/photo/:id',
-    jwtAuth,
-    upload,
-    photoLimit,
-    mySelf,
-    clearUser,
-    updatePhoto
-  )
+  .put('/user/photo/:id', jwtAuth, upload, mySelf, clearUser, updatePhoto)
   .put(
     '/user/password/:id',
     jwtAuth,

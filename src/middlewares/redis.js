@@ -63,80 +63,65 @@ module.exports = {
     return next();
   },
   // ====================================== RECIPE ======================================
-  getLatestRecipe: async (req, res, next) => {
-    const result = await redis.get(
-      `getLatestRecipe:${JSON.stringify(req.query)}`
-    );
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        `Success get latest recipe`,
-        newResult.rows
-      );
-    }
-    return next();
+  getAllRecipe: (req, res, next) => {
+    redis.get(`getRecipe:${JSON.stringify(req.query)}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get data recipe',
+          data: newResult.result,
+          pagination: newResult.pagination,
+        });
+      }
+      return next();
+    });
   },
-  getAllRecipes: async (req, res, next) => {
-    const result = await redis.get(`getRecipe:${JSON.stringify(req.query)}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        'Success get all data recipes',
-        newResult.result.rows,
-        newResult.pageInfo
-      );
-    }
-    return next();
-  },
-  getRecipeById: async (req, res, next) => {
+  getRecipeById: (req, res, next) => {
     const { id } = req.params;
-    const result = await redis.get(`getRecipe:${id}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        `Success get recipe by id ${id}`,
-        newResult.result.rows[0]
-      );
-    }
-    return next();
+    redis.get(`getRecipe:${id}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get detail recipe',
+          data: newResult,
+        });
+      }
+      return next();
+    });
   },
-  getRecipeActive: async (req, res, next) => {
-    const result = await redis.get(
-      `getRecipeActive:${JSON.stringify(req.query)}`
+  getLatestRecipe: async (req, res, next) => {
+    redis.get(
+      `getLatestRecipe:${JSON.stringify(req.query)}`,
+      (error, result) => {
+        if (!error && result !== null) {
+          const newResult = JSON.parse(result);
+          return success(res, {
+            code: 200,
+            message: 'Success get latest recipe',
+            data: newResult,
+          });
+        }
+        return next();
+      }
     );
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        `Success get recipe active`,
-        newResult.rows
-      );
-    }
-    return next();
   },
   clearRecipe: async (req, res, next) => {
-    const result = await redis.keys('getRecipe:*');
-    const result2 = await redis.keys('getRecipeByUser:*');
-
-    if (result.length > 0) {
-      result.map((e) => redis.del(e));
-    }
-
-    if (result2.length > 0) {
-      result2.map((e) => redis.del(e));
-    }
-
+    redis.keys('getRecipe:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
+    redis.keys('getLatestRecipe:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
     return next();
   },
   // ====================================== COMMENT ======================================

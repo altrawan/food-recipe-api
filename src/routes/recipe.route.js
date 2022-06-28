@@ -2,76 +2,56 @@ const express = require('express');
 
 const Router = express.Router();
 
-// Authentication
-const middlewareAuth = require('../middlewares/auth');
-// Redis
-// const middlewareRedis = require('../middlewares/redis');
-// Upload image
-const middlewareImage = require('../middlewares/imageRecipe');
-// Validation
+const jwtAuth = require('../middlewares/jwtAuth');
 const {
-  recipeValidationRules,
-  validate,
-} = require('../validations/recipe.validation');
-// Controller
-const recipeController = require('../controllers/recipe.controller');
+  isAdmin,
+  isUser,
+  recipeOwner,
+} = require('../middlewares/authorizations');
+const upload = require('../middlewares/upload');
+const { insert } = require('../validations/recipe.validation');
+const validation = require('../middlewares/validation');
+const {
+  getAllRecipe,
+  getRecipeById,
+  getLatestRecipe,
+  clearRecipe,
+} = require('../middlewares/redis');
+const {
+  list,
+  latest,
+  detail,
+  store,
+  update,
+  updateStatus,
+  destroy
+} = require('../controllers/recipe.controller');
 
-Router.get(
-  '/recipe',
-  middlewareAuth.authentication,
-  middlewareAuth.isAdmin,
-  // middlewareRedis.getAllRecipes,
-  recipeController.getAllRecipes
-)
-  .get('/recipe/list', recipeController.getListRecipe)
-  .get('/recipe/latest', recipeController.getLatestRecipe)
-  .get(
-    '/recipe/user/:id',
-    middlewareAuth.authentication,
-    // middlewareAuth.isUser,
-    // middlewareRedis.getRecipeByUser,
-    recipeController.getRecipeByUser
-  )
-  .get(
-    '/recipe/:id',
-    middlewareAuth.authentication,
-    // middlewareAuth.authentication,
-    // middlewareRedis.getRecipeById,
-    recipeController.getRecipeById
-  )
+Router.get('/recipe', jwtAuth, getAllRecipe, list)
+  .get('/recipe/latest', getLatestRecipe, latest)
+  .get('/recipe/:id', jwtAuth, getRecipeById, detail)
+  // .get('/recipe/comment/:id', jwtAuth, getCommentByRecipe, listComment)
   .post(
     '/recipe',
-    middlewareAuth.authentication,
-    // middlewareAuth.isUser,
-    middlewareImage,
-    recipeValidationRules(),
-    validate,
-    // middlewareRedis.clearRecipe,
-    recipeController.createRecipe
+    jwtAuth,
+    isUser,
+    upload,
+    insert,
+    validation,
+    clearRecipe,
+    store
   )
   .put(
     '/recipe/:id',
-    middlewareAuth.authentication,
-    // middlewareAuth.isUser,
-    middlewareImage,
-    recipeValidationRules(),
-    validate,
-    // middlewareRedis.clearRecipe,
-    recipeController.updateRecipe
+    jwtAuth,
+    isUser,
+    upload,
+    insert,
+    validation,
+    clearRecipe,
+    update
   )
-  .put(
-    '/recipe/status/:id',
-    middlewareAuth.authentication,
-    middlewareAuth.isAdmin,
-    // middlewareRedis.clearRecipe,
-    recipeController.updateStatus
-  )
-  .delete(
-    '/recipe/:id',
-    middlewareAuth.authentication,
-    middlewareAuth.isUser,
-    // middlewareRedis.clearRecipe,
-    recipeController.deleteRecipe
-  );
+  .put('/recipe/status/:id', jwtAuth, isAdmin, clearRecipe, updateStatus)
+  .delete('/recipe/:id', jwtAuth, isUser, recipeOwner, clearRecipe, destroy);
 
 module.exports = Router;

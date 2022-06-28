@@ -57,14 +57,17 @@ module.exports = {
 
       // upload image to google drive
       let photo = null;
-      if (req.files) {
-        if (req.files.photo) {
-          photo = await uploadGoogleDrive(req.files.photo[0]);
-          deleteFile(req.files.photo[0].path);
-        }
+      if (req.file) {
+        // upload image to google drive
+        const photoGd = await uploadGoogleDrive(req.file);
+        photo = photoGd.id;
+        // remove image after upload
+        deleteFile(req.file.path);
       }
       // create verify token
       verifyToken = crypto.randomBytes(30).toString('hex');
+
+      console.log(photo);
 
       // insert data to database
       const result = await authModel.register({
@@ -72,7 +75,7 @@ module.exports = {
         ...req.body,
         password: bcrypt.hashSync(password, 10),
         verifyToken,
-        photo: photo ? photo.id : null,
+        photo,
       });
 
       // send verification email
@@ -91,10 +94,8 @@ module.exports = {
         data: result,
       });
     } catch (error) {
-      if (req.files) {
-        if (req.files.photo) {
-          deleteFile(req.files.photo[0].path);
-        }
+      if (req.file) {
+        deleteFile(req.file.path);
       }
       return failed(res, {
         code: 500,

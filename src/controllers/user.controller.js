@@ -201,10 +201,8 @@ module.exports = {
       // check user
       const user = await userModel.findBy('id', id);
       if (!user.rowCount) {
-        if (req.files) {
-          if (req.files.photo) {
-            deleteFile(req.files.photo[0].path);
-          }
+        if (req.file) {
+          deleteFile(req.file.path);
         }
         return failed(res, {
           code: 404,
@@ -215,19 +213,18 @@ module.exports = {
 
       // upload image to google drive
       let { photo } = user.rows[0];
-      if (req.files) {
-        if (req.files.photo) {
-          if (photo) {
-            // remove old image google drive
-            deleteGoogleDrive(photo);
-          }
-          // upload new image to google drive
-          const photoGd = await uploadGoogleDrive(req.files.photo[0]);
-          photo = photoGd.id;
-          // remove image after upload
-          deleteFile(req.files.photo[0].path);
+      if (req.file) {
+        if (photo) {
+          // remove old image except default image
+          deleteGoogleDrive(photo);
         }
+        // upload new image to google drive
+        const photoGd = await uploadGoogleDrive(req.file);
+        photo = photoGd.id;
+        // remove image after upload
+        deleteFile(req.file.path);
       }
+
       const data = {
         photo,
         updated_at: new Date(Date.now()),
@@ -240,10 +237,8 @@ module.exports = {
         data: result,
       });
     } catch (error) {
-      if (req.files) {
-        if (req.files.photo) {
-          deleteFile(req.files.photo[0].path);
-        }
+      if (req.file) {
+        deleteFile(req.file.path);
       }
       return failed(res, {
         code: 500,
@@ -338,12 +333,9 @@ module.exports = {
       }
 
       let { photo } = user.rows[0];
-      if (req.files) {
-        if (req.files.photo) {
-          if (photo) {
-            // remove old image google drive
-            deleteGoogleDrive(photo);
-          }
+      if (req.file) {
+        if (photo) {
+          deleteGoogleDrive(photo);
         }
       }
 

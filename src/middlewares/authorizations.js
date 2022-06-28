@@ -48,7 +48,7 @@ module.exports = {
   },
   isUser: (req, res, next) => {
     try {
-      if (req.APP_DATA.tokenDecoded.role === 1) {
+      if (req.APP_DATA.tokenDecoded.level === 1) {
         next();
       } else {
         failed(res, {
@@ -90,7 +90,7 @@ module.exports = {
   recipeOwner: async (req, res, next) => {
     try {
       const idUser = req.APP_DATA.tokenDecoded.id;
-      const recipe = await recipeModel.findBy('id', req.params.id);
+      const recipe = await recipeModel.getRecipeById(req.params.id);
 
       if (!recipe.rowCount) {
         next();

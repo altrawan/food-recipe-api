@@ -1,291 +1,296 @@
 const { v4: uuidv4 } = require('uuid');
 const recipeModel = require('../models/recipe.model');
 const { success, failed } = require('../helpers/response');
-const deleteFile = require('../helpers/deleteFile');
-// const redis = require('../config/redis');
+const pagination = require('../utils/pagination');
+const deleteFile = require('../utils/deleteFile');
+const uploadGoogleDrive = require('../utils/uploadGoogleDrive');
+const deleteGoogleDrive = require('../utils/deleteGoogleDrive');
+const redis = require('../config/redis');
 
 module.exports = {
-  getListRecipe: async (req, res) => {
+  list: async (req, res) => {
     try {
-      let { key, search, sort, sortType, page, limit } = req.query;
-      key = key || 'recipes.title';
-      search = search ? `%${search}%` : '%';
-      sort = sort || 'recipes.created_at';
+      let { field, search, sort, sortType, page, limit } = req.query;
+      field = field || 'title';
+      search = !search ? '%' : `%${search}%`;
+      sort = sort || 'created_at';
       sortType = sortType || 'DESC';
       page = Number(page) || 1;
-      limit = Number(limit) || 6;
+      limit = Number(limit) || 3;
 
       const offset = page * limit - limit;
-      const totalData = await recipeModel.getCountRecipe();
-      const totalPage = Math.ceil(totalData / limit);
+      const count = await recipeModel.getCountRecipe();
 
-      const pageInfo = {
-        currentPage: page,
-        dataPerPage: limit,
-        totalPage,
-        totalData,
-      };
-
-      const result = await recipeModel.getListRecipe(
-        key,
+      const result = await recipeModel.getAllRecipe(
+        field,
         search,
         sort,
         sortType,
         limit,
-        offset
+        offset,
+        req.APP_DATA.tokenDecoded.level
       );
 
-      if (result.rows.length < 1) {
-        return failed(res, 404, 'failed', 'Data not found');
+      if (!result.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: 'Data not found',
+          error: 'Not Found',
+        });
       }
 
-      if (page > totalPage) {
-        return failed(res, 400, 'failed', `Data only up to page ${totalPage}`);
+      // Pagination with search
+      if (search) {
+        const paging = pagination(result.rowCount, page, limit);
+        redis.setex(
+          `getRecipe:${JSON.stringify(req.query)}`,
+          3600,
+          JSON.stringify({ result: result.rows, pagination: paging.response })
+        );
+        return success(res, {
+          code: 200,
+          message: `Success get data recipe`,
+          data: result.rows,
+          pagination: paging.response,
+        });
       }
 
-      // redis.setEx(
-      //   `getRecipe:${JSON.stringify(req.query)}`,
-      //   3600,
-      //   JSON.stringify({ result, pageInfo })
-      // );
-
-      return success(
-        res,
-        200,
-        'success',
-        'success get all data recipes',
-        result.rows,
-        pageInfo
+      // Pagination without search
+      const paging = pagination(Number(count), page, limit);
+      redis.setex(
+        `getRecipe:${JSON.stringify(req.query)}`,
+        3600,
+        JSON.stringify({ result: result.rows, pagination: paging.response })
       );
+      return success(res, {
+        code: 200,
+        message: `Success get data recipe`,
+        data: result.rows,
+        pagination: paging.response,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  getLatestRecipe: async (req, res) => {
+  latest: async (req, res) => {
     try {
       let { limit } = req.query;
       limit = Number(limit) || 1;
 
       const result = await recipeModel.getLatestRecipe(limit);
 
-      // redis.setEx(
-      //   `getLatestRecipe:${JSON.stringify(req.query)}`,
-      //   3600,
-      //   JSON.stringify(result)
-      // );
-
-      return success(
-        res,
-        200,
-        'success',
-        `Success get latest recipe`,
-        result.rows
+      redis.setex(
+        `getLatestRecipe:${JSON.stringify(req.query)}`,
+        3600,
+        JSON.stringify(result.rows)
       );
+
+      return success(res, {
+        code: 200,
+        message: 'Success get latest recipe',
+        data: result.rows,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  getPopularRecipe: async (req, res) => {},
-  getAllRecipes: async (req, res) => {
-    try {
-      let { key, search, sort, sortType, page, limit } = req.query;
-      key = key || 'title';
-      search = search ? `%${search}%` : '%';
-      sort = sort || 'recipes.created_at';
-      sortType = sortType || 'DESC';
-      page = Number(page) || 1;
-      limit = Number(limit) || 6;
-
-      const offset = page * limit - limit;
-      const totalData = await recipeModel.getCountRecipe();
-      const totalPage = Math.ceil(totalData / limit);
-
-      const pageInfo = {
-        currentPage: page,
-        dataPerPage: limit,
-        totalPage,
-        totalData,
-      };
-
-      const result = await recipeModel.getAllRecipes(
-        key,
-        search,
-        sort,
-        sortType,
-        limit,
-        offset
-      );
-
-      if (result.rows.length < 1) {
-        return failed(res, 404, 'failed', 'Data not found');
-      }
-
-      if (page > totalPage) {
-        return failed(res, 400, 'failed', `Data only up to page ${totalPage}`);
-      }
-
-      // redis.setEx(
-      //   `getRecipe:${JSON.stringify(req.query)}`,
-      //   3600,
-      //   JSON.stringify({ result, pageInfo })
-      // );
-
-      return success(
-        res,
-        200,
-        'success',
-        'success get all data recipes',
-        result.rows,
-        pageInfo
-      );
-    } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
-    }
-  },
-  getRecipeById: async (req, res) => {
+  detail: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await recipeModel.getRecipeById(id);
+      const recipe = await recipeModel.getRecipeById(id);
 
-      // if (result.rows.length < 1) {
-      //   return failed(
-      //     res,
-      //     404,
-      //     'failed',
-      //     `User by id ${id} hasn't created a recipe yet`
-      //   );
-      // }
+      if (!recipe.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: `Recipe with id ${id} not found`,
+          error: 'Not Found',
+        });
+      }
 
-      // redis.setEx(`getRecipe:${id}`, 3600, JSON.stringify(result));
-
-      return success(
-        res,
-        200,
-        'success',
-        `Success get recipe by id ${id}`,
-        result.rows[0]
-      );
+      redis.setex(`getRecipe:${id}`, 3600, JSON.stringify(recipe.rows[0]));
+      return success(res, {
+        code: 200,
+        message: 'Success get detail recipe',
+        data: recipe.rows[0],
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  createRecipe: async (req, res) => {
+  store: async (req, res) => {
     try {
-      // get data from req.body
-      const { title, ingredients, video } = req.body;
+      let photo = null;
+      if (req.file) {
+        // upload image to google drive
+        const photoGd = await uploadGoogleDrive(req.file);
+        photo = photoGd.id;
+        // remove image after upload
+        deleteFile(req.file.path);
+      }
 
       // create new object
       const data = {
         id: uuidv4(),
-        title,
-        image: req.file ? req.file.filename : null,
-        ingredients,
-        video: video ? video : null,
-        is_active: 1,
-        user_id: req.APP_DATA.tokenDecoded.id,
+        userId: req.APP_DATA.tokenDecoded.id,
+        photo,
+        ...req.body,
       };
 
       // send object to model
       const result = await recipeModel.createRecipe(data);
 
       // response REST API success
-      return success(
-        res,
-        200,
-        'success',
-        `Success create recipe id ${data.id}`,
-        result
-      );
+      return success(res, {
+        code: 200,
+        message: 'Success create recipe',
+        data: result,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      if (req.file) {
+        deleteFile(req.file.path);
+      }
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  updateRecipe: async (req, res) => {
+  update: async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, ingredients, video } = req.body;
+      const recipe = await recipeModel.getRecipeById(id);
 
-      // check recipe
-      const checkId = await recipeModel.getDetailRecipe(id);
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      if (!recipe.rowCount) {
+        if (req.file) {
+          deleteFile(req.file.path);
+        }
+
+        return failed(res, {
+          code: 404,
+          message: `Recipe with ${id} not found`,
+          error: 'Not Found',
+        });
       }
 
-      const row = checkId.rows[0];
-      // if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
-      //   return failed(res, 403, 'failed', `You don't have access to this page`);
-      // }
+      // upload image to google drive
+      let { image } = recipe.rows[0];
+      if (req.file) {
+        if (image) {
+          // remove old image except default image
+          deleteGoogleDrive(image);
+        }
+        // upload new image to google drive
+        const photoGd = await uploadGoogleDrive(req.file);
+        image = photoGd.id;
+        // remove image after upload
+        deleteFile(req.file.path);
+      }
 
       const data = {
-        title,
-        image: req.file ? req.file.filename : row.image,
-        ingredients,
-        video: video ? video : null,
-        updated_at: new Date(Date.now()),
+        ...req.body,
+        image,
       };
 
-      if (req.file) {
-        const file = row.image;
-        deleteFile(`public/uploads/recipe/${file}`);
-      }
-
       const result = await recipeModel.updateRecipe(data, id);
-
-      return success(
-        res,
-        200,
-        'success',
-        `Success update recipe id ${id}`,
-        result
-      );
+      return success(res, {
+        code: 200,
+        message: 'Success edit recipe',
+        data: result,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      if (req.file) {
+        deleteFile(req.file.path);
+      }
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
   updateStatus: async (req, res) => {
     try {
       const { id } = req.params;
-      const { is_active } = req.body;
-      const checkId = await recipeModel.getDetailRecipe(id);
+      const { isActive } = req.body;
 
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      const recipe = await recipeModel.getRecipeById(id);
+      if (!recipe.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: `Recipe with id ${id} not found !`,
+          error: 'Not Found',
+        });
       }
 
-      const result = await recipeModel.updateStatus(is_active, id);
-      return success(
-        res,
-        200,
-        'success',
-        `Success change status recipe to ${result.status}`,
-        result
-      );
+      let status;
+      if (isActive.toLowerCase() === 'active') {
+        status = 1;
+      } else if (isActive.toLowerCase() === 'deactive') {
+        status = 0;
+      } else {
+        throw new Error("status only must be 'active' or 'deactive'");
+      }
+
+      const result = await recipeModel.updateStatus(status, id);
+      return success(res, {
+        code: 200,
+        message: `Success change status to ${isActive.toLowerCase()}`,
+        data: result,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  deleteRecipe: async (req, res) => {
+  destroy: async (req, res) => {
     try {
       const { id } = req.params;
-      const checkId = await recipeModel.getDetailRecipe(id);
 
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      const recipe = await recipeModel.getRecipeById(id);
+      if (!recipe.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: `Recipe with id ${id} not found !`,
+          error: 'Not Found',
+        });
       }
 
-      // if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
-      //   return failed(res, 403, 'failed', `You don't have access to this page`);
-      // }
-
-      const file = checkId.rows[0].image;
-      if (file) {
-        deleteFile(`public/uploads/recipe/${file}`);
+      let { image } = recipe.rows[0];
+      if (req.file) {
+        if (image) {
+          // remove old image google drive
+          deleteGoogleDrive(image);
+        }
       }
 
-      const result = await recipeModel.deleteRecipe(id);
-      return success(res, 200, 'success', `Success delete recipe id ${id}`);
+      await recipeModel.deleteRecipe(id);
+      return success(res, {
+        code: 200,
+        message: 'Success delete recipe',
+        data: null,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
 };

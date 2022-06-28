@@ -3,7 +3,6 @@ const express = require('express');
 const jwtAuth = require('../middlewares/jwtAuth');
 const { isVerified } = require('../middlewares/authorizations');
 const upload = require('../middlewares/upload');
-const photoLimit = require('../middlewares/photoLimit');
 const {
   register,
   login,
@@ -26,14 +25,7 @@ const {
 const router = express.Router();
 
 router
-  .post(
-    '/auth/register',
-    upload,
-    photoLimit,
-    register,
-    validation,
-    registeration
-  )
+  .post('/auth/register', upload, register, validation, registeration)
   .get('/auth/activation/:token', verifyEmail)
   .post('/auth/login', isVerified, login, validation, loginAccount)
   .post('/auth/forgot', isVerified, forgot, validation, forgotPassword)
