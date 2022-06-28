@@ -25,4 +25,8 @@ module.exports = {
   REDIRECT_URI: process.env.REDIRECT_URI,
   GMAIL_REFRESH_TOKEN: process.env.GMAIL_REFRESH_TOKEN,
   DRIVE_REFRESH_TOKEN: process.env.DRIVE_REFRESH_TOKEN,
+  // redis
+  RDS_HOST: process.env.RDS_HOST,
+  RDS_PORT: process.env.RDS_PORT,
+  RDS_PASS: process.env.RDS_PASS,
 };

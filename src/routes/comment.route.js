@@ -8,16 +8,18 @@ const {
   isUser,
   commentOwner,
 } = require('../middlewares/authorizations');
-const upload = require('../middlewares/upload');
 const { insert } = require('../validations/comment.validation');
 const validation = require('../middlewares/validation');
-const { getAllComment, clearComment } = require('../middlewares/redis');
+const {
+  getAllComment,
+  getCommentById,
+  clearComment,
+} = require('../middlewares/redis');
 const {
   list,
   detail,
   store,
   update,
-  updateStatus,
   destroy,
 } = require('../controllers/comment.controller');
 
