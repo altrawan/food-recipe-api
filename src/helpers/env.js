@@ -3,9 +3,9 @@ require('dotenv').config();
 // export environment
 module.exports = {
   // app
-  APP_NAME: process.env.APP_NAME,
-  PORT: process.env.PORT,
-  NODE_ENV: process.env.NODE_ENV,
+  APP_NAME: process.env.APP_NAME || 'Mama Recipe',
+  PORT: process.env.PORT || 4000,
+  NODE_ENV: process.env.NODE_ENV || 'development',
   API_URL: process.env.API_URL,
   APP_CLIENT: process.env.APP_CLIENT,
   // database

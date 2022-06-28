@@ -1,7 +1,20 @@
 const db = require('../config/pg');
 
 module.exports = {
-  getAllUsers: (key, search, sort, sortType, limit, offset) =>
+  findBy: (field, search) =>
+    new Promise((resolve, reject) => {
+      db.query(
+        `SELECT * FROM users WHERE ${field} = $1`,
+        [search],
+        (err, res) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          resolve(res);
+        }
+      );
+    }),
+  getAllUser: (key, search, sort, sortType, limit, offset) =>
     new Promise((resolve, reject) => {
       db.query(
         `SELECT id, name, email, phone, CASE WHEN level = 0 THEN 'Admin' ELSE 'User' END AS level, 
@@ -25,38 +38,6 @@ module.exports = {
         }
         resolve(res.rows[0].total);
       });
-    }),
-  getUserByEmail: (email) =>
-    new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM users WHERE email = $1`, [email], (err, res) => {
-        if (err) {
-          reject(new Error(`SQL : ${err.message}`));
-        }
-        resolve(res);
-      });
-    }),
-  getUserByPhone: (phone) =>
-    new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM users WHERE phone = $1`, [phone], (err, res) => {
-        if (err) {
-          reject(new Error(`SQL : ${err.message}`));
-        }
-        resolve(res);
-      });
-    }),
-  getUserById: (id) =>
-    new Promise((resolve, reject) => {
-      db.query(
-        `SELECT id, name, email, phone, photo, to_char(created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date 
-        FROM users WHERE id = $1`,
-        [id],
-        (err, res) => {
-          if (err) {
-            reject(new Error(`SQL : ${err.message}`));
-          }
-          resolve(res);
-        }
-      );
     }),
   getDetailUser: (id) =>
     new Promise((resolve, reject) => {

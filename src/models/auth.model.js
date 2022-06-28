@@ -7,7 +7,7 @@ module.exports = {
       db.query(
         `INSERT INTO users 
         (id, name, email, password, phone, level, photo, verify_token, is_verified, is_active) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
         [
           id,
           name,
@@ -42,10 +42,27 @@ module.exports = {
         }
       );
     }),
+  updateCode: (code, id) =>
+    new Promise((resolve, reject) => {
+      db.query(
+        `UPDATE users SET verify_code = $1 WHERE id = $2`,
+        [code, id],
+        (err) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          const newData = {
+            id,
+            code,
+          };
+          resolve(newData);
+        }
+      );
+    }),
   updateToken: (token, id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `UPDATE users SET verify_token = $1 WHERE id = $2`,
+        `UPDATE users SET verify_token = $1, verify_code = null WHERE id = $2`,
         [token, id],
         (err) => {
           if (err) {

@@ -37,7 +37,7 @@ app.use(xss());
 app.use(compression());
 
 // parse urlencoded request body
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 // parse application/json
 app.use(bodyParser.json());
 
@@ -55,11 +55,11 @@ app.get('/', (req, res) =>
 // Main Route
 app.use(require('./src/routes/auth.route'));
 app.use(require('./src/routes/chat.route'));
-app.use(require('./src/routes/comment.route'));
-app.use(require('./src/routes/likedRecipe.route'));
-app.use(require('./src/routes/recipe.route'));
-app.use(require('./src/routes/savedRecipe.route'));
-app.use(require('./src/routes/user.route'));
+// app.use(require('./src/routes/comment.route'));
+// app.use(require('./src/routes/likedRecipe.route'));
+// app.use(require('./src/routes/recipe.route'));
+// app.use(require('./src/routes/savedRecipe.route'));
+// app.use(require('./src/routes/user.route'));
 
 // 404 Route
 app.use((req, res) => {

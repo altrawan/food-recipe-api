@@ -186,11 +186,11 @@ const index = (link) => {
                                                   style="border-collapse:collapse;border-spacing:0px;">
                                                   <tbody>
                                                       <tr>
-                                                          <td style="width:250px;">
+                                                          <td style="width:150px;">
 
-                                                              <img height="auto" src="https://i.postimg.cc/wBXQNQhC/Logo.png"
+                                                              <img height="auto" src="https://i.postimg.cc/Jh32kb65/Logo-Mama-Recipe.png"
                                                                   style="border:0;display:block;outline:none;text-decoration:none;width:100%;"
-                                                                  width="250" />
+                                                                  width="150" />
 
                                                           </td>
                                                       </tr>

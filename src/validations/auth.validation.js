@@ -33,6 +33,17 @@ const register = [
     'password',
     'Password must include one lowercase character, one uppercase character, a number, and a special character.'
   ).matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/, 'i'),
+
+  // confirm password
+  check('passwordConfirmation', 'Password confirmation cannot be empty')
+    .not()
+    .isEmpty(),
+  check('passwordConfirmation').custom((value, { req }) => {
+    if (value !== req.body.password) {
+      throw new Error('Password confirmation does not match password');
+    }
+    return true;
+  }),
 ];
 
 const login = [
