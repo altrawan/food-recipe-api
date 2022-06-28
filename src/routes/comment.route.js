@@ -2,59 +2,38 @@ const express = require('express');
 
 const Router = express.Router();
 
-// Authentication
-const middlewareAuth = require('../middlewares/auth');
-// Redis
-// const middlewareRedis = require('../middlewares/redis');
-// Validation
+const jwtAuth = require('../middlewares/jwtAuth');
 const {
-  createComment,
-  updateComment,
-  validate,
-} = require('../validations/comment.validation');
-// Controller
-const commentController = require('../controllers/comment.controller');
+  isAdmin,
+  isUser,
+  commentOwner,
+} = require('../middlewares/authorizations');
+const upload = require('../middlewares/upload');
+const { insert } = require('../validations/comment.validation');
+const validation = require('../middlewares/validation');
+const { getAllComment, clearComment } = require('../middlewares/redis');
+const {
+  list,
+  detail,
+  store,
+  update,
+  updateStatus,
+  destroy,
+} = require('../controllers/comment.controller');
 
-Router.get(
-  '/comment',
-  middlewareAuth.authentication,
-  middlewareAuth.isAdmin,
-  // middlewareRedis.getAllComments,
-  commentController.getAllComments
-)
-  .get(
-    '/comment/recipe/:id',
-    middlewareAuth.authentication,
-    // middlewareRedis.getCommentByRecipe,
-    commentController.getCommentByRecipe
-  )
-  .get(
-    '/comment/:id',
-    middlewareAuth.authentication,
-    // middlewareRedis.getCommentById,
-    commentController.getCommentById
-  )
-  .post(
-    '/comment',
-    middlewareAuth.authentication,
-    createComment(),
-    validate,
-    // middlewareRedis.clearComment,
-    commentController.createComment
-  )
+Router.get('/comment', jwtAuth, isAdmin, getAllComment, list)
+  .get('/comment/:id', jwtAuth, getCommentById, detail)
+  .post('/comment', jwtAuth, isUser, insert, validation, clearComment, store)
   .put(
     '/comment/:id',
-    middlewareAuth.authentication,
-    updateComment(),
-    validate,
-    // middlewareRedis.clearComment,
-    commentController.updateComment
+    jwtAuth,
+    isUser,
+    commentOwner,
+    insert,
+    validation,
+    clearComment,
+    update
   )
-  .delete(
-    '/comment/:id',
-    middlewareAuth.authentication,
-    // middlewareRedis.clearComment,
-    commentController.deleteComment
-  );
+  .delete('/comment/:id', jwtAuth, isUser, commentOwner, clearComment, destroy);
 
 module.exports = Router;

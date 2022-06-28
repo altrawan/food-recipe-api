@@ -123,7 +123,7 @@ module.exports = {
       }
 
       const result = await recipeModel.getRecipeByUser(id);
-      redis.setex(`getRecipeByUser:${id}`, 3600, JSON.stringify(result.rows));
+      redis.setex(`getUserRecipe:${id}`, 3600, JSON.stringify(result.rows));
       return success(res, {
         code: 200,
         message: 'Success get recipe user',

@@ -116,7 +116,7 @@ module.exports = {
   commentOwner: async (req, res, next) => {
     try {
       const idUser = req.APP_DATA.tokenDecoded.id;
-      const comment = await commentModel.findBy('id', req.params.id);
+      const comment = await commentModel.getCommentById(req.params.id);
 
       if (!comment.rowCount) {
         next();

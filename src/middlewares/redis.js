@@ -91,7 +91,7 @@ module.exports = {
       return next();
     });
   },
-  getLatestRecipe: async (req, res, next) => {
+  getLatestRecipe: (req, res, next) => {
     redis.get(
       `getLatestRecipe:${JSON.stringify(req.query)}`,
       (error, result) => {
@@ -107,7 +107,7 @@ module.exports = {
       }
     );
   },
-  clearRecipe: async (req, res, next) => {
+  clearRecipe: (req, res, next) => {
     redis.keys('getRecipe:*', (error, result) => {
       if (result.length > 0) {
         result.forEach((item) => {
@@ -125,62 +125,42 @@ module.exports = {
     return next();
   },
   // ====================================== COMMENT ======================================
-  getAllComments: async (req, res, next) => {
-    const result = await redis.get(`getComment:${JSON.stringify(req.query)}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        'Success get all data comments',
-        newResult.result.rows,
-        newResult.pageInfo
-      );
-    }
-    return next();
+  getAllComment: (req, res, next) => {
+    redis.get(`getComment:${JSON.stringify(req.query)}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get data comment',
+          data: newResult.result,
+          pagination: newResult.pagination,
+        });
+      }
+      return next();
+    });
   },
   getCommentById: async (req, res, next) => {
     const { id } = req.params;
-    const result = await redis.get(`getComment:${id}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        `Success get comment by id ${id}`,
-        newResult.rows[0]
-      );
-    }
-    return next();
+    redis.get(`getComment:${id}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get detail comment',
+          data: newResult,
+        });
+      }
+      return next();
+    });
   },
-  getCommentByRecipe: async (req, res, next) => {
-    const { id } = req.params;
-    const result = await redis.get(`getCommentByRecipe:${id}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        `Success get liked recipe by id ${id}`,
-        newResult.rows[0]
-      );
-    }
-    return next();
-  },
-  clearComment: async (req, res, next) => {
-    const result = await redis.keys('getComment:*');
-    const result2 = await redis.keys('getCommentByRecipe:*');
-
-    if (result.length > 0) {
-      result.map((e) => redis.del(e));
-    }
-
-    if (result2.length > 0) {
-      result2.map((e) => redis.del(e));
-    }
+  clearComment: (req, res, next) => {
+    redis.keys('getComment:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
     return next();
   },
   // ====================================== LIKED RECIPE ======================================

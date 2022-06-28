@@ -1,182 +1,192 @@
 const { v4: uuidv4 } = require('uuid');
 const commentModel = require('../models/comment.model');
 const { success, failed } = require('../helpers/response');
-// const redis = require('../config/redis');
+const redis = require('../config/redis');
 
 module.exports = {
-  getAllComments: async (req, res) => {
+  list: async (req, res) => {
     try {
-      let { key, search, sort, sortType, page, limit } = req.query;
-      key = key || 'recipe_id';
+      let { field, search, sort, sortType, page, limit } = req.query;
+      field = field || 'comment_text';
       search = !search ? '%' : `%${search}%`;
-      sort = sort || 'recipes.created_at';
+      sort = sort || 'created_at';
       sortType = sortType || 'DESC';
       page = Number(page) || 1;
       limit = Number(limit) || 3;
 
       const offset = page * limit - limit;
+      // const count = await commentModel.getCountComment();
       const totalData = await commentModel.getCountComment();
-      const totalPage = Math.ceil(totalData / limit);
+      // const totalData = Number(count.rows[0].total);
 
-      const pageInfo = {
-        currentPage: page,
-        dataPerPage: limit,
-        totalPage,
-        totalData,
-      };
+      // console.log(Number(totalData);
+      const totalPage = Math.ceil(Number(totalData) / limit);
 
-      const result = await commentModel.getAllComments(
-        key,
+      const result = await commentModel.getAllComment(
+        field,
         search,
         sort,
         sortType,
         limit,
-        offset
+        offset,
+        req.APP_DATA.tokenDecoded.level
       );
 
-      if (result.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data not found`);
+      if (!result.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: 'Data not found',
+          error: 'Not Found',
+        });
       }
 
-      if (page > totalPage) {
-        return failed(res, 400, 'failed', `Data only up to page ${totalPage}`);
+      // Response pagination
+      const pagination = {
+        currentPage: page,
+        dataPerPage: limit,
+        totalPage: search ? Math.ceil(result.rowCount / limit) : totalPage,
+        totalData: totalData,
+      };
+
+      // Pagination with search
+      if (search) {
+        redis.setex(
+          `getComment:${JSON.stringify(req.query)}`,
+          3600,
+          JSON.stringify({ result: result.rows, pagination })
+        );
+        return success(res, {
+          code: 200,
+          message: `Success get data comment`,
+          data: result.rows,
+          pagination,
+        });
       }
 
-      // redis.setEx(
-      //   `getComment:${JSON.stringify(req.query)}`,
-      //   3600,
-      //   JSON.stringify({ result, pageInfo })
-      // );
-
-      return success(
-        res,
-        200,
-        'success',
-        `Success get all data comments`,
-        result.rows,
-        pageInfo
+      // Pagination without search
+      redis.setex(
+        `getComment:${JSON.stringify(req.query)}`,
+        3600,
+        JSON.stringify({ result: result.rows, pagination })
       );
+      return success(res, {
+        code: 200,
+        message: `Success get data comment`,
+        data: result.rows,
+        pagination,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  getCommentById: async (req, res) => {
+  detail: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await commentModel.getCommentById(id);
+      const comment = await commentModel.getCommentById(id);
 
-      if (result.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      if (!comment.rowCount) {
+        failed(res, {
+          code: 404,
+          message: `Comment with id ${id} not found !`,
+          error: 'Not Found',
+        });
       }
 
-      // redis.setEx(`getComment:${id}`, 3600, JSON.stringify(result));
+      redis.setex(`getComment:${id}`, 3600, JSON.stringify(comment.rows[0]));
 
-      return success(
-        res,
-        200,
-        'success',
-        `Success get data by id ${id}`,
-        result.rows[0]
-      );
+      return success(res, {
+        code: 200,
+        message: 'Success get detail comment',
+        data: comment.rows[0],
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  getCommentByRecipe: async (req, res) => {
+  store: async (req, res) => {
     try {
-      const { id } = req.params;
-      const result = await commentModel.getCommentByRecipe(id);
-
-      // if (result.rows.length < 1) {
-      //   return failed(res, 404, 'failed', `Data by id ${id} not found !`);
-      // }
-
-      // redis.setEx(`getCommentByRecipe:${id}`, 3600, JSON.stringify(result));
-
-      return success(
-        res,
-        200,
-        'success',
-        `Success get comment by recipe id ${id}`,
-        result.rows
-      );
-    } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
-    }
-  },
-  createComment: async (req, res) => {
-    try {
-      const { recipe_id, comment_text } = req.body;
-
       const data = {
         id: uuidv4(),
-        user_id: req.APP_DATA.tokenDecoded.id,
-        recipe_id,
-        comment_text,
-        is_active: 1,
+        userId: req.APP_DATA.tokenDecoded.id,
+        ...req.body,
       };
 
       const result = await commentModel.createComment(data);
-      return success(
-        res,
-        200,
-        'success',
-        `Success create comment id ${data.id}`,
-        result
-      );
+
+      return success(res, {
+        code: 200,
+        message: 'Success create comment',
+        data: result,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  updateComment: async (req, res) => {
+  update: async (req, res) => {
     try {
       const { id } = req.params;
-      const { comment_text } = req.body;
+      const comment = await commentModel.getCommentById(id);
 
-      const checkId = await commentModel.getDetailComment(id);
-      if (checkId.rows.length < 1) {
-        return success(res, 404, 'failed', `Data by id ${id} not found !`);
+      if (!comment.rowCount) {
+        failed(res, {
+          code: 404,
+          message: `Comment with id ${id} not found !`,
+          error: 'Not Found',
+        });
       }
 
-      const row = checkId.rows[0];
-      if (req.APP_DATA.tokenDecoded.id !== row.user_id) {
-        return failed(res, 403, 'failed', `You don't have access to this page`);
-      }
-
-      const data = {
-        comment_text,
-        updated_at: new Date(Date.now()),
-      };
-
-      const result = await commentModel.updateComment(data, id);
-      return success(
-        res,
-        200,
-        'success',
-        `Success update comment id ${id}`,
-        result
-      );
+      const result = await commentModel.updateComment({ ...req.body }, id);
+      return success(res, {
+        code: 200,
+        message: 'Success edit comment',
+        data: result,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  deleteComment: async (req, res) => {
+  destroy: async (req, res) => {
     try {
       const { id } = req.params;
-      const checkId = await commentModel.getDetailComment(id);
 
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`, null);
+      const comment = await commentModel.getCommentById(id);
+
+      if (!comment.rowCount) {
+        failed(res, {
+          code: 404,
+          message: `Comment with id ${id} not found !`,
+          error: 'Not Found',
+        });
       }
 
-      if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
-        return failed(res, 403, 'failed', `You don't have access to this page`);
-      }
-
-      const result = await commentModel.deleteComment(id);
-      return success(res, 200, 'success', `Success delete user id ${id}`);
+      await commentModel.deleteComment(id);
+      return success(res, {
+        code: 200,
+        message: 'Success delete comment',
+        data: null,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
 };

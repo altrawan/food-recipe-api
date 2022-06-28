@@ -55,7 +55,7 @@ app.get('/', (req, res) =>
 // Main Route
 app.use(require('./src/routes/auth.route'));
 app.use(require('./src/routes/chat.route'));
-// app.use(require('./src/routes/comment.route'));
+app.use(require('./src/routes/comment.route'));
 // app.use(require('./src/routes/likedRecipe.route'));
 app.use(require('./src/routes/recipe.route'));
 // app.use(require('./src/routes/savedRecipe.route'));

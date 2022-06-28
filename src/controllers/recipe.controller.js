@@ -129,6 +129,28 @@ module.exports = {
       });
     }
   },
+  listComment: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const result = await commentModel.getCommentByRecipe(id);
+
+      // if (result.rows.length < 1) {
+      //   return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      // }
+
+      // redis.setEx(`getCommentByRecipe:${id}`, 3600, JSON.stringify(result));
+
+      return success(
+        res,
+        200,
+        'success',
+        `Success get comment by recipe id ${id}`,
+        result.rows
+      );
+    } catch (error) {
+      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+    }
+  },
   store: async (req, res) => {
     try {
       let photo = null;
