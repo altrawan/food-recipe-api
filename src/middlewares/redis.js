@@ -45,6 +45,34 @@ module.exports = {
       return next();
     });
   },
+  getLikedRecipeByUser: (req, res, next) => {
+    const { id } = req.params;
+    redis.get(`getLikedRecipeUser:${id}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get list liked recipe user',
+          data: newResult,
+        });
+      }
+      return next();
+    });
+  },
+  getSavedRecipeByUser: (req, res, next) => {
+    const { id } = req.params;
+    redis.get(`getSavedRecipeUser:${id}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get list saved recipe user',
+          data: newResult,
+        });
+      }
+      return next();
+    });
+  },
   clearUser: (req, res, next) => {
     redis.keys('getUser:*', (error, result) => {
       if (result.length > 0) {
@@ -54,6 +82,20 @@ module.exports = {
       }
     });
     redis.keys('getUserRecipe:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
+    redis.keys('getLikedRecipeUser:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
+    redis.keys('getSavedRecipeUser:*', (error, result) => {
       if (result.length > 0) {
         result.forEach((item) => {
           redis.del(item);
@@ -143,6 +185,20 @@ module.exports = {
         });
       }
     });
+    redis.keys('getLikedRecipeUser:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
+    redis.keys('getSavedRecipeUser:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
     redis.keys('getRecipeComment:*', (error, result) => {
       if (result.length > 0) {
         result.forEach((item) => {
@@ -199,123 +255,101 @@ module.exports = {
     return next();
   },
   // ====================================== LIKED RECIPE ======================================
-  getAllLikedRecipe: async (req, res, next) => {
-    const result = await redis.get(
-      `getLikedRecipe:${JSON.stringify(req.query)}`
+  getAllLikedRecipe: (req, res, next) => {
+    redis.get(
+      `getLikedRecipe:${JSON.stringify(req.query)}`,
+      (error, result) => {
+        if (!error && result !== null) {
+          const newResult = JSON.parse(result);
+          return success(res, {
+            code: 200,
+            message: 'Success get data liked recipe',
+            data: newResult.result,
+            pagination: newResult.pagination,
+          });
+        }
+        return next();
+      }
     );
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        'Success get all data liked recipes',
-        newResult.result.rows,
-        newResult.pageInfo
-      );
-    }
-    return next();
   },
-  getLikedRecipeById: async (req, res, next) => {
+  getLikedRecipeById: (req, res, next) => {
     const { id } = req.params;
-    const result = await redis.get(`getLikedRecipe:${id}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        `Success get liked recipe by id ${id}`,
-        newResult.result.rows[0]
-      );
-    }
-    return next();
+    redis.get(`getLikedRecipe:${id}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get detail liked recipe',
+          data: newResult,
+        });
+      }
+      return next();
+    });
   },
-  getLikedRecipeByUser: async (req, res, next) => {
-    const { id } = req.params;
-    const result = await redis.get(`getLikedRecipeByUser:${id}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        `Success get liked recipe by user id ${id}`,
-        newResult.result.rows[0]
-      );
-    }
-    return next();
-  },
-  clearLikedRecipe: async (req, res, next) => {
-    const result = await redis.keys('getLikedRecipe:*');
-    const result2 = await redis.keys('getLikedRecipeByUser:*');
-    if (result.length > 0) {
-      result.map((e) => redis.del(e));
-    }
-
-    if (result2.length > 0) {
-      result2.map((e) => redis.del(e));
-    }
+  clearLikedRecipe: (req, res, next) => {
+    redis.keys('getLikedRecipe:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
+    redis.keys('getLikedRecipeUser:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
     return next();
   },
   // ====================================== SAVED REDIPE ======================================
-  getAllSavedRecipe: async (req, res, next) => {
-    const result = await redis.get(
-      `getSavedRecipe:${JSON.stringify(req.query)}`
+  getAllSavedRecipe: (req, res, next) => {
+    redis.get(
+      `getSavedRecipe:${JSON.stringify(req.query)}`,
+      (error, result) => {
+        if (!error && result !== null) {
+          const newResult = JSON.parse(result);
+          return success(res, {
+            code: 200,
+            message: 'Success get data saved recipe',
+            data: newResult.result,
+            pagination: newResult.pagination,
+          });
+        }
+        return next();
+      }
     );
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        'Success get all data saved recipes',
-        newResult.result.rows,
-        newResult.pageInfo
-      );
-    }
-    return next();
   },
-  getSavedRecipeById: async (req, res, next) => {
+  getSavedRecipeById: (req, res, next) => {
     const { id } = req.params;
-    const result = await redis.get(`getSavedRecipe:${id}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        `Success get saved recipe by id ${id}`,
-        newResult.rows[0]
-      );
-    }
-    return next();
+    redis.get(`getSavedRecipe:${id}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get detail saved recipe',
+          data: newResult,
+        });
+      }
+      return next();
+    });
   },
-  getSavedRecipeByUser: async (req, res, next) => {
-    const { id } = req.params;
-    const result = await redis.get(`getSavedRecipeByUser:${id}`);
-    if (result) {
-      const newResult = JSON.parse(result);
-      return success(
-        res,
-        200,
-        'success',
-        `Success get saved recipe by user id ${id}`,
-        newResult.result.rows[0]
-      );
-    }
-    return next();
-  },
-  clearSavedRecipe: async (req, res, next) => {
-    const result = await redis.keys('getSavedRecipe:*');
-    const result2 = await redis.keys('getSavedRecipeByUser:*');
-    if (result.length > 0) {
-      result.map((e) => redis.del(e));
-    }
-
-    if (result2.length > 0) {
-      result2.map((e) => redis.del(e));
-    }
+  clearSavedRecipe: (req, res, next) => {
+    redis.keys('getSavedRecipe:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
+    redis.keys('getSavedRecipeUser:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
     return next();
   },
 };

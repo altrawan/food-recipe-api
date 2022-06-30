@@ -1,163 +1,135 @@
 const { v4: uuidv4 } = require('uuid');
 const likedRecipeModel = require('../models/likedRecipe.model');
 const { success, failed } = require('../helpers/response');
-// const redis = require('../config/redis');
+const pagination = require('../utils/pagination');
+const redis = require('../config/redis');
 
 module.exports = {
-  getAllLikedRecipe: async (req, res) => {
+  list: async (req, res) => {
     try {
-      const { id } = req.params;
-      let { key, search, sort, sortType, page, limit } = req.query;
-      key = key || 'liked_recipes.id';
-      search = search ? `%${search}%` : '%';
-      sort = sort || 'liked_recipes.created_at';
+      let { sort, sortType, page, limit } = req.query;
+      sort = sort || 'created_at';
       sortType = sortType || 'DESC';
       page = Number(page) || 1;
       limit = Number(limit) || 3;
 
       const offset = page * limit - limit;
-      const totalData = await likedRecipeModel.getCountLikedRecipe();
-      const totalPage = Math.ceil(totalData / limit);
-
-      const pageInfo = {
-        currentPage: page,
-        dataPerPage: limit,
-        totalPage,
-        totalData,
-      };
+      const count = await likedRecipeModel.getCountLikedRecipe();
 
       const result = await likedRecipeModel.getAllLikedRecipe(
-        key,
-        search,
         sort,
         sortType,
         limit,
-        offset
+        offset,
+        req.APP_DATA.tokenDecoded.level
       );
 
-      if (result.rows.length < 1) {
-        return failed(res, 404, 'failed', 'Data not found');
+      if (!result.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: 'Data not found',
+          error: 'Not Found',
+        });
       }
 
-      if (page > totalPage) {
-        return failed(res, 400, 'failed', `Data only up to page ${totalPage}`);
-      }
-
-      // redis.setEx(
-      //   `getLikedRecipe:${JSON.stringify(req.query)}`,
-      //   3600,
-      //   JSON.stringify({ result, pageInfo })
-      // );
-
-      return success(
-        res,
-        200,
-        'success',
-        'Success get all data liked recipes',
-        result.rows,
-        pageInfo
+      // Pagination without search
+      const paging = pagination(Number(count), page, limit);
+      redis.setex(
+        `getLikedRecipe:${JSON.stringify(req.query)}`,
+        3600,
+        JSON.stringify({ result: result.rows, pagination: paging.response })
       );
+      return success(res, {
+        code: 200,
+        message: `Success get data liked recipe`,
+        data: result.rows,
+        pagination: paging.response,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  getLikedRecipeById: async (req, res) => {
+  detail: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await likedRecipeModel.getLikedRecipeById(id);
+      const liked = await likedRecipeModel.findBy('liked_recipes.id', id);
 
-      if (result.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      if (!liked.rowCount) {
+        failed(res, {
+          code: 404,
+          message: `Liked Recipe with id ${id} not found !`,
+          error: 'Not Found',
+        });
       }
 
-      // redis.setEx(`getLikedRecipe:${id}`, 3600, JSON.stringify(result));
+      redis.setex(`getLikedRecipe:${id}`, 3600, JSON.stringify(liked.rows[0]));
 
-      return success(
-        res,
-        200,
-        'success',
-        `Success get liked recipe by id ${id}`,
-        result.rows[0]
-      );
+      return success(res, {
+        code: 200,
+        message: 'Success get detail liked recipe',
+        data: liked.rows[0],
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  getLikedRecipeByUser: async (req, res) => {
+  store: async (req, res) => {
     try {
-      const { id } = req.params;
-      const result = await likedRecipeModel.getLikedRecipeByUser(id);
-
-      // if (result.rows.length < 1) {
-      //   return failed(res, 404, 'failed', `Data by id ${id} not found !`);
-      // }
-
-      // const checkId = await likedRecipeModel.getDetailLikedRecipeByUser(id);
-      // if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
-      //   return failed(res, 403, 'failed', `You don't have access to this page`);
-      // }
-
-      // redis.setEx(`getLikedRecipeByUser:${id}`, 3600, JSON.stringify(result));
-
-      return success(
-        res,
-        200,
-        'success',
-        `Success get liked recipe by user id ${id}`,
-        result.rows
-      );
-    } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
-    }
-  },
-  createLikedRecipe: async (req, res) => {
-    try {
-      let isNull;
-      const { recipe_id } = req.body;
-
       const data = {
         id: uuidv4(),
-        user_id: req.APP_DATA.tokenDecoded.id,
-        recipe_id,
+        userId: req.APP_DATA.tokenDecoded.id,
+        ...req.body,
       };
 
-      Object.keys(data).forEach((e) => {
-        if (!data[e]) isNull = e;
-      });
-
-      if (isNull) {
-        return failed(res, 400, 'failed', `${isNull} cannot be empty`);
-      }
-
       const result = await likedRecipeModel.createLikedRecipe(data);
-      return success(
-        res,
-        200,
-        'success',
-        `Liked Recipe Added Successfully`,
-        result
-      );
+
+      return success(res, {
+        code: 200,
+        message: 'Success create liked recipe',
+        data: result,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
-  deleteLikedRecipe: async (req, res) => {
+  destroy: async (req, res) => {
     try {
       const { id } = req.params;
-      const checkId = await likedRecipeModel.getDetailLikedRecipe(id);
 
-      if (checkId.rows.length < 1) {
-        return failed(res, 404, 'failed', `Data by id ${id} not found !`);
+      const liked = await likedRecipeModel.findBy('liked_recipes.id', id);
+
+      if (!liked.rowCount) {
+        failed(res, {
+          code: 404,
+          message: `Liked Recipe with id ${id} not found !`,
+          error: 'Not Found',
+        });
       }
 
-      // if (req.APP_DATA.tokenDecoded.id !== checkId.rows[0].user_id) {
-      //   return failed(res, 403, 'failed', `You don't have access to this page`);
-      // }
-
-      const result = await likedRecipeModel.deleteLikedRecipe(id);
-      return success(res, 200, 'success', `Liked Recipe Deleted Successfully`);
+      await likedRecipeModel.deleteLikedRecipe(id);
+      return success(res, {
+        code: 200,
+        message: 'Success delete liked recipe',
+        data: null,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
 };

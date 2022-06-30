@@ -28,8 +28,8 @@ module.exports = {
   getCommentById: (id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT recipes.title, users.photo, users.name, comments.comment_text, 
-        to_char(comments.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
+        `SELECT comments.id, comments.comment_text, comments.user_id, comments.recipe_id,
+        users.name, users.photo, comments.created_at AS date
         FROM comments INNER JOIN users ON comments.user_id = users.id
         INNER JOIN recipes ON comments.recipe_id = recipes.id WHERE comments.id = $1`,
         [id],
@@ -45,8 +45,9 @@ module.exports = {
     new Promise((resolve, reject) => {
       db.query(
         `SELECT comments.id, comments.comment_text, comments.user_id, comments.recipe_id,
-        users.name, users.photo FROM comments INNER JOIN users ON comments.user_id = users.id
-        WHERE recipe_id=$1`,
+        users.name, users.photo, comments.created_at AS date 
+        FROM comments INNER JOIN users ON comments.user_id = users.id
+        INNER JOIN recipes ON comments.recipe_id = recipes.id WHERE recipe_id=$1`,
         [id],
         (err, res) => {
           if (err) {
@@ -55,15 +56,6 @@ module.exports = {
           resolve(res);
         }
       );
-    }),
-  getDetailComment: (id) =>
-    new Promise((resolve, reject) => {
-      db.query(`SELECT * FROM comments WHERE id = $1`, [id], (err, res) => {
-        if (err) {
-          reject(new Error(`SQL : ${err.message}`));
-        }
-        resolve(res);
-      });
     }),
   createComment: (data) =>
     new Promise((resolve, reject) => {
@@ -95,6 +87,23 @@ module.exports = {
             ...data,
           };
           resolve(newRes);
+        }
+      );
+    }),
+  updateStatus: (status, id) =>
+    new Promise((resolve, reject) => {
+      db.query(
+        `UPDATE comments SET is_active = $1, updated_at = $2 WHERE id = $3`,
+        [status, new Date(Date.now()), id],
+        (err) => {
+          if (err) {
+            reject(new Error(`SQL : ${err.message}`));
+          }
+          const data = {
+            id,
+            status: status === 1 ? 'active' : 'deactive',
+          };
+          resolve(data);
         }
       );
     }),

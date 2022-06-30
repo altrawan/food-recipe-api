@@ -2,6 +2,8 @@ const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcrypt');
 const userModel = require('../models/user.model');
 const recipeModel = require('../models/recipe.model');
+const likedRecipeModel = require('../models/likedRecipe.model');
+const savedRecipeModel = require('../models/savedRecipe.model');
 const { success, failed } = require('../helpers/response');
 const pagination = require('../utils/pagination');
 const deleteFile = require('../utils/deleteFile');
@@ -127,6 +129,76 @@ module.exports = {
       return success(res, {
         code: 200,
         message: 'Success get recipe user',
+        data: result.rows,
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  listLikedRecipe: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const user = await userModel.findBy('id', id);
+      // if user not exist
+      if (!user.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: `User with id ${id} not found`,
+          error: 'Not Found',
+        });
+      }
+
+      const result = await likedRecipeModel.findBy('liked_recipes.user_id', id);
+
+      redis.setex(
+        `getLikedRecipeUser:${id}`,
+        3600,
+        JSON.stringify(result.rows)
+      );
+
+      return success(res, {
+        code: 200,
+        message: 'Success get liked recipe user',
+        data: result.rows,
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  listSavedRecipe: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const user = await userModel.findBy('id', id);
+      // if user not exist
+      if (!user.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: `User with id ${id} not found`,
+          error: 'Not Found',
+        });
+      }
+
+      const result = await savedRecipeModel.findBy('saved_recipes.user_id', id);
+
+      redis.setex(
+        `getSavedRecipeUser:${id}`,
+        3600,
+        JSON.stringify(result.rows)
+      );
+
+      return success(res, {
+        code: 200,
+        message: 'Success get saved recipe user',
         data: result.rows,
       });
     } catch (error) {

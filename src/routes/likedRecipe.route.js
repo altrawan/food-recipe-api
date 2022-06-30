@@ -2,43 +2,34 @@ const express = require('express');
 
 const Router = express.Router();
 
-// Authentication
-const middlewareAuth = require('../middlewares/auth');
-// Redis
-// const middlewareRedis = require('../middlewares/redis');
-// Controller
-const likedRecipeController = require('../controllers/likedRecipe.controller');
+const jwtAuth = require('../middlewares/jwtAuth');
+const {
+  isAdmin,
+  isUser,
+  likedRecipeOwner,
+} = require('../middlewares/authorizations');
+const {
+  getAllLikedRecipe,
+  getLikedRecipeById,
+  clearLikedRecipe,
+} = require('../middlewares/redis');
+const {
+  list,
+  detail,
+  store,
+  destroy,
+} = require('../controllers/likedRecipe.controller');
 
-Router.get(
-  '/liked',
-  middlewareAuth.authentication,
-  middlewareAuth.isAdmin,
-  // middlewareRedis.getAllLikedRecipe,
-  likedRecipeController.getAllLikedRecipe
-)
-  .get(
-    '/liked/user/:id',
-    middlewareAuth.authentication,
-    // middlewareRedis.getLikedRecipeById,
-    likedRecipeController.getLikedRecipeByUser
-  )
-  .get(
-    '/liked/:id',
-    middlewareAuth.authentication,
-    // middlewareRedis.getLikedRecipeByUser,
-    likedRecipeController.getLikedRecipeById
-  )
-  .post(
-    '/liked',
-    middlewareAuth.authentication,
-    // middlewareRedis.clearLikedRecipe,
-    likedRecipeController.createLikedRecipe
-  )
+Router.get('/liked', jwtAuth, isAdmin, getAllLikedRecipe, list)
+  .get('/liked/:id', jwtAuth, getLikedRecipeById, detail)
+  .post('/liked', jwtAuth, isUser, clearLikedRecipe, store)
   .delete(
     '/liked/:id',
-    middlewareAuth.authentication,
-    // middlewareRedis.clearLikedRecipe,
-    likedRecipeController.deleteLikedRecipe
+    jwtAuth,
+    isUser,
+    likedRecipeOwner,
+    clearLikedRecipe,
+    destroy
   );
 
 module.exports = Router;

@@ -11,6 +11,8 @@ const {
   getAllUser,
   getUserById,
   getRecipeByUser,
+  getLikedRecipeByUser,
+  getSavedRecipeByUser,
   clearUser,
 } = require('../middlewares/redis');
 const {
@@ -22,11 +24,15 @@ const {
   updateStatus,
   destroy,
   listRecipe,
+  listLikedRecipe,
+  listSavedRecipe,
 } = require('../controllers/user.controller');
 
 Router.get('/user', jwtAuth, isAdmin, getAllUser, list)
   .get('/user/:id', jwtAuth, getUserById, detail)
   .get('/user/recipe/:id', jwtAuth, getRecipeByUser, listRecipe)
+  .get('/user/liked/:id', jwtAuth, getLikedRecipeByUser, listLikedRecipe)
+  .get('/user/saved/:id', jwtAuth, getSavedRecipeByUser, listSavedRecipe)
   .put(
     '/user/:id',
     jwtAuth,

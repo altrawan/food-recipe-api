@@ -79,7 +79,7 @@ module.exports = {
       const comment = await commentModel.getCommentById(id);
 
       if (!comment.rowCount) {
-        failed(res, {
+        return failed(res, {
           code: 404,
           message: `Comment with id ${id} not found !`,
           error: 'Not Found',
@@ -130,7 +130,7 @@ module.exports = {
       const comment = await commentModel.getCommentById(id);
 
       if (!comment.rowCount) {
-        failed(res, {
+        return failed(res, {
           code: 404,
           message: `Comment with id ${id} not found !`,
           error: 'Not Found',
@@ -141,6 +141,43 @@ module.exports = {
       return success(res, {
         code: 200,
         message: 'Success edit comment',
+        data: result,
+      });
+    } catch (error) {
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
+    }
+  },
+  updateStatus: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { isActive } = req.body;
+
+      const comment = await commentModel.getCommentById(id);
+      if (!comment.rowCount) {
+        return failed(res, {
+          code: 404,
+          message: `Comment with id ${id} not found !`,
+          error: 'Not Found',
+        });
+      }
+
+      let status;
+      if (isActive.toLowerCase() === 'active') {
+        status = 1;
+      } else if (isActive.toLowerCase() === 'deactive') {
+        status = 0;
+      } else {
+        throw new Error("status only must be 'active' or 'deactive'");
+      }
+
+      const result = await commentModel.updateStatus(status, id);
+      return success(res, {
+        code: 200,
+        message: `Success change status to ${isActive.toLowerCase()}`,
         data: result,
       });
     } catch (error) {

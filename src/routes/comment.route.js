@@ -20,6 +20,7 @@ const {
   detail,
   store,
   update,
+  updateStatus,
   destroy,
 } = require('../controllers/comment.controller');
 
@@ -36,6 +37,7 @@ Router.get('/comment', jwtAuth, isAdmin, getAllComment, list)
     clearComment,
     update
   )
+  .put('/comment/status/:id', jwtAuth, isAdmin, clearComment, updateStatus)
   .delete('/comment/:id', jwtAuth, isUser, commentOwner, clearComment, destroy);
 
 module.exports = Router;
