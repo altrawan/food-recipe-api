@@ -107,6 +107,20 @@ module.exports = {
       }
     );
   },
+  getCommentByRecipe: (req, res, next) => {
+    const { id } = req.params;
+    redis.get(`getRecipeComment:${id}`, (error, result) => {
+      if (!error && result !== null) {
+        const newResult = JSON.parse(result);
+        return success(res, {
+          code: 200,
+          message: 'Success get list comment by recipe',
+          data: newResult,
+        });
+      }
+      return next();
+    });
+  },
   clearRecipe: (req, res, next) => {
     redis.keys('getRecipe:*', (error, result) => {
       if (result.length > 0) {
@@ -116,6 +130,20 @@ module.exports = {
       }
     });
     redis.keys('getLatestRecipe:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
+    redis.keys('getUserRecipe:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
+    redis.keys('getRecipeComment:*', (error, result) => {
       if (result.length > 0) {
         result.forEach((item) => {
           redis.del(item);
@@ -155,6 +183,13 @@ module.exports = {
   },
   clearComment: (req, res, next) => {
     redis.keys('getComment:*', (error, result) => {
+      if (result.length > 0) {
+        result.forEach((item) => {
+          redis.del(item);
+        });
+      }
+    });
+    redis.keys('getRecipeComment:*', (error, result) => {
       if (result.length > 0) {
         result.forEach((item) => {
           redis.del(item);

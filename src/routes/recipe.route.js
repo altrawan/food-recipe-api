@@ -15,22 +15,24 @@ const {
   getAllRecipe,
   getRecipeById,
   getLatestRecipe,
+  getCommentByRecipe,
   clearRecipe,
 } = require('../middlewares/redis');
 const {
   list,
   latest,
   detail,
+  listComment,
   store,
   update,
   updateStatus,
-  destroy
+  destroy,
 } = require('../controllers/recipe.controller');
 
 Router.get('/recipe', jwtAuth, getAllRecipe, list)
   .get('/recipe/latest', getLatestRecipe, latest)
   .get('/recipe/:id', jwtAuth, getRecipeById, detail)
-  // .get('/recipe/comment/:id', jwtAuth, getCommentByRecipe, listComment)
+  .get('/recipe/comment/:id', jwtAuth, getCommentByRecipe, listComment)
   .post(
     '/recipe',
     jwtAuth,

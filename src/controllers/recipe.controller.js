@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const recipeModel = require('../models/recipe.model');
+const commentModel = require('../models/comment.model');
 const { success, failed } = require('../helpers/response');
 const pagination = require('../utils/pagination');
 const deleteFile = require('../utils/deleteFile');
@@ -14,9 +15,9 @@ module.exports = {
       field = field || 'title';
       search = search || '';
       sort = sort || 'created_at';
-      sortType = sortType || 'DESC';
+      sortType = sortType || 'ASC';
       page = Number(page) || 1;
-      limit = Number(limit) || 3;
+      limit = Number(limit) || 6;
 
       const offset = page * limit - limit;
       const count = await recipeModel.getCountRecipe();
@@ -79,7 +80,7 @@ module.exports = {
   latest: async (req, res) => {
     try {
       let { limit } = req.query;
-      limit = Number(limit) || 1;
+      limit = Number(limit) || 6;
 
       const result = await recipeModel.getLatestRecipe(limit);
 
@@ -132,23 +133,21 @@ module.exports = {
   listComment: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await commentModel.getCommentByRecipe(id);
+      const comment = await commentModel.getCommentByRecipe(id);
 
-      // if (result.rows.length < 1) {
-      //   return failed(res, 404, 'failed', `Data by id ${id} not found !`);
-      // }
+      redis.setex(`getRecipeComment:${id}`, 3600, JSON.stringify(comment.rows));
 
-      // redis.setEx(`getCommentByRecipe:${id}`, 3600, JSON.stringify(result));
-
-      return success(
-        res,
-        200,
-        'success',
-        `Success get comment by recipe id ${id}`,
-        result.rows
-      );
+      return success(res, {
+        code: 200,
+        message: 'Success get list comment by recipe',
+        data: comment.rows,
+      });
     } catch (error) {
-      return failed(res, 400, 'failed', `Bad Request : ${error.message}`);
+      return failed(res, {
+        code: 500,
+        message: error.message,
+        error: 'Internal Server Error',
+      });
     }
   },
   store: async (req, res) => {

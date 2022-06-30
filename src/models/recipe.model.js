@@ -58,9 +58,9 @@ module.exports = {
   getRecipeByUser: (id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT recipes.id, recipes.title, recipes.image, recipes.created_at AS date, 
-        recipes.user_id, users.name, users.email, users.phone FROM recipes 
-        INNER JOIN users ON recipes.user_id = users.id WHERE user_id = $1`,
+        `SELECT recipes.id, recipes.title, recipes.image, recipes.ingredients, recipes.video, 
+        recipes.user_id, users.name, users.photo, recipes.created_at AS date 
+        FROM recipes INNER JOIN users ON recipes.user_id = users.id WHERE user_id = $1`,
         [id],
         (err, res) => {
           if (err) {
@@ -76,7 +76,7 @@ module.exports = {
       db.query(
         `INSERT INTO recipes (id, user_id, title, ingredients, image, video, is_active) 
         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-        [id, userId, title, photo, ingredients, video, true],
+        [id, userId, title, ingredients, photo, video, true],
         (err) => {
           if (err) {
             reject(new Error(`SQL : ${err.message}`));

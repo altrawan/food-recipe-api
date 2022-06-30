@@ -64,7 +64,7 @@ const login = [
 
 const forgot = [
   // email
-  check('email', 'Username required').not().isEmpty(),
+  check('email', 'Email required').not().isEmpty(),
   check('email', 'Please enter email correctly').isEmail(),
   check('email', 'Email maximum length is 50 characters').isLength({ max: 50 }),
 ];

@@ -44,10 +44,9 @@ module.exports = {
   getCommentByRecipe: (id) =>
     new Promise((resolve, reject) => {
       db.query(
-        `SELECT recipes.title, users.photo, users.name, comments.comment_text, 
-        to_char(comments.created_at, 'FMDay, DD FMMonth YYYY HH24:MI:SS') AS date
-        FROM comments INNER JOIN users ON comments.user_id = users.id
-        INNER JOIN recipes ON comments.recipe_id = recipes.id WHERE comments.recipe_id = $1`,
+        `SELECT comments.id, comments.comment_text, comments.user_id, comments.recipe_id,
+        users.name, users.photo FROM comments INNER JOIN users ON comments.user_id = users.id
+        WHERE recipe_id=$1`,
         [id],
         (err, res) => {
           if (err) {
