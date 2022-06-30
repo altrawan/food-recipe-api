@@ -63,6 +63,10 @@ This app was built with some technologies below:
 - [JSON Web Tokens](https://jwt.io/)
 - [Nodemailer](https://nodemailer.com/about/)
 - [PostgreSQL](https://www.postgresql.org/)
+- [Bcrypt](https://www.npmjs.com/package/bcrypt)
+- [Google APIs](https://github.com/googleapis/google-api-nodejs-client)
+- [Socket.io](https://socket.io/)
+- [Redis](https://redis.io/)
 - and other
 
 <p align="right">(<a href="#top">back to top</a>)</p>
