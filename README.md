@@ -113,25 +113,35 @@ Create .env file in your root project folder.
 ```env
 # app
 APP_NAME=
-PORT='YOUR PORT'
 NODE_ENV=
+PORT=
+API_URL=
+APP_CLIENT=
 
-# Setting PostgreSQL
-PG_HOST='YOUR HOST'
-PG_USER='YOUR USERNAME'
-PG_DATABASE='YOUR DATABASE'
-PG_PASSWORD='YOUR PASSWORD'
-PG_PORT=5432
+# database
+DB_HOST=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+DB_PORT=
 
-# JWT
-# JWT secret key
-JWT_SECRET=thisisasamplesecret
+# jwt
+JWT_SECRET=
+JWT_EXPIRED=
 
-# SMTP configuration options for the email service
-# For testing, you can use a fake SMTP service like Ethereal: https://ethereal.email/create
-STMP_SERVICE=email-server # example: gmail
-STMP_USER=your-email
-STMP_PASS=your-password
+# google
+EMAIL_FROM=
+EMAIL_USER=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+REDIRECT_URI=
+GMAIL_REFRESH_TOKEN=
+DRIVE_REFRESH_TOKEN=
+
+# redis
+RDS_HOST=
+RDS_PORT=
+RDS_PASS=
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
