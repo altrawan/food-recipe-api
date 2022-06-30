@@ -11,6 +11,7 @@ const {
 const upload = require('../middlewares/upload');
 const { insert } = require('../validations/recipe.validation');
 const validation = require('../middlewares/validation');
+const url = require('../validations/url.validation');
 const {
   getAllRecipe,
   getRecipeById,
@@ -40,6 +41,7 @@ Router.get('/recipe', jwtAuth, getAllRecipe, list)
     upload,
     insert,
     validation,
+    url,
     clearRecipe,
     store
   )
@@ -50,6 +52,7 @@ Router.get('/recipe', jwtAuth, getAllRecipe, list)
     upload,
     insert,
     validation,
+    url,
     clearRecipe,
     update
   )
