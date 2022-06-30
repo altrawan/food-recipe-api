@@ -21,11 +21,12 @@ const multerUpload = multer({
     if (
       file.mimetype === 'image/png' ||
       file.mimetype === 'image/jpg' ||
-      file.mimetype === 'image/jpeg'
+      file.mimetype === 'image/jpeg' ||
+      file.mimetype === 'image/webp'
     ) {
       cb(null, true);
     } else {
-      cb({ message: 'Image extension only can .jpg, .jpeg, and .png' }, false);
+      cb({ message: 'Image extension only can .jpg, .jpeg, .png and .webp' }, false);
     }
   },
   limits: {
